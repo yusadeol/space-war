@@ -1,0 +1,50 @@
+[
+  {
+    "file": "src/game.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/game.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
+    "file": "src/main.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/main.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
+    "file": "src/player.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/player.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  }
+]
