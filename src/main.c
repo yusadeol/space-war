@@ -3,23 +3,24 @@
 #include "raylib.h"
 
 int main(void) {
-    Game game = {.world_size = {720, 480}};
+    Game game = {720, 480, BLACK};
 
-    InitWindow(game.world_size.x, game.world_size.y, "Space War");
+    InitWindow(game.window_width, game.window_height, "Space War");
 
     SetTargetFPS(60);
 
-    Player player = {.size = {40.0f, 80.0f}, .speed = 400.0f};
+    Player player = {
+        .texture = LoadTexture("assets/textures/spaceships/viper.png"), .scale = {1.0f, 1.0f}, .speed = 400.0f};
 
     while (!WindowShouldClose()) {
         float delta = GetFrameTime();
 
         PlayerUpdate(&player, delta);
-        WorldResolveBoundaries(&game, &player.position, &player.size);
+        WorldResolveBoundaries(&game, &player.position, (Vector2){player.texture.width, player.texture.height});
 
         BeginDrawing();
 
-        ClearBackground(WHITE);
+        ClearBackground(game.background);
 
         PlayerDraw(&player);
 

@@ -4,9 +4,11 @@
 #include "raylib.h"
 
 typedef struct Game {
-    Vector2 world_size;
+    int window_width;
+    int window_height;
+    Color background;
 } Game;
 
-void WorldResolveBoundaries(const Game *game, Vector2 *position, Vector2 *size);
+void WorldResolveBoundaries(const Game *game, Vector2 *position, const Vector2 size);
 
 #endif
