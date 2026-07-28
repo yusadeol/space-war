@@ -1,8 +1,9 @@
 #include "player.h"
+#include "bullet.h"
 #include <raylib.h>
 
 void PlayerUpdate(Player *player, float delta) {
-    float move_step = player->speed * delta;
+    float move_step = PLAYER_SPEED * delta;
 
     if (IsKeyDown(KEY_LEFT)) {
         player->position.x -= move_step;
@@ -19,19 +20,27 @@ void PlayerUpdate(Player *player, float delta) {
     if (IsKeyDown(KEY_DOWN)) {
         player->position.y += move_step;
     }
+
+    if (IsKeyDown(KEY_SPACE)) {
+        PlayerShot(player);
+    }
 }
 
-float PlayerWidth(const Player *player) { return player->texture.width * player->scale.x; }
+float PlayerWidth(const Player *player) { return player->texture.width * PLAYER_SCALE; }
 
-float PlayerHeight(const Player *player) { return player->texture.height * player->scale.y; }
+float PlayerHeight(const Player *player) { return player->texture.height * PLAYER_SCALE; }
 
 void PlayerDraw(const Player *player) {
 
-    Rectangle source = {.width = player->texture.width, .height = player->texture.height};
+    Rectangle source = { .width = player->texture.width, .height = player->texture.height };
+    Rectangle destination = { player->position.x, player->position.y, PlayerWidth(player), PlayerHeight(player) };
 
-    Rectangle dest = {player->position.x, player->position.y, PlayerWidth(player), PlayerHeight(player)};
+    DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
+}
 
-    Vector2 origin = {};
+void PlayerShot(Player *player) {
+    Vector2 position = { player->position.x + (player->texture.width / 2),
+                         player->position.y + (player->texture.height / 2) };
 
-    DrawTexturePro(player->texture, source, dest, origin, 0, WHITE);
+    player->bullets[player->bullet_count++] = BulletCreate(BULLET_TYPE_PULSE, position);
 }

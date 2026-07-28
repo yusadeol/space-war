@@ -1,5 +1,21 @@
 [
   {
+    "file": "src/bullet.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/bullet.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
     "file": "src/game.c",
     "arguments": [
       "/usr/sbin/gcc",
