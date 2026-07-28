@@ -71,8 +71,8 @@ AlignTrailingComments:
   AlignPPAndNotPP: true
   Kind:            Always
   OverEmptyLines:  0
-AllowAllArgumentsOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowBreakBeforeNoexceptSpecifier: Never
 AllowBreakBeforeQtProperty: false
 AllowShortBlocksOnASingleLine: Never
@@ -89,9 +89,9 @@ AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AttributeMacros:
   - __capability
-BinPackArguments: true
-BinPackLongBracedList: true
-BinPackParameters: BinPack
+BinPackArguments: false
+BinPackLongBracedList: false
+BinPackParameters: OnePerLine
 BitFieldColonSpacing: Both
 BracedInitializerIndentWidth: -1
 BraceWrapping:
@@ -117,7 +117,7 @@ BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Leave
 BreakAfterJavaFieldAnnotations: false
 BreakAfterOpenBracketBracedList: false
-BreakAfterOpenBracketFunction: false
+BreakAfterOpenBracketFunction: true
 BreakAfterOpenBracketIf: false
 BreakAfterOpenBracketLoop: false
 BreakAfterOpenBracketSwitch: false
@@ -145,7 +145,7 @@ CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: AlignFirstComment
+Cpp11BracedListStyle: Block
 DerivePointerAlignment: false
 DisableFormat:   false
 EmptyLineAfterAccessModifier: Never
