@@ -21,7 +21,7 @@ void PlayerUpdate(Player *player, float delta) {
         player->position.y += move_step;
     }
 
-    if (IsKeyDown(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE)) {
         PlayerShot(player);
     }
 }

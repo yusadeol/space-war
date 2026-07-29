@@ -33,9 +33,6 @@ int main(void) {
                 Bullet *bullet = &player->bullets[j];
 
                 BulletUpdate(bullet, delta);
-                WorldResolveBoundaries(
-                    &game, &bullet->position,
-                    &(Vector2){bullet->texture.width, bullet->texture.height});
             }
         }
 
