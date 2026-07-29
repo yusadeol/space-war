@@ -2,6 +2,7 @@
 #include "game.h"
 #include "player.h"
 #include "raylib.h"
+#include "texture.h"
 
 int main(void) {
     Game game = {.window_width = 1080,
@@ -10,8 +11,10 @@ int main(void) {
 
     InitWindow(game.window_width, game.window_height, "Space War");
 
-    game.players[game.player_count++] = (Player){
-        .texture = LoadTexture("assets/textures/spaceships/viper.png")};
+    TextureLoad();
+
+    game.players[game.player_count++] =
+        (Player){.texture = *TextureGet(TEXTURE_SPACESHIP_VIPER)};
 
     SetTargetFPS(60);
 

@@ -1,10 +1,11 @@
 #include "bullet.h"
+#include "texture.h"
 #include <raylib.h>
 
 Texture2D BulletTexture(BulletType type) {
     switch (type) {
     case BULLET_TYPE_PULSE:
-        return LoadTexture("assets/textures/bullets/pulse.png");
+        return *TextureGet(TEXTURE_BULLET_PULSE);
     }
 
     return (Texture2D){};
