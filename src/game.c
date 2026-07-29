@@ -1,6 +1,7 @@
 #include "game.h"
 
-void WorldResolveBoundaries(const Game *game, Vector2 *position, const Vector2 *size) {
+void WorldResolveBoundaries(
+    const Game *game, Vector2 *position, const Vector2 *size) {
     int border = 10;
 
     int width_limit = game->window_width - border;

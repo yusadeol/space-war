@@ -12,6 +12,7 @@ typedef struct Game {
     int player_count;
 } Game;
 
-void WorldResolveBoundaries(const Game *game, Vector2 *position, const Vector2 *size);
+void WorldResolveBoundaries(
+    const Game *game, Vector2 *position, const Vector2 *size);
 
 #endif

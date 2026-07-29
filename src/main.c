@@ -4,11 +4,14 @@
 #include "raylib.h"
 
 int main(void) {
-    Game game = { .window_width = 1080, .window_height = 720, .background = BLACK };
+    Game game = {.window_width = 1080,
+                 .window_height = 720,
+                 .background = BLACK};
 
     InitWindow(game.window_width, game.window_height, "Space War");
 
-    game.players[game.player_count++] = (Player){ .texture = LoadTexture("assets/textures/spaceships/viper.png") };
+    game.players[game.player_count++] = (Player){
+        .texture = LoadTexture("assets/textures/spaceships/viper.png")};
 
     SetTargetFPS(60);
 
@@ -20,18 +23,16 @@ int main(void) {
 
             PlayerUpdate(player, delta);
             WorldResolveBoundaries(
-                &game,
-                &player->position,
-                &(Vector2){ player->texture.width, player->texture.height });
+                &game, &player->position,
+                &(Vector2){player->texture.width, player->texture.height});
 
             for (int j = 0; j < player->bullet_count; j++) {
                 Bullet *bullet = &player->bullets[j];
 
                 BulletUpdate(bullet, delta);
                 WorldResolveBoundaries(
-                    &game,
-                    &bullet->position,
-                    &(Vector2){ bullet->texture.width, bullet->texture.height });
+                    &game, &bullet->position,
+                    &(Vector2){bullet->texture.width, bullet->texture.height});
             }
         }
 
