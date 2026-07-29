@@ -45,8 +45,8 @@ void PlayerDraw(const Player *player) {
 }
 
 void PlayerShot(Player *player) {
-    Vector2 position = {player->position.x + (player->texture.width / 2),
-                        player->position.y + (player->texture.height / 2)};
+    Vector2 position = {player->position.x + (PlayerWidth(player) / 2),
+                        player->position.y + (PlayerHeight(player) / 2)};
 
     player->bullets[player->bullet_count++] =
         BulletCreate(BULLET_TYPE_PULSE, position);
