@@ -6,8 +6,9 @@ Built in C as a way to explore game development closer to the metal.
 ## Description
 
 Space War is a 2D space combat game built with [raylib](https://www.raylib.com/) and C23.
-The player controls a Viper-class spaceship, navigating the screen and firing pulse
-cannons while staying within the battlefield boundaries.
+The player controls a spaceship, navigating the screen and firing weapons while
+staying within the battlefield boundaries. The game will feature multiple spaceship
+and bullet types.
 
 Built entirely in C without a game engine, the project focuses on understanding game
 loop fundamentals, frame-independent movement, and manual resource management through
@@ -25,7 +26,6 @@ a simple, modular codebase.
 - CPU-controlled enemy ships with basic AI
 - Bullet-to-enemy collision detection
 - Scoring system
-- Multiple spaceship types
 
 ## Build
 
