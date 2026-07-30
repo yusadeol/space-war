@@ -7,7 +7,7 @@
 struct Player {
     Texture2D texture;
     Vector2 position;
-    Bullet bullets[MAX_SIMULTANEOUS_BULLETS];
+    Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
 };
 
@@ -29,6 +29,11 @@ Player *PlayerCreate(SpaceshipType type) {
 }
 
 void PlayerDestroy(Player *player) {
+    for (int i = 0; i < player->bullet_count; i++) {
+        Bullet *bullet = player->bullets[i];
+        BulletDestroy(bullet);
+    }
+
     free(player);
 }
 
@@ -49,7 +54,7 @@ TextureSize PlayerGetSize(const Player *player) {
 }
 
 Bullet *PlayerGetBullet(Player *player, int index) {
-    return &player->bullets[index];
+    return player->bullets[index];
 }
 
 int PlayerGetBulletCount(const Player *player) {
@@ -99,6 +104,9 @@ void PlayerShot(Player *player) {
 }
 
 void PlayerSpliceBullet(Player *player, int index) {
+    Bullet *bullet = player->bullets[index];
+    BulletDestroy(bullet);
+
     for (int i = index; i < player->bullet_count - 1; i++) {
         player->bullets[i] = player->bullets[i + 1];
     }

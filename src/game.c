@@ -26,6 +26,12 @@ Game *GameCreate(int window_width, int window_height, Color world_background) {
 }
 
 void GameDestroy(Game *game) {
+    for (int i = 0; i < game->player_count; i++) {
+        Player *player = game->players[i];
+
+        PlayerDestroy(player);
+    }
+
     free(game);
 }
 

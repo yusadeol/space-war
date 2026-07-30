@@ -10,15 +10,14 @@ constexpr float BULLET_SCALE = 1.0f;
 
 typedef enum { BULLET_TYPE_PULSE } BulletType;
 
-typedef struct Bullet {
-    Texture2D texture;
-    Vector2 position;
-} Bullet;
+typedef struct Bullet Bullet;
 
-Bullet BulletCreate(BulletType type, Vector2 position);
+Bullet *BulletCreate(BulletType type, Vector2 position);
+void BulletDestroy(Bullet *bullet);
 
 float BulletGetWidth(const Bullet *bullet);
 float BulletGetHeight(const Bullet *bullet);
+Vector2 *BulletGetPosition(Bullet *bullet);
 TextureSize BulletGetSize(const Bullet *bullet);
 
 void BulletUpdate(Bullet *bullet, float delta);

@@ -1,6 +1,12 @@
 #include "bullet.h"
 #include "asset.h"
 #include <raylib.h>
+#include <stdlib.h>
+
+struct Bullet {
+    Texture2D texture;
+    Vector2 position;
+};
 
 static Texture2D BulletTexture(BulletType type) {
     switch (type) {
@@ -11,8 +17,16 @@ static Texture2D BulletTexture(BulletType type) {
     return (Texture2D){};
 }
 
-Bullet BulletCreate(BulletType type, Vector2 position) {
-    return (Bullet){.texture = BulletTexture(type), .position = position};
+Bullet *BulletCreate(BulletType type, Vector2 position) {
+    Bullet *bullet = malloc(sizeof(Bullet));
+
+    *bullet = (Bullet){.texture = BulletTexture(type), .position = position};
+
+    return bullet;
+}
+
+void BulletDestroy(Bullet *bullet) {
+    free(bullet);
 }
 
 float BulletGetWidth(const Bullet *bullet) {
@@ -21,6 +35,10 @@ float BulletGetWidth(const Bullet *bullet) {
 
 float BulletGetHeight(const Bullet *bullet) {
     return bullet->texture.height * BULLET_SCALE;
+}
+
+Vector2 *BulletGetPosition(Bullet *bullet) {
+    return &bullet->position;
 }
 
 TextureSize BulletGetSize(const Bullet *bullet) {

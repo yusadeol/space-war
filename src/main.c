@@ -36,7 +36,8 @@ int main(void) {
                 Bullet *bullet = PlayerGetBullet(player, j);
 
                 if (WorldIsOutOfBounds(
-                        game, &bullet->position, BulletGetSize(bullet))) {
+                        game, BulletGetPosition(bullet),
+                        BulletGetSize(bullet))) {
                     PlayerSpliceBullet(player, j);
 
                     j--;
