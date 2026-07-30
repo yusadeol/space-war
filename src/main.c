@@ -14,9 +14,7 @@ int main(void) {
 
     AssetLoadTextures();
 
-    if (!GameAddPlayer(
-            game,
-            &(Player){.texture = *AssetGetTexture(TEXTURE_SPACESHIP_VIPER)})) {
+    if (!GameAddPlayer(game, PlayerCreate(SPACESHIP_TYPE_VIPER))) {
         TraceLog(LOG_ERROR, "Failed to add player");
 
         return 1;
@@ -32,16 +30,13 @@ int main(void) {
 
             PlayerUpdate(player, delta);
             WorldResolveBoundaries(
-                game, &player->position,
-                &(Vector2){player->texture.width, player->texture.height});
+                game, PlayerGetPosition(player), PlayerGetSize(player));
 
-            for (int j = 0; j < player->bullet_count; j++) {
-                Bullet *bullet = &player->bullets[j];
+            for (int j = 0; j < PlayerGetBulletCount(player); j++) {
+                Bullet *bullet = PlayerGetBullet(player, j);
 
                 if (WorldIsOutOfBounds(
-                        game, &bullet->position,
-                        &(Vector2){bullet->texture.width,
-                                   bullet->texture.height})) {
+                        game, &bullet->position, BulletGetSize(bullet))) {
                     PlayerSpliceBullet(player, j);
 
                     j--;
@@ -61,8 +56,8 @@ int main(void) {
 
             PlayerDraw(player);
 
-            for (int j = 0; j < player->bullet_count; j++) {
-                Bullet *bullet = &player->bullets[j];
+            for (int j = 0; j < PlayerGetBulletCount(player); j++) {
+                Bullet *bullet = PlayerGetBullet(player, j);
 
                 BulletDraw(bullet);
             }
