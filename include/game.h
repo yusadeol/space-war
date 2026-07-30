@@ -15,4 +15,7 @@ typedef struct Game {
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const Vector2 *size);
 
+bool WorldIsOutOfBounds(
+    const Game *game, const Vector2 *position, const Vector2 *size);
+
 #endif

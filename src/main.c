@@ -32,6 +32,16 @@ int main(void) {
             for (int j = 0; j < player->bullet_count; j++) {
                 Bullet *bullet = &player->bullets[j];
 
+                if (WorldIsOutOfBounds(
+                        &game, &bullet->position,
+                        &(Vector2){bullet->texture.width,
+                                   bullet->texture.height})) {
+                    PlayerSpliceBullet(player, j);
+
+                    j--;
+                    continue;
+                }
+
                 BulletUpdate(bullet, delta);
             }
         }

@@ -51,3 +51,11 @@ void PlayerShot(Player *player) {
     player->bullets[player->bullet_count++] =
         BulletCreate(BULLET_TYPE_PULSE, position);
 }
+
+void PlayerSpliceBullet(Player *player, int index) {
+    for (int i = index; i < player->bullet_count - 1; i++) {
+        player->bullets[i] = player->bullets[i + 1];
+    }
+
+    player->bullet_count--;
+}

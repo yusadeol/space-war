@@ -20,5 +20,6 @@ float PlayerWidth(const Player *player);
 float PlayerHeight(const Player *player);
 void PlayerDraw(const Player *player);
 void PlayerShot(Player *player);
+void PlayerSpliceBullet(Player *player, int index);
 
 #endif
