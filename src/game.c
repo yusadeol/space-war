@@ -1,4 +1,5 @@
 #include "game.h"
+#include "asset.h"
 #include "player.h"
 #include <stdlib.h>
 
@@ -8,7 +9,7 @@ struct Game {
     int window_width;
     int window_height;
     Color world_background;
-    Player players[MAX_PLAYERS];
+    Player *players[MAX_PLAYERS];
     int player_count;
 };
 
@@ -40,30 +41,30 @@ Color GameGetWorldBackground(const Game *game) {
     return game->world_background;
 }
 
-int GameGetPlayerCount(const Game *game) {
-    return game->player_count;
-}
-
 Player *GameGetPlayer(Game *game, int index) {
     if (index < 0 || index >= game->player_count) {
         return NULL;
     }
 
-    return &game->players[index];
+    return game->players[index];
 }
 
-bool GameAddPlayer(Game *game, const Player *player) {
+int GameGetPlayerCount(const Game *game) {
+    return game->player_count;
+}
+
+bool GameAddPlayer(Game *game, Player *player) {
     if ((game->player_count + 1) > MAX_PLAYERS) {
         return false;
     }
 
-    game->players[game->player_count++] = *player;
+    game->players[game->player_count++] = player;
 
     return true;
 }
 
 void WorldResolveBoundaries(
-    const Game *game, Vector2 *position, const Vector2 *size) {
+    const Game *game, Vector2 *position, const TextureSize size) {
     int width_limit = game->window_width - border;
     int height_limit = game->window_height - border;
 
@@ -75,23 +76,23 @@ void WorldResolveBoundaries(
         position->y = border;
     }
 
-    if (position->x > (width_limit - size->x)) {
-        position->x = width_limit - size->x;
+    if (position->x > (width_limit - size.width)) {
+        position->x = width_limit - size.width;
     }
 
-    if (position->y > (height_limit - size->y)) {
-        position->y = height_limit - size->y;
+    if (position->y > (height_limit - size.height)) {
+        position->y = height_limit - size.height;
     }
 }
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 *position, const Vector2 *size) {
+    const Game *game, const Vector2 *position, const TextureSize size) {
     int width_limit = game->window_width - border;
     int height_limit = game->window_height - border;
 
     if (position->x < border || position->y < border ||
-        position->x > (width_limit - size->x) ||
-        position->y > (height_limit - size->y)) {
+        position->x > (width_limit - size.width) ||
+        position->y > (height_limit - size.height)) {
         return true;
     }
 

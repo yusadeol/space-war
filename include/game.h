@@ -13,13 +13,13 @@ int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
 Color GameGetWorldBackground(const Game *game);
 int GameGetPlayerCount(const Game *game);
+bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, int index);
-bool GameAddPlayer(Game *game, const Player *player);
 
 void WorldResolveBoundaries(
-    const Game *game, Vector2 *position, const Vector2 *size);
+    const Game *game, Vector2 *position, const TextureSize size);
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 *position, const Vector2 *size);
+    const Game *game, const Vector2 *position, const TextureSize size);
 
 #endif

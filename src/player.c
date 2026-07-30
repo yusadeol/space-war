@@ -1,6 +1,60 @@
 #include "player.h"
+#include "asset.h"
 #include "bullet.h"
 #include <raylib.h>
+#include <stdlib.h>
+
+struct Player {
+    Texture2D texture;
+    Vector2 position;
+    Bullet bullets[MAX_SIMULTANEOUS_BULLETS];
+    int bullet_count;
+};
+
+static Texture2D PlayerTexture(SpaceshipType type) {
+    switch (type) {
+    case SPACESHIP_TYPE_VIPER:
+        return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
+    }
+
+    return (Texture2D){};
+}
+
+Player *PlayerCreate(SpaceshipType type) {
+    Player *player = malloc(sizeof(Player));
+
+    *player = (Player){.texture = PlayerTexture(type)};
+
+    return player;
+}
+
+void PlayerDestroy(Player *player) {
+    free(player);
+}
+
+float PlayerGetWidth(const Player *player) {
+    return player->texture.width * PLAYER_SCALE;
+}
+
+float PlayerGetHeight(const Player *player) {
+    return player->texture.height * PLAYER_SCALE;
+}
+
+Vector2 *PlayerGetPosition(Player *player) {
+    return &player->position;
+}
+
+TextureSize PlayerGetSize(const Player *player) {
+    return (TextureSize){player->texture.width, player->texture.height};
+}
+
+Bullet *PlayerGetBullet(Player *player, int index) {
+    return &player->bullets[index];
+}
+
+int PlayerGetBulletCount(const Player *player) {
+    return player->bullet_count;
+}
 
 void PlayerUpdate(Player *player, float delta) {
     float move_step = PLAYER_SPEED * delta;
@@ -24,14 +78,6 @@ void PlayerUpdate(Player *player, float delta) {
     if (IsKeyPressed(KEY_SPACE)) {
         PlayerShot(player);
     }
-}
-
-float PlayerGetWidth(const Player *player) {
-    return player->texture.width * PLAYER_SCALE;
-}
-
-float PlayerGetHeight(const Player *player) {
-    return player->texture.height * PLAYER_SCALE;
 }
 
 void PlayerDraw(const Player *player) {
