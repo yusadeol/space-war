@@ -10,6 +10,11 @@ typedef enum {
     TEXTURE_COUNT
 } TextureType;
 
+typedef struct TextureSize {
+    int width;
+    int height;
+} TextureSize;
+
 void AssetLoadTextures(void);
 void AssetUnloadTextures(void);
 
