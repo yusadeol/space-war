@@ -26,11 +26,11 @@ void PlayerUpdate(Player *player, float delta) {
     }
 }
 
-float PlayerWidth(const Player *player) {
+float PlayerGetWidth(const Player *player) {
     return player->texture.width * PLAYER_SCALE;
 }
 
-float PlayerHeight(const Player *player) {
+float PlayerGetHeight(const Player *player) {
     return player->texture.height * PLAYER_SCALE;
 }
 
@@ -39,14 +39,14 @@ void PlayerDraw(const Player *player) {
     Rectangle source = {.width = player->texture.width,
                         .height = player->texture.height};
     Rectangle destination = {player->position.x, player->position.y,
-                             PlayerWidth(player), PlayerHeight(player)};
+                             PlayerGetWidth(player), PlayerGetHeight(player)};
 
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
 void PlayerShot(Player *player) {
-    Vector2 position = {player->position.x + (PlayerWidth(player) / 2),
-                        player->position.y + (PlayerHeight(player) / 2)};
+    Vector2 position = {player->position.x + (PlayerGetWidth(player) / 2),
+                        player->position.y + (PlayerGetHeight(player) / 2)};
 
     player->bullets[player->bullet_count++] =
         BulletCreate(BULLET_TYPE_PULSE, position);

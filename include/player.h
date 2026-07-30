@@ -16,8 +16,8 @@ typedef struct Player {
 } Player;
 
 void PlayerUpdate(Player *player, float delta);
-float PlayerWidth(const Player *player);
-float PlayerHeight(const Player *player);
+float PlayerGetWidth(const Player *player);
+float PlayerGetHeight(const Player *player);
 void PlayerDraw(const Player *player);
 void PlayerShot(Player *player);
 void PlayerSpliceBullet(Player *player, int index);

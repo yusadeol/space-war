@@ -17,8 +17,8 @@ typedef struct Bullet {
 Texture2D BulletTexture(BulletType type);
 Bullet BulletCreate(BulletType type, Vector2 position);
 void BulletUpdate(Bullet *bullet, float delta);
-float BulletWidth(const Bullet *bullet);
-float BulletHeight(const Bullet *bullet);
+float BulletGetWidth(const Bullet *bullet);
+float BulletGetHeight(const Bullet *bullet);
 void BulletDraw(const Bullet *bullet);
 
 #endif

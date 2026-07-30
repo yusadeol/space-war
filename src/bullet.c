@@ -21,11 +21,11 @@ void BulletUpdate(Bullet *bullet, float delta) {
     bullet->position.x += move_step;
 }
 
-float BulletWidth(const Bullet *bullet) {
+float BulletGetWidth(const Bullet *bullet) {
     return bullet->texture.width * BULLET_SCALE;
 }
 
-float BulletHeight(const Bullet *bullet) {
+float BulletGetHeight(const Bullet *bullet) {
     return bullet->texture.height * BULLET_SCALE;
 }
 
@@ -33,7 +33,7 @@ void BulletDraw(const Bullet *bullet) {
     Rectangle source = {.width = bullet->texture.width,
                         .height = bullet->texture.height};
     Rectangle destination = {bullet->position.x, bullet->position.y,
-                             BulletWidth(bullet), BulletHeight(bullet)};
+                             BulletGetWidth(bullet), BulletGetHeight(bullet)};
 
     DrawTexturePro(bullet->texture, source, destination, (Vector2){}, 0, WHITE);
 }
