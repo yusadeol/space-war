@@ -15,7 +15,9 @@ struct Game {
     int enemy_count[MAX_PLAYERS];
 };
 
-Game *GameCreate(int window_width, int window_height, Color world_background) {
+Game *GameCreate(
+    const int window_width, const int window_height,
+    const Color world_background) {
     Game *game = malloc(sizeof(*game));
 
     if (game == NULL) {
@@ -69,7 +71,7 @@ bool GameAddPlayer(Game *game, Player *player) {
     return true;
 }
 
-Player *GameGetPlayer(Game *game, int index) {
+Player *GameGetPlayer(Game *game, const int index) {
     if (index < 0 || index >= game->player_count) {
         return NULL;
     }
@@ -81,7 +83,7 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
-bool GameAddEnemy(Game *game, int player_index, Enemy *enemy) {
+bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     if ((game->enemy_count[player_index] + 1) > MAX_ENEMIES) {
         return false;
     }
@@ -91,7 +93,7 @@ bool GameAddEnemy(Game *game, int player_index, Enemy *enemy) {
     return true;
 }
 
-Enemy *GameGetEnemy(Game *game, int player_index, int enemy_index) {
+Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index) {
     if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
         return NULL;
     }
@@ -99,7 +101,7 @@ Enemy *GameGetEnemy(Game *game, int player_index, int enemy_index) {
     return game->enemies[player_index][enemy_index];
 }
 
-int GameGetEnemyCount(const Game *game, int player_index) {
+int GameGetEnemyCount(const Game *game, const int player_index) {
     return game->enemy_count[player_index];
 }
 
@@ -126,13 +128,13 @@ void WorldResolveBoundaries(
 }
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 *position, const TextureSize size) {
+    const Game *game, const Vector2 position, const TextureSize size) {
     int width_limit = game->window_width - border;
     int height_limit = game->window_height - border;
 
-    if (position->x < border || position->y < border ||
-        position->x > (width_limit - size.width) ||
-        position->y > (height_limit - size.height)) {
+    if (position.x < border || position.y < border ||
+        position.x > (width_limit - size.width) ||
+        position.y > (height_limit - size.height)) {
         return true;
     }
 

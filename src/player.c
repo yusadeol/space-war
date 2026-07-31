@@ -11,7 +11,7 @@ struct Player {
     int bullet_count;
 };
 
-static Texture2D PlayerTexture(PlayerType type) {
+static Texture2D PlayerTexture(const PlayerType type) {
     switch (type) {
     case PLAYER_TYPE_VIPER:
         return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
@@ -20,7 +20,7 @@ static Texture2D PlayerTexture(PlayerType type) {
     return (Texture2D){};
 }
 
-Player *PlayerCreate(PlayerType type) {
+Player *PlayerCreate(const PlayerType type) {
     Player *player = malloc(sizeof(*player));
 
     if (player == NULL) {
@@ -57,7 +57,7 @@ TextureSize PlayerGetSize(const Player *player) {
     return (TextureSize){player->texture.width, player->texture.height};
 }
 
-Bullet *PlayerGetBullet(Player *player, int index) {
+Bullet *PlayerGetBullet(Player *player, const int index) {
     return player->bullets[index];
 }
 
@@ -65,7 +65,7 @@ int PlayerGetBulletCount(const Player *player) {
     return player->bullet_count;
 }
 
-void PlayerUpdate(Player *player, float delta) {
+void PlayerUpdate(Player *player, const float delta) {
     float move_step = PLAYER_SPEED * delta;
 
     if (IsKeyDown(KEY_LEFT)) {
@@ -113,7 +113,7 @@ bool PlayerShot(Player *player) {
     return true;
 }
 
-void PlayerSpliceBullet(Player *player, int index) {
+void PlayerSpliceBullet(Player *player, const int index) {
     Bullet *bullet = player->bullets[index];
     BulletDestroy(bullet);
 

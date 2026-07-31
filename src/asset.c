@@ -20,6 +20,6 @@ void AssetUnloadTextures(void) {
     }
 }
 
-Texture2D *AssetGetTexture(TextureType type) {
+Texture2D *AssetGetTexture(const TextureType type) {
     return &textures[type];
 }

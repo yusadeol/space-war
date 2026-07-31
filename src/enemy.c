@@ -11,7 +11,7 @@ struct Enemy {
     int bullet_count;
 };
 
-static Texture2D EnemyTexture(EnemyType type) {
+static Texture2D EnemyTexture(const EnemyType type) {
     switch (type) {
     case ENEMY_TYPE_SPECTRA:
         return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
@@ -20,7 +20,7 @@ static Texture2D EnemyTexture(EnemyType type) {
     return (Texture2D){};
 }
 
-Enemy *EnemyCreate(EnemyType type) {
+Enemy *EnemyCreate(const EnemyType type) {
     Enemy *enemy = malloc(sizeof(*enemy));
 
     if (enemy == NULL) {
@@ -57,7 +57,7 @@ TextureSize EnemyGetSize(const Enemy *enemy) {
     return (TextureSize){enemy->texture.width, enemy->texture.height};
 }
 
-Bullet *EnemyGetBullet(Enemy *enemy, int index) {
+Bullet *EnemyGetBullet(Enemy *enemy, const int index) {
     return enemy->bullets[index];
 }
 
@@ -95,7 +95,7 @@ bool EnemyShot(Enemy *enemy) {
     return true;
 }
 
-void EnemySpliceBullet(Enemy *enemy, int index) {
+void EnemySpliceBullet(Enemy *enemy, const int index) {
     Bullet *bullet = enemy->bullets[index];
     BulletDestroy(bullet);
 

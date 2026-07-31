@@ -6,7 +6,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-static void UpdatePlayerAndBullets(Game *game, float delta) {
+static void UpdatePlayerAndBullets(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -18,7 +18,7 @@ static void UpdatePlayerAndBullets(Game *game, float delta) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
             if (WorldIsOutOfBounds(
-                    game, BulletGetPosition(bullet), BulletGetSize(bullet))) {
+                    game, *BulletGetPosition(bullet), BulletGetSize(bullet))) {
                 PlayerSpliceBullet(player, j);
 
                 j--;
@@ -44,7 +44,7 @@ static void DrawPlayerAndBullets(Game *game) {
     }
 }
 
-static void UpdateEnemyAndBullets(Game *game, float delta) {
+static void UpdateEnemyAndBullets(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
@@ -57,7 +57,7 @@ static void UpdateEnemyAndBullets(Game *game, float delta) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
                 if (WorldIsOutOfBounds(
-                        game, BulletGetPosition(bullet),
+                        game, *BulletGetPosition(bullet),
                         BulletGetSize(bullet))) {
                     EnemySpliceBullet(enemy, k);
 

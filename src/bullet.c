@@ -8,7 +8,7 @@ struct Bullet {
     Vector2 position;
 };
 
-static Texture2D BulletTexture(BulletType type) {
+static Texture2D BulletTexture(const BulletType type) {
     switch (type) {
     case BULLET_TYPE_PULSE:
         return *AssetGetTexture(TEXTURE_BULLET_PULSE);
@@ -17,7 +17,7 @@ static Texture2D BulletTexture(BulletType type) {
     return (Texture2D){};
 }
 
-Bullet *BulletCreate(BulletType type, Vector2 position) {
+Bullet *BulletCreate(const BulletType type, const Vector2 position) {
     Bullet *bullet = malloc(sizeof(*bullet));
 
     if (bullet == NULL) {
@@ -49,7 +49,7 @@ TextureSize BulletGetSize(const Bullet *bullet) {
     return (TextureSize){bullet->texture.width, bullet->texture.height};
 }
 
-void BulletUpdate(Bullet *bullet, float delta) {
+void BulletUpdate(Bullet *bullet, const float delta) {
     float move_step = BULLET_SPEED * delta;
 
     bullet->position.x += move_step;

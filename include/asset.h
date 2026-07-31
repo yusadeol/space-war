@@ -19,6 +19,6 @@ typedef struct TextureSize {
 void AssetLoadTextures(void);
 void AssetUnloadTextures(void);
 
-Texture2D *AssetGetTexture(TextureType type);
+Texture2D *AssetGetTexture(const TextureType type);
 
 #endif

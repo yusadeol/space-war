@@ -12,7 +12,7 @@ typedef enum { BULLET_TYPE_PULSE } BulletType;
 
 typedef struct Bullet Bullet;
 
-Bullet *BulletCreate(BulletType type, Vector2 position);
+Bullet *BulletCreate(const BulletType type, const Vector2 position);
 void BulletDestroy(Bullet *bullet);
 
 float BulletGetWidth(const Bullet *bullet);
@@ -20,7 +20,7 @@ float BulletGetHeight(const Bullet *bullet);
 Vector2 *BulletGetPosition(Bullet *bullet);
 TextureSize BulletGetSize(const Bullet *bullet);
 
-void BulletUpdate(Bullet *bullet, float delta);
+void BulletUpdate(Bullet *bullet, const float delta);
 void BulletDraw(const Bullet *bullet);
 
 #endif

@@ -13,19 +13,19 @@ typedef enum { ENEMY_TYPE_SPECTRA } EnemyType;
 
 typedef struct Enemy Enemy;
 
-Enemy *EnemyCreate(EnemyType type);
+Enemy *EnemyCreate(const EnemyType type);
 void EnemyDestroy(Enemy *enemy);
 
 float EnemyGetWidth(const Enemy *enemy);
 float EnemyGetHeight(const Enemy *enemy);
 Vector2 *EnemyGetPosition(Enemy *enemy);
 TextureSize EnemyGetSize(const Enemy *enemy);
-Bullet *EnemyGetBullet(Enemy *enemy, int index);
+Bullet *EnemyGetBullet(Enemy *enemy, const int index);
 int EnemyGetBulletCount(const Enemy *enemy);
 
 void EnemyUpdate(Enemy *enemy, float delta);
 void EnemyDraw(const Enemy *enemy);
 bool EnemyShot(Enemy *enemy);
-void EnemySpliceBullet(Enemy *enemy, int index);
+void EnemySpliceBullet(Enemy *enemy, const int index);
 
 #endif
