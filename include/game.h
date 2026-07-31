@@ -19,9 +19,9 @@ bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, int index);
 int GameGetPlayerCount(const Game *game);
 
-bool GameAddEnemy(Game *game, Enemy *enemy);
-Enemy *GameGetEnemy(Game *game, int index);
-int GameGetEnemyCount(const Game *game);
+bool GameAddEnemy(Game *game, int player_index, Enemy *enemy);
+Enemy *GameGetEnemy(Game *game, int player_index, int enemy_index);
+int GameGetEnemyCount(const Game *game, int player_index);
 
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const TextureSize size);

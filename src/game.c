@@ -11,8 +11,8 @@ struct Game {
     Color world_background;
     Player *players[MAX_PLAYERS];
     int player_count;
-    Enemy *enemies[MAX_ENEMIES];
-    int enemy_count;
+    Enemy *enemies[MAX_PLAYERS][MAX_ENEMIES];
+    int enemy_count[MAX_PLAYERS];
 };
 
 Game *GameCreate(int window_width, int window_height, Color world_background) {
@@ -36,12 +36,12 @@ void GameDestroy(Game *game) {
         Player *player = game->players[i];
 
         PlayerDestroy(player);
-    }
 
-    for (int i = 0; i < game->enemy_count; i++) {
-        Enemy *enemy = game->enemies[i];
+        for (int j = 0; j < game->enemy_count[i]; j++) {
+            Enemy *enemy = game->enemies[i][j];
 
-        EnemyDestroy(enemy);
+            EnemyDestroy(enemy);
+        }
     }
 
     free(game);
@@ -81,26 +81,26 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
-bool GameAddEnemy(Game *game, Enemy *enemy) {
-    if ((game->enemy_count + 1) > MAX_ENEMIES) {
+bool GameAddEnemy(Game *game, int player_index, Enemy *enemy) {
+    if ((game->enemy_count[player_index] + 1) > MAX_ENEMIES) {
         return false;
     }
 
-    game->enemies[game->enemy_count++] = enemy;
+    game->enemies[player_index][game->enemy_count[player_index]++] = enemy;
 
     return true;
 }
 
-Enemy *GameGetEnemy(Game *game, int index) {
-    if (index < 0 || index >= game->enemy_count) {
+Enemy *GameGetEnemy(Game *game, int player_index, int enemy_index) {
+    if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
         return NULL;
     }
 
-    return game->enemies[index];
+    return game->enemies[player_index][enemy_index];
 }
 
-int GameGetEnemyCount(const Game *game) {
-    return game->enemy_count;
+int GameGetEnemyCount(const Game *game, int player_index) {
+    return game->enemy_count[player_index];
 }
 
 void WorldResolveBoundaries(

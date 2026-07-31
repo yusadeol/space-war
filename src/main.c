@@ -45,39 +45,52 @@ static void DrawPlayerAndBullets(Game *game) {
 }
 
 static void UpdateEnemyAndBullets(Game *game, float delta) {
-    for (int i = 0; i < GameGetEnemyCount(game); i++) {
-        Enemy *enemy = GameGetEnemy(game, i);
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
+            Enemy *enemy = GameGetEnemy(game, i, j);
 
-        EnemyUpdate(enemy, delta);
-        WorldResolveBoundaries(
-            game, EnemyGetPosition(enemy), EnemyGetSize(enemy));
+            EnemyUpdate(enemy, delta);
+            WorldResolveBoundaries(
+                game, EnemyGetPosition(enemy), EnemyGetSize(enemy));
 
-        for (int j = 0; j < EnemyGetBulletCount(enemy); j++) {
-            Bullet *bullet = EnemyGetBullet(enemy, j);
+            for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
+                Bullet *bullet = EnemyGetBullet(enemy, k);
 
-            if (WorldIsOutOfBounds(
-                    game, BulletGetPosition(bullet), BulletGetSize(bullet))) {
-                EnemySpliceBullet(enemy, j);
+                if (WorldIsOutOfBounds(
+                        game, BulletGetPosition(bullet),
+                        BulletGetSize(bullet))) {
+                    EnemySpliceBullet(enemy, k);
 
-                j--;
-                continue;
+                    k--;
+                    continue;
+                }
+
+                BulletUpdate(bullet, delta);
             }
-
-            BulletUpdate(bullet, delta);
         }
     }
 }
 
 static void DrawEnemyAndBullets(Game *game) {
-    for (int i = 0; i < GameGetEnemyCount(game); i++) {
-        Enemy *enemy = GameGetEnemy(game, i);
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
+            Enemy *enemy = GameGetEnemy(game, i, j);
 
-        EnemyDraw(enemy);
+            EnemyDraw(enemy);
 
-        for (int j = 0; j < EnemyGetBulletCount(enemy); j++) {
-            Bullet *bullet = EnemyGetBullet(enemy, j);
+            for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
+                Bullet *bullet = EnemyGetBullet(enemy, k);
 
-            BulletDraw(bullet);
+                BulletDraw(bullet);
+            }
+        }
+    }
+}
+
+static void CreateEnemiesForPlayers(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        if (!GameAddEnemy(game, i, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
+            TraceLog(LOG_WARNING, "Failed to create enemy for player %d", i);
         }
     }
 }
@@ -107,14 +120,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    if (!GameAddEnemy(game, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
-        TraceLog(LOG_ERROR, "Failed to add enemy");
-
-        GameDestroy(game);
-        CloseWindow();
-
-        return EXIT_FAILURE;
-    }
+    CreateEnemiesForPlayers(game);
 
     SetTargetFPS(60);
 
