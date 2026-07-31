@@ -45,7 +45,7 @@ Vector2 *BulletGetPosition(Bullet *bullet) {
     return &bullet->position;
 }
 
-TextureSize BulletGetSize(const Bullet *bullet) {
+TextureSize BulletGetTextureSize(const Bullet *bullet) {
     return (TextureSize){bullet->texture.width, bullet->texture.height};
 }
 

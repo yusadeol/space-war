@@ -53,7 +53,7 @@ Vector2 *PlayerGetPosition(Player *player) {
     return &player->position;
 }
 
-TextureSize PlayerGetSize(const Player *player) {
+TextureSize PlayerGetTextureSize(const Player *player) {
     return (TextureSize){player->texture.width, player->texture.height};
 }
 

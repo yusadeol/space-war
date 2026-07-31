@@ -17,7 +17,7 @@ void EnemyDestroy(Enemy *enemy);
 float EnemyGetWidth(const Enemy *enemy);
 float EnemyGetHeight(const Enemy *enemy);
 Vector2 *EnemyGetPosition(Enemy *enemy);
-TextureSize EnemyGetSize(const Enemy *enemy);
+TextureSize EnemyGetTextureSize(const Enemy *enemy);
 Bullet *EnemyGetBullet(Enemy *enemy, const int index);
 int EnemyGetBulletCount(const Enemy *enemy);
 

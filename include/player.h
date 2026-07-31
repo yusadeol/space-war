@@ -17,7 +17,7 @@ void PlayerDestroy(Player *player);
 float PlayerGetWidth(const Player *player);
 float PlayerGetHeight(const Player *player);
 Vector2 *PlayerGetPosition(Player *player);
-TextureSize PlayerGetSize(const Player *player);
+TextureSize PlayerGetTextureSize(const Player *player);
 Bullet *PlayerGetBullet(Player *player, const int index);
 int PlayerGetBulletCount(const Player *player);
 

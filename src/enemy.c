@@ -53,7 +53,7 @@ Vector2 *EnemyGetPosition(Enemy *enemy) {
     return &enemy->position;
 }
 
-TextureSize EnemyGetSize(const Enemy *enemy) {
+TextureSize EnemyGetTextureSize(const Enemy *enemy) {
     return (TextureSize){enemy->texture.width, enemy->texture.height};
 }
 
