@@ -1,5 +1,5 @@
 #include "game.h"
-#include "asset.h"
+#include "enemy.h"
 #include "player.h"
 #include <stdlib.h>
 
@@ -11,10 +11,16 @@ struct Game {
     Color world_background;
     Player *players[MAX_PLAYERS];
     int player_count;
+    Enemy *enemies[MAX_ENEMIES];
+    int enemy_count;
 };
 
 Game *GameCreate(int window_width, int window_height, Color world_background) {
-    Game *game = malloc(sizeof(Game));
+    Game *game = malloc(sizeof(*game));
+
+    if (game == NULL) {
+        return NULL;
+    }
 
     *game = (Game){
         .window_width = window_width,
@@ -32,6 +38,12 @@ void GameDestroy(Game *game) {
         PlayerDestroy(player);
     }
 
+    for (int i = 0; i < game->enemy_count; i++) {
+        Enemy *enemy = game->enemies[i];
+
+        EnemyDestroy(enemy);
+    }
+
     free(game);
 }
 
@@ -47,6 +59,16 @@ Color GameGetWorldBackground(const Game *game) {
     return game->world_background;
 }
 
+bool GameAddPlayer(Game *game, Player *player) {
+    if ((game->player_count + 1) > MAX_PLAYERS) {
+        return false;
+    }
+
+    game->players[game->player_count++] = player;
+
+    return true;
+}
+
 Player *GameGetPlayer(Game *game, int index) {
     if (index < 0 || index >= game->player_count) {
         return NULL;
@@ -59,14 +81,26 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
-bool GameAddPlayer(Game *game, Player *player) {
-    if ((game->player_count + 1) > MAX_PLAYERS) {
+bool GameAddEnemy(Game *game, Enemy *enemy) {
+    if ((game->enemy_count + 1) > MAX_ENEMIES) {
         return false;
     }
 
-    game->players[game->player_count++] = player;
+    game->enemies[game->enemy_count++] = enemy;
 
     return true;
+}
+
+Enemy *GameGetEnemy(Game *game, int index) {
+    if (index < 0 || index >= game->enemy_count) {
+        return NULL;
+    }
+
+    return game->enemies[index];
+}
+
+int GameGetEnemyCount(const Game *game) {
+    return game->enemy_count;
 }
 
 void WorldResolveBoundaries(

@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "asset.h"
+#include "enemy.h"
 #include "player.h"
 #include <raylib.h>
 
@@ -12,9 +14,14 @@ void GameDestroy(Game *game);
 int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
 Color GameGetWorldBackground(const Game *game);
-int GameGetPlayerCount(const Game *game);
+
 bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, int index);
+int GameGetPlayerCount(const Game *game);
+
+bool GameAddEnemy(Game *game, Enemy *enemy);
+Enemy *GameGetEnemy(Game *game, int index);
+int GameGetEnemyCount(const Game *game);
 
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const TextureSize size);
