@@ -1,6 +1,4 @@
-#ifndef BULLET_H
-#define BULLET_H
-
+#pragma once
 #include "asset.h"
 #include <raylib.h>
 
@@ -22,5 +20,3 @@ TextureSize BulletGetSize(const Bullet *bullet);
 
 void BulletUpdate(Bullet *bullet, const float delta);
 void BulletDraw(const Bullet *bullet);
-
-#endif

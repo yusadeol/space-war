@@ -1,6 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
+#pragma once
 #include "asset.h"
 #include "bullet.h"
 #include <raylib.h>
@@ -27,5 +25,3 @@ void PlayerUpdate(Player *player, const float delta);
 void PlayerDraw(const Player *player);
 bool PlayerShot(Player *player);
 void PlayerSpliceBullet(Player *player, const int index);
-
-#endif

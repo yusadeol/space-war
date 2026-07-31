@@ -1,6 +1,4 @@
-#ifndef ENEMY_H
-#define ENEMY_H
-
+#pragma once
 #include "asset.h"
 #include "bullet.h"
 #include <raylib.h>
@@ -28,5 +26,3 @@ void EnemyUpdate(
 void EnemyDraw(const Enemy *enemy);
 bool EnemyShot(Enemy *enemy);
 void EnemySpliceBullet(Enemy *enemy, const int index);
-
-#endif

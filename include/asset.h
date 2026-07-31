@@ -1,6 +1,4 @@
-#ifndef ASSET_H
-#define ASSET_H
-
+#pragma once
 #include <raylib.h>
 
 typedef enum {
@@ -20,5 +18,3 @@ void AssetLoadTextures(void);
 void AssetUnloadTextures(void);
 
 Texture2D *AssetGetTexture(const TextureType type);
-
-#endif

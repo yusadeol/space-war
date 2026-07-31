@@ -1,6 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
-
+#pragma once
 #include "asset.h"
 #include "enemy.h"
 #include "player.h"
@@ -30,5 +28,3 @@ void WorldResolveBoundaries(
 
 bool WorldIsOutOfBounds(
     const Game *game, const Vector2 position, const TextureSize size);
-
-#endif
