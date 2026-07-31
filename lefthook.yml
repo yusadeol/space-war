@@ -2,4 +2,4 @@ pre-commit:
   parallel: true
   commands:
     just:
-      run: just clang-check
+      run: just check
