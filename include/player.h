@@ -9,11 +9,11 @@ constexpr int MAX_PLAYERS = 2;
 constexpr float PLAYER_SPEED = 400.0f;
 constexpr float PLAYER_SCALE = 1.0f;
 
-typedef enum { SPACESHIP_TYPE_VIPER } SpaceshipType;
+typedef enum { PLAYER_TYPE_VIPER } PlayerType;
 
 typedef struct Player Player;
 
-Player *PlayerCreate(SpaceshipType type);
+Player *PlayerCreate(PlayerType type);
 void PlayerDestroy(Player *player);
 
 float PlayerGetWidth(const Player *player);
@@ -25,7 +25,7 @@ int PlayerGetBulletCount(const Player *player);
 
 void PlayerUpdate(Player *player, float delta);
 void PlayerDraw(const Player *player);
-void PlayerShot(Player *player);
+bool PlayerShot(Player *player);
 void PlayerSpliceBullet(Player *player, int index);
 
 #endif

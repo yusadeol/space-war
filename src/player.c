@@ -11,17 +11,21 @@ struct Player {
     int bullet_count;
 };
 
-static Texture2D PlayerTexture(SpaceshipType type) {
+static Texture2D PlayerTexture(PlayerType type) {
     switch (type) {
-    case SPACESHIP_TYPE_VIPER:
+    case PLAYER_TYPE_VIPER:
         return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
     }
 
     return (Texture2D){};
 }
 
-Player *PlayerCreate(SpaceshipType type) {
-    Player *player = malloc(sizeof(Player));
+Player *PlayerCreate(PlayerType type) {
+    Player *player = malloc(sizeof(*player));
+
+    if (player == NULL) {
+        return NULL;
+    }
 
     *player = (Player){.texture = PlayerTexture(type)};
 
@@ -95,12 +99,18 @@ void PlayerDraw(const Player *player) {
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
-void PlayerShot(Player *player) {
+bool PlayerShot(Player *player) {
+    if ((player->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
+        return false;
+    }
+
     Vector2 position = {player->position.x + (PlayerGetWidth(player) / 2),
                         player->position.y + (PlayerGetHeight(player) / 2)};
 
     player->bullets[player->bullet_count++] =
         BulletCreate(BULLET_TYPE_PULSE, position);
+
+    return true;
 }
 
 void PlayerSpliceBullet(Player *player, int index) {

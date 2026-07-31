@@ -18,7 +18,11 @@ static Texture2D BulletTexture(BulletType type) {
 }
 
 Bullet *BulletCreate(BulletType type, Vector2 position) {
-    Bullet *bullet = malloc(sizeof(Bullet));
+    Bullet *bullet = malloc(sizeof(*bullet));
+
+    if (bullet == NULL) {
+        return NULL;
+    }
 
     *bullet = (Bullet){.texture = BulletTexture(type), .position = position};
 

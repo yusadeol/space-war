@@ -14,7 +14,7 @@ int main(void) {
 
     AssetLoadTextures();
 
-    if (!GameAddPlayer(game, PlayerCreate(SPACESHIP_TYPE_VIPER))) {
+    if (!GameAddPlayer(game, PlayerCreate(PLAYER_TYPE_VIPER))) {
         TraceLog(LOG_ERROR, "Failed to add player");
 
         return 1;
