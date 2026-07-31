@@ -65,10 +65,17 @@ int EnemyGetBulletCount(const Enemy *enemy) {
     return enemy->bullet_count;
 }
 
-void EnemyUpdate(Enemy *enemy, float delta) {
+void EnemyUpdate(
+    Enemy *enemy, const Vector2 player_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;
 
-    enemy->position.y += move_step;
+    if (enemy->position.y < player_position.y) {
+        enemy->position.y += move_step;
+    }
+
+    if (enemy->position.y > player_position.y) {
+        enemy->position.y -= move_step;
+    }
 }
 
 void EnemyDraw(const Enemy *enemy) {

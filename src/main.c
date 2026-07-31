@@ -46,10 +46,12 @@ static void DrawPlayerAndBullets(Game *game) {
 
 static void UpdateEnemyAndBullets(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        Player *player = GameGetPlayer(game, i);
+
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
-            EnemyUpdate(enemy, delta);
+            EnemyUpdate(enemy, *PlayerGetPosition(player), delta);
             WorldResolveBoundaries(
                 game, EnemyGetPosition(enemy), EnemyGetSize(enemy));
 
