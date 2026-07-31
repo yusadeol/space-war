@@ -1,10 +1,11 @@
 #ifndef ASSET_H
 #define ASSET_H
 
-#include "raylib.h"
+#include <raylib.h>
 
 typedef enum {
     TEXTURE_SPACESHIP_VIPER,
+    TEXTURE_SPACESHIP_SPECTRA,
     TEXTURE_BULLET_PULSE,
 
     TEXTURE_COUNT

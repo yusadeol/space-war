@@ -2,7 +2,7 @@
 #define BULLET_H
 
 #include "asset.h"
-#include "raylib.h"
+#include <raylib.h>
 
 constexpr int MAX_SIMULTANEOUS_BULLETS = 50;
 constexpr float BULLET_SPEED = 800.0f;

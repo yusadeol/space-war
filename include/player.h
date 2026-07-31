@@ -3,6 +3,7 @@
 
 #include "asset.h"
 #include "bullet.h"
+#include <raylib.h>
 
 constexpr int MAX_PLAYERS = 2;
 constexpr float PLAYER_SPEED = 400.0f;

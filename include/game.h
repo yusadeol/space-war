@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "player.h"
-#include "raylib.h"
+#include <raylib.h>
 
 typedef struct Game Game;
 
