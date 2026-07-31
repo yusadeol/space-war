@@ -20,6 +20,7 @@ Vector2 *EnemyGetPosition(Enemy *enemy);
 TextureSize EnemyGetTextureSize(const Enemy *enemy);
 Bullet *EnemyGetBullet(Enemy *enemy, const int index);
 int EnemyGetBulletCount(const Enemy *enemy);
+Rectangle EnemyGetBounds(const Enemy *enemy);
 
 void EnemyUpdate(
     Enemy *enemy, const Vector2 player_position, const float delta);

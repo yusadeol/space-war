@@ -17,6 +17,7 @@ float BulletGetWidth(const Bullet *bullet);
 float BulletGetHeight(const Bullet *bullet);
 Vector2 *BulletGetPosition(Bullet *bullet);
 TextureSize BulletGetTextureSize(const Bullet *bullet);
+Rectangle BulletGetBounds(const Bullet *bullet);
 
 void BulletUpdate(Bullet *bullet, const float delta);
 void BulletDraw(const Bullet *bullet);

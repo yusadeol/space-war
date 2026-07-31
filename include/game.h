@@ -22,6 +22,7 @@ int GameGetPlayerCount(const Game *game);
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);
 int GameGetEnemyCount(const Game *game, const int player_index);
+void GameSpliceEnemy(Game *game, const int player_index, const int enemy_index);
 
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const TextureSize size);

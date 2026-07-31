@@ -65,6 +65,15 @@ int EnemyGetBulletCount(const Enemy *enemy) {
     return enemy->bullet_count;
 }
 
+Rectangle EnemyGetBounds(const Enemy *enemy) {
+    return (Rectangle){
+        .x = enemy->position.x,
+        .y = enemy->position.y,
+        .width = EnemyGetWidth(enemy),
+        .height = EnemyGetHeight(enemy),
+    };
+}
+
 void EnemyUpdate(
     Enemy *enemy, const Vector2 player_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;

@@ -105,6 +105,18 @@ int GameGetEnemyCount(const Game *game, const int player_index) {
     return game->enemy_count[player_index];
 }
 
+void GameSpliceEnemy(
+    Game *game, const int player_index, const int enemy_index) {
+    Enemy *enemy = game->enemies[player_index][enemy_index];
+    EnemyDestroy(enemy);
+
+    for (int i = enemy_index; i < game->enemy_count[player_index] - 1; i++) {
+        game->enemies[player_index][i] = game->enemies[player_index][i + 1];
+    }
+
+    game->enemy_count[player_index]--;
+}
+
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const TextureSize size) {
     int width_limit = game->window_width - border;

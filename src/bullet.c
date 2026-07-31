@@ -49,6 +49,15 @@ TextureSize BulletGetTextureSize(const Bullet *bullet) {
     return (TextureSize){bullet->texture.width, bullet->texture.height};
 }
 
+Rectangle BulletGetBounds(const Bullet *bullet) {
+    return (Rectangle){
+        .x = bullet->position.x,
+        .y = bullet->position.y,
+        .width = BulletGetWidth(bullet),
+        .height = BulletGetHeight(bullet),
+    };
+}
+
 void BulletUpdate(Bullet *bullet, const float delta) {
     float move_step = BULLET_SPEED * delta;
 

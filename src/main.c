@@ -1,5 +1,6 @@
 #include "asset.h"
 #include "bullet.h"
+#include "collision.h"
 #include "enemy.h"
 #include "game.h"
 #include "player.h"
@@ -132,6 +133,7 @@ int main(void) {
 
         UpdatePlayerAndBullets(game, delta);
         UpdateEnemyAndBullets(game, delta);
+        CollisionUpdate(game);
 
         BeginDrawing();
 
