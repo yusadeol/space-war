@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "asset.h"
 #include "bullet.h"
+#include "game.h"
 #include "geometry.h"
 #include <math.h>
 #include <raylib.h>
@@ -30,9 +31,13 @@ Enemy *EnemyCreate(const EnemyType type) {
         return NULL;
     }
 
-    *enemy = (Enemy){.position = {99999.0f, 0},
-                     .texture = EnemyTexture(type),
+    *enemy = (Enemy){.texture = EnemyTexture(type),
                      .shot_cooldown = ENEMY_SHOT_COOLDOWN};
+
+    Size size = EnemyGetSize(enemy);
+
+    enemy->position = (Vector2){GAME_WINDOW_WIDTH - size.width,
+                                rand() % (GAME_WINDOW_HEIGHT - size.height)};
 
     return enemy;
 }
