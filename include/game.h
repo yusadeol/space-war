@@ -24,6 +24,7 @@ int GameGetPlayerCount(const Game *game);
 void GameSplicePlayer(Game *game, const int index);
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
+void GameCreateRandomEnemiesForPlayer(Game *game, const int index);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);
 int GameGetEnemyCount(const Game *game, const int player_index);
 void GameSpliceEnemy(Game *game, const int player_index, const int enemy_index);

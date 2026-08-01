@@ -100,6 +100,16 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     return true;
 }
 
+void GameCreateRandomEnemiesForPlayer(Game *game, const int index) {
+    int enemy_amount = rand() % MAX_ENEMIES;
+    for (int i = 0; i < enemy_amount; i++) {
+        if (!GameAddEnemy(game, index, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
+            TraceLog(
+                LOG_WARNING, "Failed to add enemy %d for player %d", i, index);
+        }
+    }
+}
+
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index) {
     if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
         return NULL;

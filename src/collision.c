@@ -25,6 +25,10 @@ static void CollisionPlayerBulletsVsEnemies(Game *game) {
                 }
             }
         }
+
+        if (GameGetEnemyCount(game, i) == 0) {
+            GameCreateRandomEnemiesForPlayer(game, i);
+        }
     }
 }
 

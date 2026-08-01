@@ -36,8 +36,11 @@ Enemy *EnemyCreate(const EnemyType type) {
 
     Size size = EnemyGetSize(enemy);
 
-    enemy->position = (Vector2){GAME_WINDOW_WIDTH - size.width,
-                                rand() % (GAME_WINDOW_HEIGHT - size.height)};
+    enemy->position =
+        (Vector2){GAME_WINDOW_WIDTH,
+                  GetRandomValue(
+                      GAME_WORLD_BORDER,
+                      GAME_WINDOW_HEIGHT - (size.height + GAME_WORLD_BORDER))};
 
     return enemy;
 }
@@ -92,20 +95,24 @@ void EnemyUpdate(
     Enemy *enemy, const Vector2 player_position,
     const Vector2 player_center_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;
-
+    Size size = EnemyGetSize(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
-
     float player_distance_y =
         fabsf(player_center_position.y - enemy_center_position.y);
 
     enemy->shot_cooldown -= delta;
 
-    if (enemy->position.y < player_position.y) {
-        enemy->position.y += move_step;
+    if (enemy->position.x >
+        GAME_WINDOW_WIDTH - ((size.width + GAME_WORLD_BORDER) * 2)) {
+        enemy->position.x -= move_step;
     }
 
     if (enemy->position.y > player_position.y) {
         enemy->position.y -= move_step;
+    }
+
+    if (enemy->position.y < player_position.y) {
+        enemy->position.y += move_step;
     }
 
     if (player_distance_y <= ENEMY_ATTACK_DISTANCE &&

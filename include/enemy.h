@@ -5,7 +5,7 @@
 
 constexpr float ENEMY_ATTACK_DISTANCE = 40.0f;
 constexpr float ENEMY_SHOT_COOLDOWN = 0.5f;
-constexpr int MAX_ENEMIES = 2;
+constexpr int MAX_ENEMIES = 10;
 constexpr float ENEMY_SPEED = 100.0f;
 constexpr float ENEMY_SCALE = 1.0f;
 

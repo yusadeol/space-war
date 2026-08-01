@@ -55,8 +55,6 @@ static void UpdateEnemyAndBullets(Game *game, const float delta) {
             EnemyUpdate(
                 enemy, *PlayerGetPosition(player),
                 PlayerGetCenterPosition(player), delta);
-            WorldResolveBoundaries(
-                game, EnemyGetPosition(enemy), EnemyGetSize(enemy));
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
@@ -92,11 +90,9 @@ static void DrawEnemyAndBullets(Game *game) {
     }
 }
 
-static void CreateEnemiesForPlayers(Game *game) {
+static void CreateRandomEnemiesForPlayers(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        if (!GameAddEnemy(game, i, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
-            TraceLog(LOG_WARNING, "Failed to create enemy for player %d", i);
-        }
+        GameCreateRandomEnemiesForPlayer(game, i);
     }
 }
 
@@ -122,7 +118,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    CreateEnemiesForPlayers(game);
+    CreateRandomEnemiesForPlayers(game);
 
     SetTargetFPS(60);
 
