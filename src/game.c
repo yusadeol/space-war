@@ -3,8 +3,6 @@
 #include "player.h"
 #include <stdlib.h>
 
-static const int border = 10;
-
 struct Game {
     int window_width;
     int window_height;
@@ -128,15 +126,15 @@ void GameSpliceEnemy(
 
 void WorldResolveBoundaries(
     const Game *game, Vector2 *position, const Size size) {
-    int width_limit = game->window_width - border;
-    int height_limit = game->window_height - border;
+    int width_limit = game->window_width - GAME_WORLD_BORDER;
+    int height_limit = game->window_height - GAME_WORLD_BORDER;
 
-    if (position->x < border) {
-        position->x = border;
+    if (position->x < GAME_WORLD_BORDER) {
+        position->x = GAME_WORLD_BORDER;
     }
 
-    if (position->y < border) {
-        position->y = border;
+    if (position->y < GAME_WORLD_BORDER) {
+        position->y = GAME_WORLD_BORDER;
     }
 
     if (position->x > (width_limit - size.width)) {
@@ -150,10 +148,10 @@ void WorldResolveBoundaries(
 
 bool WorldIsOutOfBounds(
     const Game *game, const Vector2 position, const Size size) {
-    int width_limit = game->window_width - border;
-    int height_limit = game->window_height - border;
+    int width_limit = game->window_width - GAME_WORLD_BORDER;
+    int height_limit = game->window_height - GAME_WORLD_BORDER;
 
-    if (position.x < border || position.y < border ||
+    if (position.x < GAME_WORLD_BORDER || position.y < GAME_WORLD_BORDER ||
         position.x > (width_limit - size.width) ||
         position.y > (height_limit - size.height)) {
         return true;

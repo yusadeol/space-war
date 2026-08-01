@@ -8,6 +8,7 @@ typedef struct Game Game;
 
 constexpr int GAME_WINDOW_WIDTH = 1080;
 constexpr int GAME_WINDOW_HEIGHT = 720;
+constexpr int GAME_WORLD_BORDER = 5;
 constexpr Color GAME_WORLD_BACKGROUND = {0, 0, 0, 255};
 
 Game *GameCreate();
