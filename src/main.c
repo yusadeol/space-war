@@ -53,7 +53,9 @@ static void UpdateEnemyAndBullets(Game *game, const float delta) {
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
-            EnemyUpdate(enemy, *PlayerGetPosition(player), delta);
+            EnemyUpdate(
+                enemy, *PlayerGetPosition(player),
+                PlayerGetCenterPosition(player), delta);
             WorldResolveBoundaries(
                 game, EnemyGetPosition(enemy), EnemyGetTextureSize(enemy));
 

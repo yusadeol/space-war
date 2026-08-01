@@ -1,6 +1,8 @@
 #include "enemy.h"
 #include "asset.h"
 #include "bullet.h"
+#include "geometry.h"
+#include <math.h>
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -9,6 +11,7 @@ struct Enemy {
     Vector2 position;
     Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
+    float shot_cooldown;
 };
 
 static Texture2D EnemyTexture(const EnemyType type) {
@@ -27,7 +30,9 @@ Enemy *EnemyCreate(const EnemyType type) {
         return NULL;
     }
 
-    *enemy = (Enemy){.position = {99999.0f, 0}, .texture = EnemyTexture(type)};
+    *enemy = (Enemy){.position = {99999.0f, 0},
+                     .texture = EnemyTexture(type),
+                     .shot_cooldown = ENEMY_SHOT_COOLDOWN};
 
     return enemy;
 }
@@ -57,14 +62,6 @@ TextureSize EnemyGetTextureSize(const Enemy *enemy) {
     return (TextureSize){enemy->texture.width, enemy->texture.height};
 }
 
-Bullet *EnemyGetBullet(Enemy *enemy, const int index) {
-    return enemy->bullets[index];
-}
-
-int EnemyGetBulletCount(const Enemy *enemy) {
-    return enemy->bullet_count;
-}
-
 Rectangle EnemyGetBounds(const Enemy *enemy) {
     return (Rectangle){
         .x = enemy->position.x,
@@ -74,9 +71,29 @@ Rectangle EnemyGetBounds(const Enemy *enemy) {
     };
 }
 
+Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
+    return RectangleCenter(EnemyGetBounds(enemy));
+}
+
+Bullet *EnemyGetBullet(Enemy *enemy, const int index) {
+    return enemy->bullets[index];
+}
+
+int EnemyGetBulletCount(const Enemy *enemy) {
+    return enemy->bullet_count;
+}
+
 void EnemyUpdate(
-    Enemy *enemy, const Vector2 player_position, const float delta) {
+    Enemy *enemy, const Vector2 player_position,
+    const Vector2 player_center_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;
+
+    Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
+
+    float player_distance_y =
+        fabsf(player_center_position.y - enemy_center_position.y);
+
+    enemy->shot_cooldown -= delta;
 
     if (enemy->position.y < player_position.y) {
         enemy->position.y += move_step;
@@ -84,6 +101,13 @@ void EnemyUpdate(
 
     if (enemy->position.y > player_position.y) {
         enemy->position.y -= move_step;
+    }
+
+    if (player_distance_y <= ENEMY_ATTACK_DISTANCE &&
+        enemy->shot_cooldown <= 0.0f) {
+        EnemyShot(enemy);
+
+        enemy->shot_cooldown = ENEMY_SHOT_COOLDOWN;
     }
 }
 
@@ -102,11 +126,10 @@ bool EnemyShot(Enemy *enemy) {
         return false;
     }
 
-    Vector2 position = {enemy->position.x + (EnemyGetWidth(enemy) / 2),
-                        enemy->position.y + (EnemyGetHeight(enemy) / 2)};
+    Vector2 enemy_center_position = RectangleCenter(EnemyGetBounds(enemy));
 
-    enemy->bullets[enemy->bullet_count++] =
-        BulletCreate(BULLET_TYPE_PULSE, position);
+    enemy->bullets[enemy->bullet_count++] = BulletCreate(
+        BULLET_TYPE_PULSE, BULLET_DIRECTION_LEFT, enemy_center_position);
 
     return true;
 }

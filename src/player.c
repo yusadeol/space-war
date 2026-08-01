@@ -1,6 +1,7 @@
 #include "player.h"
 #include "asset.h"
 #include "bullet.h"
+#include "geometry.h"
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -57,6 +58,19 @@ TextureSize PlayerGetTextureSize(const Player *player) {
     return (TextureSize){player->texture.width, player->texture.height};
 }
 
+Rectangle PlayerGetBounds(const Player *player) {
+    return (Rectangle){
+        .x = player->position.x,
+        .y = player->position.y,
+        .width = PlayerGetWidth(player),
+        .height = PlayerGetHeight(player),
+    };
+}
+
+Vector2 PlayerGetCenterPosition(const Player *player) {
+    return RectangleCenter(PlayerGetBounds(player));
+}
+
 Bullet *PlayerGetBullet(Player *player, const int index) {
     return player->bullets[index];
 }
@@ -104,11 +118,9 @@ bool PlayerShot(Player *player) {
         return false;
     }
 
-    Vector2 position = {player->position.x + (PlayerGetWidth(player) / 2),
-                        player->position.y + (PlayerGetHeight(player) / 2)};
-
-    player->bullets[player->bullet_count++] =
-        BulletCreate(BULLET_TYPE_PULSE, position);
+    player->bullets[player->bullet_count++] = BulletCreate(
+        BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT,
+        PlayerGetCenterPosition(player));
 
     return true;
 }
