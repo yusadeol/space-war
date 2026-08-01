@@ -83,6 +83,17 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
+void GameSplicePlayer(Game *game, const int index) {
+    Player *player = game->players[index];
+    PlayerDestroy(player);
+
+    for (int i = index; i < game->player_count - 1; i++) {
+        game->players[i] = game->players[i + 1];
+    }
+
+    game->player_count--;
+}
+
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     if ((game->enemy_count[player_index] + 1) > MAX_ENEMIES) {
         return false;

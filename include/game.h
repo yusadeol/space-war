@@ -18,6 +18,7 @@ Color GameGetWorldBackground(const Game *game);
 bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, const int index);
 int GameGetPlayerCount(const Game *game);
+void GameSplicePlayer(Game *game, const int index);
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);

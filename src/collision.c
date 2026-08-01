@@ -28,6 +28,32 @@ static void CollisionPlayerBulletsVsEnemies(Game *game) {
     }
 }
 
+static void CollisionEnemyBulletsVsPlayers(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
+            Enemy *enemy = GameGetEnemy(game, i, j);
+
+            for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
+                Bullet *bullet = EnemyGetBullet(enemy, j);
+
+                for (int l = 0; l < GameGetPlayerCount(game); l++) {
+                    Player *player = GameGetPlayer(game, l);
+
+                    if (CheckCollisionRecs(
+                            BulletGetBounds(bullet), PlayerGetBounds(player))) {
+                        EnemySpliceBullet(enemy, k);
+                        GameSplicePlayer(game, l);
+
+                        k--;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void CollisionUpdate(Game *game) {
     CollisionPlayerBulletsVsEnemies(game);
+    CollisionEnemyBulletsVsPlayers(game);
 }
