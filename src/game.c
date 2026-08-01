@@ -129,7 +129,7 @@ void GameSpliceEnemy(
 }
 
 void WorldResolveBoundaries(
-    const Game *game, Vector2 *position, const TextureSize size) {
+    const Game *game, Vector2 *position, const Size size) {
     int width_limit = game->window_width - border;
     int height_limit = game->window_height - border;
 
@@ -151,7 +151,7 @@ void WorldResolveBoundaries(
 }
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 position, const TextureSize size) {
+    const Game *game, const Vector2 position, const Size size) {
     int width_limit = game->window_width - border;
     int height_limit = game->window_height - border;
 

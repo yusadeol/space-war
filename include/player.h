@@ -1,6 +1,6 @@
 #pragma once
-#include "asset.h"
 #include "bullet.h"
+#include "geometry.h"
 #include <raylib.h>
 
 constexpr int MAX_PLAYERS = 2;
@@ -17,7 +17,7 @@ void PlayerDestroy(Player *player);
 float PlayerGetWidth(const Player *player);
 float PlayerGetHeight(const Player *player);
 Vector2 *PlayerGetPosition(Player *player);
-TextureSize PlayerGetTextureSize(const Player *player);
+Size PlayerGetSize(const Player *player);
 Rectangle PlayerGetBounds(const Player *player);
 Vector2 PlayerGetCenterPosition(const Player *player);
 Bullet *PlayerGetBullet(Player *player, const int index);

@@ -1,5 +1,5 @@
 #pragma once
-#include "asset.h"
+#include "geometry.h"
 #include <raylib.h>
 
 constexpr int MAX_SIMULTANEOUS_BULLETS = 50;
@@ -22,7 +22,7 @@ void BulletDestroy(Bullet *bullet);
 float BulletGetWidth(const Bullet *bullet);
 float BulletGetHeight(const Bullet *bullet);
 Vector2 *BulletGetPosition(Bullet *bullet);
-TextureSize BulletGetTextureSize(const Bullet *bullet);
+Size BulletGetSize(const Bullet *bullet);
 Rectangle BulletGetBounds(const Bullet *bullet);
 
 void BulletUpdate(Bullet *bullet, const float delta);

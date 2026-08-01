@@ -50,8 +50,8 @@ Vector2 *BulletGetPosition(Bullet *bullet) {
     return &bullet->position;
 }
 
-TextureSize BulletGetTextureSize(const Bullet *bullet) {
-    return (TextureSize){bullet->texture.width, bullet->texture.height};
+Size BulletGetSize(const Bullet *bullet) {
+    return (Size){BulletGetWidth(bullet), BulletGetHeight(bullet)};
 }
 
 Rectangle BulletGetBounds(const Bullet *bullet) {

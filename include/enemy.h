@@ -1,6 +1,6 @@
 #pragma once
-#include "asset.h"
 #include "bullet.h"
+#include "geometry.h"
 #include <raylib.h>
 
 constexpr float ENEMY_ATTACK_DISTANCE = 40.0f;
@@ -19,7 +19,7 @@ void EnemyDestroy(Enemy *enemy);
 float EnemyGetWidth(const Enemy *enemy);
 float EnemyGetHeight(const Enemy *enemy);
 Vector2 *EnemyGetPosition(Enemy *enemy);
-TextureSize EnemyGetTextureSize(const Enemy *enemy);
+Size EnemyGetSize(const Enemy *enemy);
 Rectangle EnemyGetBounds(const Enemy *enemy);
 Vector2 EnemyGetCenterPosition(const Enemy *enemy);
 Bullet *EnemyGetBullet(Enemy *enemy, const int index);

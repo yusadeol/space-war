@@ -58,8 +58,8 @@ Vector2 *EnemyGetPosition(Enemy *enemy) {
     return &enemy->position;
 }
 
-TextureSize EnemyGetTextureSize(const Enemy *enemy) {
-    return (TextureSize){enemy->texture.width, enemy->texture.height};
+Size EnemyGetSize(const Enemy *enemy) {
+    return (Size){EnemyGetWidth(enemy), EnemyGetHeight(enemy)};
 }
 
 Rectangle EnemyGetBounds(const Enemy *enemy) {
