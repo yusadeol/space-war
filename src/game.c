@@ -35,15 +35,15 @@ Game *GameCreate(
 
 void GameDestroy(Game *game) {
     for (int i = 0; i < game->player_count; i++) {
-        Player *player = game->players[i];
-
-        PlayerDestroy(player);
-
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = game->enemies[i][j];
 
             EnemyDestroy(enemy);
         }
+
+        Player *player = game->players[i];
+
+        PlayerDestroy(player);
     }
 
     free(game);
