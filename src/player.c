@@ -82,23 +82,28 @@ int PlayerGetBulletCount(const Player *player) {
 void PlayerUpdate(Player *player, const float delta) {
     float move_step = PLAYER_SPEED * delta;
 
-    if (IsKeyDown(KEY_LEFT)) {
+    if (IsKeyDown(KEY_LEFT) ||
+        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
         player->position.x -= move_step;
     }
 
-    if (IsKeyDown(KEY_UP)) {
+    if (IsKeyDown(KEY_UP) ||
+        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
         player->position.y -= move_step;
     }
 
-    if (IsKeyDown(KEY_RIGHT)) {
+    if (IsKeyDown(KEY_RIGHT) ||
+        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
         player->position.x += move_step;
     }
 
-    if (IsKeyDown(KEY_DOWN)) {
+    if (IsKeyDown(KEY_DOWN) ||
+        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
         player->position.y += move_step;
     }
 
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE) ||
+        IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
         PlayerShot(player);
     }
 }
