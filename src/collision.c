@@ -34,7 +34,7 @@ static void CollisionEnemyBulletsVsPlayers(Game *game) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
-                Bullet *bullet = EnemyGetBullet(enemy, j);
+                Bullet *bullet = EnemyGetBullet(enemy, k);
 
                 for (int l = 0; l < GameGetPlayerCount(game); l++) {
                     Player *player = GameGetPlayer(game, l);
