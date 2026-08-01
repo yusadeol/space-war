@@ -6,9 +6,11 @@
 
 typedef struct Game Game;
 
-Game *GameCreate(
-    const int window_width, const int window_height,
-    const Color world_background);
+constexpr int GAME_WINDOW_WIDTH = 1080;
+constexpr int GAME_WINDOW_HEIGHT = 720;
+constexpr Color GAME_WORLD_BACKGROUND = {0, 0, 0, 255};
+
+Game *GameCreate();
 void GameDestroy(Game *game);
 
 int GameGetWindowWidth(const Game *game);

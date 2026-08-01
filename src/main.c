@@ -101,18 +101,15 @@ static void CreateEnemiesForPlayers(Game *game) {
 }
 
 int main(void) {
-    Game *game = GameCreate(1080, 720, BLACK);
+    Game *game = GameCreate();
     if (game == NULL) {
         TraceLog(LOG_ERROR, "Failed to create game");
 
         return EXIT_FAILURE;
     }
 
-    float game_window_width = GameGetWindowWidth(game);
-    float game_window_height = GameGetWindowHeight(game);
-    Color game_world_background = GameGetWorldBackground(game);
-
-    InitWindow(game_window_width, game_window_height, "Space War");
+    InitWindow(
+        GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
     AssetLoadTextures();
 
@@ -138,7 +135,7 @@ int main(void) {
 
         BeginDrawing();
 
-        ClearBackground(game_world_background);
+        ClearBackground(GameGetWorldBackground(game));
 
         DrawPlayerAndBullets(game);
         DrawEnemyAndBullets(game);

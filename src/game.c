@@ -15,9 +15,7 @@ struct Game {
     int enemy_count[MAX_PLAYERS];
 };
 
-Game *GameCreate(
-    const int window_width, const int window_height,
-    const Color world_background) {
+Game *GameCreate() {
     Game *game = malloc(sizeof(*game));
 
     if (game == NULL) {
@@ -25,9 +23,9 @@ Game *GameCreate(
     }
 
     *game = (Game){
-        .window_width = window_width,
-        .window_height = window_height,
-        .world_background = world_background,
+        .window_width = GAME_WINDOW_WIDTH,
+        .window_height = GAME_WINDOW_HEIGHT,
+        .world_background = GAME_WORLD_BACKGROUND,
     };
 
     return game;
