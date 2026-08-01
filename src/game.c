@@ -1,6 +1,7 @@
 #include "game.h"
 #include "enemy.h"
 #include "player.h"
+#include <raylib.h>
 #include <stdlib.h>
 
 struct Game {
@@ -101,7 +102,7 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
 }
 
 void GameCreateRandomEnemiesForPlayer(Game *game, const int index) {
-    int enemy_amount = rand() % MAX_ENEMIES;
+    int enemy_amount = GetRandomValue(1, MAX_ENEMIES);
     for (int i = 0; i < enemy_amount; i++) {
         if (!GameAddEnemy(game, index, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
             TraceLog(
