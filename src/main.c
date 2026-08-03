@@ -67,25 +67,7 @@ static void UpdateEnemiesAndBullets(Game *game, const float delta) {
     }
 }
 
-static void DrawPlayers(Game *game) {
-    for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        Player *player = GameGetPlayer(game, i);
-
-        PlayerDraw(player);
-    }
-}
-
-static void DrawEnemies(Game *game) {
-    for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
-            Enemy *enemy = GameGetEnemy(game, i, j);
-
-            EnemyDraw(enemy);
-        }
-    }
-}
-
-static void DrawBullets(Game *game) {
+static void DrawPlayersAndEnemiesBullets(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -103,6 +85,24 @@ static void DrawBullets(Game *game) {
 
                 BulletDraw(bullet);
             }
+        }
+    }
+}
+
+static void DrawPlayers(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        Player *player = GameGetPlayer(game, i);
+
+        PlayerDraw(player);
+    }
+}
+
+static void DrawEnemies(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
+            Enemy *enemy = GameGetEnemy(game, i, j);
+
+            EnemyDraw(enemy);
         }
     }
 }
@@ -144,9 +144,9 @@ int main(void) {
 
         ClearBackground(GameGetWorldBackground(game));
 
+        DrawPlayersAndEnemiesBullets(game);
         DrawPlayers(game);
         DrawEnemies(game);
-        DrawBullets(game);
 
         EndDrawing();
     }
