@@ -13,6 +13,8 @@ static Texture2D BulletTexture(const BulletType type) {
     switch (type) {
     case BULLET_TYPE_PULSE:
         return *AssetGetTexture(TEXTURE_BULLET_PULSE);
+    case BULLET_TYPE_BOLT:
+        return *AssetGetTexture(TEXTURE_BULLET_BOLT);
     }
 
     return (Texture2D){};
@@ -20,7 +22,7 @@ static Texture2D BulletTexture(const BulletType type) {
 
 Bullet *BulletCreate(
     const BulletType type, const BulletDirection direction,
-    const Vector2 position) {
+    const Rectangle shooter_bounds) {
     Bullet *bullet = malloc(sizeof(*bullet));
 
     if (bullet == NULL) {
@@ -29,7 +31,7 @@ Bullet *BulletCreate(
 
     *bullet = (Bullet){.texture = BulletTexture(type),
                        .direction = direction,
-                       .position = position};
+                       .position = RectangleCenter(shooter_bounds)};
 
     return bullet;
 }

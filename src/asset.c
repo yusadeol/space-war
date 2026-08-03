@@ -6,6 +6,7 @@ static const char *file_textures[TEXTURE_COUNT] = {
     [TEXTURE_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.png",
     [TEXTURE_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.png",
     [TEXTURE_BULLET_PULSE] = "assets/textures/bullets/pulse.png",
+    [TEXTURE_BULLET_BOLT] = "assets/textures/bullets/bolt.png",
 };
 
 void AssetLoadTextures(void) {

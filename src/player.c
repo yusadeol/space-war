@@ -124,8 +124,7 @@ bool PlayerShot(Player *player) {
     }
 
     player->bullets[player->bullet_count++] = BulletCreate(
-        BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT,
-        PlayerGetCenterPosition(player));
+        BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
 
     return true;
 }

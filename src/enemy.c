@@ -138,10 +138,8 @@ bool EnemyShot(Enemy *enemy) {
         return false;
     }
 
-    Vector2 enemy_center_position = RectangleCenter(EnemyGetBounds(enemy));
-
     enemy->bullets[enemy->bullet_count++] = BulletCreate(
-        BULLET_TYPE_PULSE, BULLET_DIRECTION_LEFT, enemy_center_position);
+        BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
 
     return true;
 }
