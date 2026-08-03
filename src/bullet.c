@@ -30,9 +30,11 @@ Bullet *BulletCreate(
         return NULL;
     }
 
-    *bullet = (Bullet){.texture = BulletTexture(type),
-                       .direction = direction,
-                       .position = RectangleCenter(shooter_bounds)};
+    *bullet = (Bullet){.texture = BulletTexture(type), .direction = direction};
+
+    Vector2 shooter_center = CenterFromRectangle(shooter_bounds);
+    bullet->position = PositionFromCenter(
+        shooter_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
 
     return bullet;
 }
