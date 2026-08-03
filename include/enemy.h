@@ -12,7 +12,9 @@ typedef enum { ENEMY_TYPE_SPECTRA } EnemyType;
 
 typedef struct Enemy Enemy;
 
-Enemy *EnemyCreate(const EnemyType type);
+Enemy *EnemyCreate(
+    const EnemyType type, const int window_width, const int world_height,
+    const int world_border);
 void EnemyDestroy(Enemy *enemy);
 
 float EnemyGetWidth(const Enemy *enemy);
@@ -24,7 +26,7 @@ Bullet *EnemyGetBullet(Enemy *enemy, const int index);
 int EnemyGetBulletCount(const Enemy *enemy);
 
 void EnemyUpdate(
-    Enemy *enemy, const Vector2 player_position,
+    Enemy *enemy, const int world_width, const Vector2 player_position,
     const Vector2 player_center_position, const float delta);
 void EnemyDraw(const Enemy *enemy);
 bool EnemyShoot(Enemy *enemy);

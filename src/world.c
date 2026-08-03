@@ -4,11 +4,13 @@
 struct World {
     int width;
     int height;
+    int border;
     Color background_color;
 };
 
 World *WorldCreate(
-    const int window_width, const int window_height, Color background_color) {
+    const int window_width, const int window_height, const int border,
+    Color background_color) {
     World *world = malloc(sizeof(*world));
 
     if (world == NULL) {
@@ -16,8 +18,9 @@ World *WorldCreate(
     }
 
     *world = (World){
-        .width = window_width - WORLD_BORDER,
-        .height = window_height - WORLD_BORDER,
+        .width = window_width - border,
+        .height = window_height - border,
+        .border = border,
         .background_color = background_color,
     };
 
@@ -28,18 +31,30 @@ void WorldDestroy(World *world) {
     free(world);
 }
 
+int WorldGetWidth(const World *world) {
+    return world->width;
+}
+
+int WorldGetHeight(const World *world) {
+    return world->height;
+}
+
+int WorldGetBorder(const World *world) {
+    return world->border;
+}
+
 Color WorldGetBackgroundColor(const World *world) {
     return world->background_color;
 }
 
 void WorldResolveBoundaries(
     const World *world, Vector2 *position, const Rectangle bounds) {
-    if (position->x < WORLD_BORDER) {
-        position->x = WORLD_BORDER;
+    if (position->x < world->border) {
+        position->x = world->border;
     }
 
-    if (position->y < WORLD_BORDER) {
-        position->y = WORLD_BORDER;
+    if (position->y < world->border) {
+        position->y = world->border;
     }
 
     if (position->x > (world->width - bounds.width)) {
@@ -53,7 +68,7 @@ void WorldResolveBoundaries(
 
 bool WorldIsOutOfBounds(
     const World *world, const Vector2 position, const Rectangle bounds) {
-    if (position.x < WORLD_BORDER || position.y < WORLD_BORDER ||
+    if (position.x < world->border || position.y < world->border ||
         position.x > (world->width - bounds.width) ||
         position.y > (world->height - bounds.height)) {
         return true;

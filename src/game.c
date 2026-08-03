@@ -1,6 +1,7 @@
 #include "game.h"
 #include "enemy.h"
 #include "player.h"
+#include "world.h"
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -26,8 +27,8 @@ Game *GameCreate(const int window_width, const int window_height) {
         .window_height = window_height,
     };
 
-    game->world =
-        WorldCreate(window_width, window_height, WORLD_BACKGROUND_COLOR);
+    game->world = WorldCreate(
+        window_width, window_height, WORLD_BORDER, WORLD_BACKGROUND_COLOR);
 
     return game;
 }
@@ -108,7 +109,12 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int index) {
     int enemy_amount = GetRandomValue(1, MAX_ENEMIES);
     for (int i = 0; i < enemy_amount; i++) {
-        if (!GameAddEnemy(game, index, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
+        if (!GameAddEnemy(
+                game, index,
+                EnemyCreate(
+                    ENEMY_TYPE_SPECTRA, game->window_width,
+                    WorldGetHeight(game->world),
+                    WorldGetBorder(game->world)))) {
             TraceLog(
                 LOG_WARNING, "Failed to add enemy %d for player %d", i, index);
         }

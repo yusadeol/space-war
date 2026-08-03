@@ -1,7 +1,6 @@
 #include "enemy.h"
 #include "asset.h"
 #include "bullet.h"
-#include "game.h"
 #include "geometry.h"
 #include <math.h>
 #include <raylib.h>
@@ -24,7 +23,9 @@ static Texture2D EnemyTexture(const EnemyType type) {
     return (Texture2D){};
 }
 
-Enemy *EnemyCreate(const EnemyType type) {
+Enemy *EnemyCreate(
+    const EnemyType type, const int window_width, const int world_height,
+    const int world_border) {
     Enemy *enemy = malloc(sizeof(*enemy));
 
     if (enemy == NULL) {
@@ -36,10 +37,9 @@ Enemy *EnemyCreate(const EnemyType type) {
 
     Rectangle bounds = EnemyGetBounds(enemy);
 
-    enemy->position = (Vector2){
-        GAME_WINDOW_WIDTH,
-        GetRandomValue(
-            WORLD_BORDER, GAME_WINDOW_HEIGHT - (bounds.height + WORLD_BORDER))};
+    enemy->position =
+        (Vector2){window_width,
+                  GetRandomValue(world_border, world_height - bounds.height)};
 
     return enemy;
 }
@@ -87,7 +87,7 @@ int EnemyGetBulletCount(const Enemy *enemy) {
 }
 
 void EnemyUpdate(
-    Enemy *enemy, const Vector2 player_position,
+    Enemy *enemy, const int world_width, const Vector2 player_position,
     const Vector2 player_center_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;
     Rectangle bounds = EnemyGetBounds(enemy);
@@ -97,8 +97,7 @@ void EnemyUpdate(
 
     enemy->shot_cooldown -= delta;
 
-    if (enemy->position.x >
-        GAME_WINDOW_WIDTH - ((bounds.width + WORLD_BORDER) * 2)) {
+    if (enemy->position.x > (world_width - bounds.width)) {
         enemy->position.x -= move_step;
     }
 
