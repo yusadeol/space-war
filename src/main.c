@@ -7,7 +7,13 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-static void UpdatePlayerAndBullets(Game *game, const float delta) {
+static void CreateRandomEnemiesForPlayers(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        GameCreateRandomEnemiesForPlayer(game, i);
+    }
+}
+
+static void UpdatePlayersAndBullets(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -31,21 +37,7 @@ static void UpdatePlayerAndBullets(Game *game, const float delta) {
     }
 }
 
-static void DrawPlayerAndBullets(Game *game) {
-    for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        Player *player = GameGetPlayer(game, i);
-
-        PlayerDraw(player);
-
-        for (int j = 0; j < PlayerGetBulletCount(player); j++) {
-            Bullet *bullet = PlayerGetBullet(player, j);
-
-            BulletDraw(bullet);
-        }
-    }
-}
-
-static void UpdateEnemyAndBullets(Game *game, const float delta) {
+static void UpdateEnemiesAndBullets(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -74,12 +66,36 @@ static void UpdateEnemyAndBullets(Game *game, const float delta) {
     }
 }
 
-static void DrawEnemyAndBullets(Game *game) {
+static void DrawPlayers(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        Player *player = GameGetPlayer(game, i);
+
+        PlayerDraw(player);
+    }
+}
+
+static void DrawEnemies(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
             EnemyDraw(enemy);
+        }
+    }
+}
+
+static void DrawBullets(Game *game) {
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        Player *player = GameGetPlayer(game, i);
+
+        for (int j = 0; j < PlayerGetBulletCount(player); j++) {
+            Bullet *bullet = PlayerGetBullet(player, j);
+
+            BulletDraw(bullet);
+        }
+
+        for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
+            Enemy *enemy = GameGetEnemy(game, i, j);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
@@ -87,12 +103,6 @@ static void DrawEnemyAndBullets(Game *game) {
                 BulletDraw(bullet);
             }
         }
-    }
-}
-
-static void CreateRandomEnemiesForPlayers(Game *game) {
-    for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        GameCreateRandomEnemiesForPlayer(game, i);
     }
 }
 
@@ -125,16 +135,17 @@ int main(void) {
     while (!WindowShouldClose()) {
         float delta = GetFrameTime();
 
-        UpdatePlayerAndBullets(game, delta);
-        UpdateEnemyAndBullets(game, delta);
+        UpdatePlayersAndBullets(game, delta);
+        UpdateEnemiesAndBullets(game, delta);
         CollisionUpdate(game);
 
         BeginDrawing();
 
         ClearBackground(GameGetWorldBackground(game));
 
-        DrawPlayerAndBullets(game);
-        DrawEnemyAndBullets(game);
+        DrawPlayers(game);
+        DrawEnemies(game);
+        DrawBullets(game);
 
         EndDrawing();
     }
