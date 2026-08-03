@@ -7,27 +7,27 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-static void CreateRandomEnemiesForPlayers(Game *game) {
+static void SpawnRandomEnemiesForPlayers(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
-        GameCreateRandomEnemiesForPlayer(game, i);
+        GameSpawnRandomEnemiesForPlayer(game, i);
     }
 }
 
-static void UpdatePlayersAndBullets(Game *game, const float delta) {
+static void UpdatePlayerEntities(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
         PlayerUpdate(player, delta);
-        WorldResolveBoundaries(
+        GameResolveBoundaries(
             game, PlayerGetPosition(player), PlayerGetBounds(player));
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            if (WorldIsOutOfBounds(
+            if (GameIsOutOfBounds(
                     game, *BulletGetPosition(bullet),
                     BulletGetBounds(bullet))) {
-                PlayerSpliceBullet(player, j);
+                PlayerRemoveBullet(player, j);
 
                 j--;
                 continue;
@@ -38,7 +38,7 @@ static void UpdatePlayersAndBullets(Game *game, const float delta) {
     }
 }
 
-static void UpdateEnemiesAndBullets(Game *game, const float delta) {
+static void UpdateEnemyEntities(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -52,10 +52,10 @@ static void UpdateEnemiesAndBullets(Game *game, const float delta) {
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                if (WorldIsOutOfBounds(
+                if (GameIsOutOfBounds(
                         game, *BulletGetPosition(bullet),
                         BulletGetBounds(bullet))) {
-                    EnemySpliceBullet(enemy, k);
+                    EnemyRemoveBullet(enemy, k);
 
                     k--;
                     continue;
@@ -67,7 +67,7 @@ static void UpdateEnemiesAndBullets(Game *game, const float delta) {
     }
 }
 
-static void DrawPlayersAndEnemiesBullets(Game *game) {
+static void DrawAllBullets(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -129,22 +129,22 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    CreateRandomEnemiesForPlayers(game);
+    SpawnRandomEnemiesForPlayers(game);
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
         float delta = GetFrameTime();
 
-        UpdatePlayersAndBullets(game, delta);
-        UpdateEnemiesAndBullets(game, delta);
+        UpdatePlayerEntities(game, delta);
+        UpdateEnemyEntities(game, delta);
         CollisionUpdate(game);
 
         BeginDrawing();
 
         ClearBackground(GameGetWorldBackground(game));
 
-        DrawPlayersAndEnemiesBullets(game);
+        DrawAllBullets(game);
         DrawPlayers(game);
         DrawEnemies(game);
 

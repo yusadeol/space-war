@@ -27,5 +27,5 @@ void EnemyUpdate(
     Enemy *enemy, const Vector2 player_position,
     const Vector2 player_center_position, const float delta);
 void EnemyDraw(const Enemy *enemy);
-bool EnemyShot(Enemy *enemy);
-void EnemySpliceBullet(Enemy *enemy, const int index);
+bool EnemyShoot(Enemy *enemy);
+void EnemyRemoveBullet(Enemy *enemy, const int index);

@@ -23,5 +23,5 @@ int PlayerGetBulletCount(const Player *player);
 
 void PlayerUpdate(Player *player, const float delta);
 void PlayerDraw(const Player *player);
-bool PlayerShot(Player *player);
-void PlayerSpliceBullet(Player *player, const int index);
+bool PlayerShoot(Player *player);
+void PlayerRemoveBullet(Player *player, const int index);

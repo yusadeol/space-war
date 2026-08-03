@@ -76,7 +76,7 @@ Rectangle EnemyGetBounds(const Enemy *enemy) {
 }
 
 Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
-    return CenterFromRectangle(EnemyGetBounds(enemy));
+    return GeometryGetCenterFromRect(EnemyGetBounds(enemy));
 }
 
 Bullet *EnemyGetBullet(Enemy *enemy, const int index) {
@@ -113,7 +113,7 @@ void EnemyUpdate(
 
     if (player_distance_y <= ENEMY_ATTACK_DISTANCE &&
         enemy->shot_cooldown <= 0.0f) {
-        EnemyShot(enemy);
+        EnemyShoot(enemy);
 
         enemy->shot_cooldown = ENEMY_SHOT_COOLDOWN;
     }
@@ -129,7 +129,7 @@ void EnemyDraw(const Enemy *enemy) {
     DrawTexturePro(enemy->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
-bool EnemyShot(Enemy *enemy) {
+bool EnemyShoot(Enemy *enemy) {
     if ((enemy->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
         return false;
     }
@@ -140,7 +140,7 @@ bool EnemyShot(Enemy *enemy) {
     return true;
 }
 
-void EnemySpliceBullet(Enemy *enemy, const int index) {
+void EnemyRemoveBullet(Enemy *enemy, const int index) {
     Bullet *bullet = enemy->bullets[index];
     BulletDestroy(bullet);
 

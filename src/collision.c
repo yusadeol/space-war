@@ -5,7 +5,7 @@
 #include "player.h"
 #include <raylib.h>
 
-static void CollisionPlayerBulletsVsEnemies(Game *game) {
+static void ResolvePlayerBulletCollisions(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -17,8 +17,8 @@ static void CollisionPlayerBulletsVsEnemies(Game *game) {
 
                 if (CheckCollisionRecs(
                         BulletGetBounds(bullet), EnemyGetBounds(enemy))) {
-                    PlayerSpliceBullet(player, j);
-                    GameSpliceEnemy(game, i, k);
+                    PlayerRemoveBullet(player, j);
+                    GameRemoveEnemy(game, i, k);
 
                     j--;
                     break;
@@ -27,12 +27,12 @@ static void CollisionPlayerBulletsVsEnemies(Game *game) {
         }
 
         if (GameGetEnemyCount(game, i) == 0) {
-            GameCreateRandomEnemiesForPlayer(game, i);
+            GameSpawnRandomEnemiesForPlayer(game, i);
         }
     }
 }
 
-static void CollisionEnemyBulletsVsPlayers(Game *game) {
+static void ResolveEnemyBulletCollisions(Game *game) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
@@ -45,8 +45,8 @@ static void CollisionEnemyBulletsVsPlayers(Game *game) {
 
                     if (CheckCollisionRecs(
                             BulletGetBounds(bullet), PlayerGetBounds(player))) {
-                        EnemySpliceBullet(enemy, k);
-                        GameSplicePlayer(game, l);
+                        EnemyRemoveBullet(enemy, k);
+                        GameRemovePlayer(game, l);
 
                         k--;
                         break;
@@ -58,6 +58,6 @@ static void CollisionEnemyBulletsVsPlayers(Game *game) {
 }
 
 void CollisionUpdate(Game *game) {
-    CollisionPlayerBulletsVsEnemies(game);
-    CollisionEnemyBulletsVsPlayers(game);
+    ResolvePlayerBulletCollisions(game);
+    ResolveEnemyBulletCollisions(game);
 }

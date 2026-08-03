@@ -20,16 +20,16 @@ Color GameGetWorldBackground(const Game *game);
 bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, const int index);
 int GameGetPlayerCount(const Game *game);
-void GameSplicePlayer(Game *game, const int index);
+void GameRemovePlayer(Game *game, const int index);
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
-void GameCreateRandomEnemiesForPlayer(Game *game, const int index);
+void GameSpawnRandomEnemiesForPlayer(Game *game, const int index);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);
 int GameGetEnemyCount(const Game *game, const int player_index);
-void GameSpliceEnemy(Game *game, const int player_index, const int enemy_index);
+void GameRemoveEnemy(Game *game, const int player_index, const int enemy_index);
 
-void WorldResolveBoundaries(
+void GameResolveBoundaries(
     const Game *game, Vector2 *position, const Rectangle bounds);
 
-bool WorldIsOutOfBounds(
+bool GameIsOutOfBounds(
     const Game *game, const Vector2 position, const Rectangle bounds);

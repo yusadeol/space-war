@@ -80,7 +80,7 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
-void GameSplicePlayer(Game *game, const int index) {
+void GameRemovePlayer(Game *game, const int index) {
     Player *player = game->players[index];
     PlayerDestroy(player);
 
@@ -101,7 +101,7 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     return true;
 }
 
-void GameCreateRandomEnemiesForPlayer(Game *game, const int index) {
+void GameSpawnRandomEnemiesForPlayer(Game *game, const int index) {
     int enemy_amount = GetRandomValue(1, MAX_ENEMIES);
     for (int i = 0; i < enemy_amount; i++) {
         if (!GameAddEnemy(game, index, EnemyCreate(ENEMY_TYPE_SPECTRA))) {
@@ -123,7 +123,7 @@ int GameGetEnemyCount(const Game *game, const int player_index) {
     return game->enemy_count[player_index];
 }
 
-void GameSpliceEnemy(
+void GameRemoveEnemy(
     Game *game, const int player_index, const int enemy_index) {
     Enemy *enemy = game->enemies[player_index][enemy_index];
     EnemyDestroy(enemy);
@@ -135,7 +135,7 @@ void GameSpliceEnemy(
     game->enemy_count[player_index]--;
 }
 
-void WorldResolveBoundaries(
+void GameResolveBoundaries(
     const Game *game, Vector2 *position, const Rectangle bounds) {
     int width_limit = game->window_width - GAME_WORLD_BORDER;
     int height_limit = game->window_height - GAME_WORLD_BORDER;
@@ -157,7 +157,7 @@ void WorldResolveBoundaries(
     }
 }
 
-bool WorldIsOutOfBounds(
+bool GameIsOutOfBounds(
     const Game *game, const Vector2 position, const Rectangle bounds) {
     int width_limit = game->window_width - GAME_WORLD_BORDER;
     int height_limit = game->window_height - GAME_WORLD_BORDER;

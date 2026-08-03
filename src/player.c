@@ -64,7 +64,7 @@ Rectangle PlayerGetBounds(const Player *player) {
 }
 
 Vector2 PlayerGetCenterPosition(const Player *player) {
-    return CenterFromRectangle(PlayerGetBounds(player));
+    return GeometryGetCenterFromRect(PlayerGetBounds(player));
 }
 
 Bullet *PlayerGetBullet(Player *player, const int index) {
@@ -100,7 +100,7 @@ void PlayerUpdate(Player *player, const float delta) {
 
     if (IsKeyPressed(KEY_SPACE) ||
         IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-        PlayerShot(player);
+        PlayerShoot(player);
     }
 }
 
@@ -114,7 +114,7 @@ void PlayerDraw(const Player *player) {
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
-bool PlayerShot(Player *player) {
+bool PlayerShoot(Player *player) {
     if ((player->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
         return false;
     }
@@ -125,7 +125,7 @@ bool PlayerShot(Player *player) {
     return true;
 }
 
-void PlayerSpliceBullet(Player *player, const int index) {
+void PlayerRemoveBullet(Player *player, const int index) {
     Bullet *bullet = player->bullets[index];
     BulletDestroy(bullet);
 

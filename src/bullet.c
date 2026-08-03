@@ -32,8 +32,8 @@ Bullet *BulletCreate(
 
     *bullet = (Bullet){.texture = BulletTexture(type), .direction = direction};
 
-    Vector2 shooter_center = CenterFromRectangle(shooter_bounds);
-    bullet->position = PositionFromCenter(
+    Vector2 shooter_center = GeometryGetCenterFromRect(shooter_bounds);
+    bullet->position = GeometryGetTopLeftFromCenter(
         shooter_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
 
     return bullet;
