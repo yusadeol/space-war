@@ -18,7 +18,11 @@ static void ResolvePlayerBulletCollisions(Game *game) {
                 if (CheckCollisionRecs(
                         BulletGetBounds(bullet), EnemyGetBounds(enemy))) {
                     PlayerRemoveBullet(player, j);
-                    GameRemoveEnemy(game, i, k);
+                    EnemyTakeDamage(enemy);
+
+                    if (EnemyGetStatus(enemy) == ENEMY_STATUS_DESTROYED) {
+                        GameRemoveEnemy(game, i, k);
+                    }
 
                     j--;
                     break;

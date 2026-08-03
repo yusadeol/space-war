@@ -9,6 +9,9 @@
 struct Enemy {
     Texture2D texture;
     Vector2 position;
+    EnemyStatus status;
+    EnemyBehavior behavior;
+    float behavior_cooldown;
     Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
     float shot_cooldown;
@@ -33,6 +36,8 @@ Enemy *EnemyCreate(
     }
 
     *enemy = (Enemy){.texture = EnemyTexture(type),
+                     .status = ENEMY_STATUS_NORMAL,
+                     .behavior = ENEMY_BEHAVIOR_PURSUIT,
                      .shot_cooldown = ENEMY_SHOT_COOLDOWN};
 
     Rectangle bounds = EnemyGetBounds(enemy);
@@ -65,6 +70,10 @@ Vector2 *EnemyGetPosition(Enemy *enemy) {
     return &enemy->position;
 }
 
+EnemyStatus EnemyGetStatus(const Enemy *enemy) {
+    return enemy->status;
+}
+
 Rectangle EnemyGetBounds(const Enemy *enemy) {
     return (Rectangle){
         .x = enemy->position.x,
@@ -89,24 +98,47 @@ int EnemyGetBulletCount(const Enemy *enemy) {
 void EnemyUpdate(
     Enemy *enemy, const int world_width, const Vector2 player_position,
     const Vector2 player_center_position, const float delta) {
-    float move_step = ENEMY_SPEED * delta;
     Rectangle bounds = EnemyGetBounds(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
     float player_distance_y =
         fabsf(player_center_position.y - enemy_center_position.y);
 
+    enemy->behavior_cooldown -= delta;
     enemy->shot_cooldown -= delta;
 
-    if (enemy->position.x > (world_width - bounds.width)) {
-        enemy->position.x -= move_step;
+    if (enemy->behavior_cooldown <= 0.0f) {
+        enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
     }
 
-    if (enemy->position.y > player_position.y) {
-        enemy->position.y -= move_step;
-    }
+    float move_step;
 
-    if (enemy->position.y < player_position.y) {
-        enemy->position.y += move_step;
+    switch (enemy->behavior) {
+    case ENEMY_BEHAVIOR_PURSUIT:
+        move_step = ENEMY_SPEED * delta;
+
+        if (enemy->position.x > (world_width - bounds.width)) {
+            enemy->position.x -= move_step;
+        }
+
+        if (enemy->position.y > player_position.y) {
+            enemy->position.y -= move_step;
+        } else {
+            enemy->position.y += move_step;
+        }
+
+        break;
+    case ENEMY_BEHAVIOR_RETREAT:
+        move_step = (ENEMY_SPEED * 2) * delta;
+        if (player_distance_y < ENEMY_RETREAT_DISTANCE) {
+            if (enemy_center_position.y > player_center_position.y) {
+                enemy->position.y += move_step;
+            } else {
+                enemy->position.y -= move_step;
+            }
+        } else {
+            enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
+        }
+        break;
     }
 
     if (player_distance_y <= ENEMY_ATTACK_DISTANCE &&
@@ -136,6 +168,15 @@ bool EnemyShoot(Enemy *enemy) {
         BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
 
     return true;
+}
+
+void EnemyTakeDamage(Enemy *enemy) {
+    if (enemy->behavior == ENEMY_BEHAVIOR_RETREAT) {
+        enemy->status = ENEMY_STATUS_DESTROYED;
+    }
+
+    enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
+    enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
 }
 
 void EnemyRemoveBullet(Enemy *enemy, const int index) {
