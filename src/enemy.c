@@ -34,13 +34,13 @@ Enemy *EnemyCreate(const EnemyType type) {
     *enemy = (Enemy){.texture = EnemyTexture(type),
                      .shot_cooldown = ENEMY_SHOT_COOLDOWN};
 
-    Size size = EnemyGetSize(enemy);
+    Rectangle bounds = EnemyGetBounds(enemy);
 
-    enemy->position =
-        (Vector2){GAME_WINDOW_WIDTH,
-                  GetRandomValue(
-                      GAME_WORLD_BORDER,
-                      GAME_WINDOW_HEIGHT - (size.height + GAME_WORLD_BORDER))};
+    enemy->position = (Vector2){
+        GAME_WINDOW_WIDTH,
+        GetRandomValue(
+            GAME_WORLD_BORDER,
+            GAME_WINDOW_HEIGHT - (bounds.height + GAME_WORLD_BORDER))};
 
     return enemy;
 }
@@ -64,10 +64,6 @@ float EnemyGetHeight(const Enemy *enemy) {
 
 Vector2 *EnemyGetPosition(Enemy *enemy) {
     return &enemy->position;
-}
-
-Size EnemyGetSize(const Enemy *enemy) {
-    return (Size){EnemyGetWidth(enemy), EnemyGetHeight(enemy)};
 }
 
 Rectangle EnemyGetBounds(const Enemy *enemy) {
@@ -95,7 +91,7 @@ void EnemyUpdate(
     Enemy *enemy, const Vector2 player_position,
     const Vector2 player_center_position, const float delta) {
     float move_step = ENEMY_SPEED * delta;
-    Size size = EnemyGetSize(enemy);
+    Rectangle bounds = EnemyGetBounds(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
     float player_distance_y =
         fabsf(player_center_position.y - enemy_center_position.y);
@@ -103,7 +99,7 @@ void EnemyUpdate(
     enemy->shot_cooldown -= delta;
 
     if (enemy->position.x >
-        GAME_WINDOW_WIDTH - ((size.width + GAME_WORLD_BORDER) * 2)) {
+        GAME_WINDOW_WIDTH - ((bounds.width + GAME_WORLD_BORDER) * 2)) {
         enemy->position.x -= move_step;
     }
 

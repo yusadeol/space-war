@@ -136,7 +136,7 @@ void GameSpliceEnemy(
 }
 
 void WorldResolveBoundaries(
-    const Game *game, Vector2 *position, const Size size) {
+    const Game *game, Vector2 *position, const Rectangle bounds) {
     int width_limit = game->window_width - GAME_WORLD_BORDER;
     int height_limit = game->window_height - GAME_WORLD_BORDER;
 
@@ -148,23 +148,23 @@ void WorldResolveBoundaries(
         position->y = GAME_WORLD_BORDER;
     }
 
-    if (position->x > (width_limit - size.width)) {
-        position->x = width_limit - size.width;
+    if (position->x > (width_limit - bounds.width)) {
+        position->x = width_limit - bounds.width;
     }
 
-    if (position->y > (height_limit - size.height)) {
-        position->y = height_limit - size.height;
+    if (position->y > (height_limit - bounds.height)) {
+        position->y = height_limit - bounds.height;
     }
 }
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 position, const Size size) {
+    const Game *game, const Vector2 position, const Rectangle bounds) {
     int width_limit = game->window_width - GAME_WORLD_BORDER;
     int height_limit = game->window_height - GAME_WORLD_BORDER;
 
     if (position.x < GAME_WORLD_BORDER || position.y < GAME_WORLD_BORDER ||
-        position.x > (width_limit - size.width) ||
-        position.y > (height_limit - size.height)) {
+        position.x > (width_limit - bounds.width) ||
+        position.y > (height_limit - bounds.height)) {
         return true;
     }
 

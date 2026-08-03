@@ -1,5 +1,6 @@
 #include "bullet.h"
 #include "asset.h"
+#include "geometry.h"
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -50,10 +51,6 @@ float BulletGetHeight(const Bullet *bullet) {
 
 Vector2 *BulletGetPosition(Bullet *bullet) {
     return &bullet->position;
-}
-
-Size BulletGetSize(const Bullet *bullet) {
-    return (Size){BulletGetWidth(bullet), BulletGetHeight(bullet)};
 }
 
 Rectangle BulletGetBounds(const Bullet *bullet) {

@@ -1,6 +1,5 @@
 #pragma once
 #include "enemy.h"
-#include "geometry.h"
 #include "player.h"
 #include <raylib.h>
 
@@ -30,7 +29,7 @@ int GameGetEnemyCount(const Game *game, const int player_index);
 void GameSpliceEnemy(Game *game, const int player_index, const int enemy_index);
 
 void WorldResolveBoundaries(
-    const Game *game, Vector2 *position, const Size size);
+    const Game *game, Vector2 *position, const Rectangle bounds);
 
 bool WorldIsOutOfBounds(
-    const Game *game, const Vector2 position, const Size size);
+    const Game *game, const Vector2 position, const Rectangle bounds);

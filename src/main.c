@@ -19,13 +19,14 @@ static void UpdatePlayersAndBullets(Game *game, const float delta) {
 
         PlayerUpdate(player, delta);
         WorldResolveBoundaries(
-            game, PlayerGetPosition(player), PlayerGetSize(player));
+            game, PlayerGetPosition(player), PlayerGetBounds(player));
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
             if (WorldIsOutOfBounds(
-                    game, *BulletGetPosition(bullet), BulletGetSize(bullet))) {
+                    game, *BulletGetPosition(bullet),
+                    BulletGetBounds(bullet))) {
                 PlayerSpliceBullet(player, j);
 
                 j--;
@@ -53,7 +54,7 @@ static void UpdateEnemiesAndBullets(Game *game, const float delta) {
 
                 if (WorldIsOutOfBounds(
                         game, *BulletGetPosition(bullet),
-                        BulletGetSize(bullet))) {
+                        BulletGetBounds(bullet))) {
                     EnemySpliceBullet(enemy, k);
 
                     k--;

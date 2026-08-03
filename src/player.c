@@ -54,10 +54,6 @@ Vector2 *PlayerGetPosition(Player *player) {
     return &player->position;
 }
 
-Size PlayerGetSize(const Player *player) {
-    return (Size){PlayerGetWidth(player), PlayerGetHeight(player)};
-}
-
 Rectangle PlayerGetBounds(const Player *player) {
     return (Rectangle){
         .x = player->position.x,
