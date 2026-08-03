@@ -4,6 +4,7 @@
 #include "enemy.h"
 #include "game.h"
 #include "player.h"
+#include "world.h"
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -18,14 +19,15 @@ static void UpdatePlayerEntities(Game *game, const float delta) {
         Player *player = GameGetPlayer(game, i);
 
         PlayerUpdate(player, delta);
-        GameResolveBoundaries(
-            game, PlayerGetPosition(player), PlayerGetBounds(player));
+        WorldResolveBoundaries(
+            GameGetWorld(game), PlayerGetPosition(player),
+            PlayerGetBounds(player));
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            if (GameIsOutOfBounds(
-                    game, *BulletGetPosition(bullet),
+            if (WorldIsOutOfBounds(
+                    GameGetWorld(game), *BulletGetPosition(bullet),
                     BulletGetBounds(bullet))) {
                 PlayerRemoveBullet(player, j);
 
@@ -52,8 +54,8 @@ static void UpdateEnemyEntities(Game *game, const float delta) {
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                if (GameIsOutOfBounds(
-                        game, *BulletGetPosition(bullet),
+                if (WorldIsOutOfBounds(
+                        GameGetWorld(game), *BulletGetPosition(bullet),
                         BulletGetBounds(bullet))) {
                     EnemyRemoveBullet(enemy, k);
 
@@ -108,7 +110,7 @@ static void DrawEnemies(Game *game) {
 }
 
 int main(void) {
-    Game *game = GameCreate();
+    Game *game = GameCreate(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
     if (game == NULL) {
         TraceLog(LOG_ERROR, "Failed to create game");
 
@@ -142,7 +144,7 @@ int main(void) {
 
         BeginDrawing();
 
-        ClearBackground(GameGetWorldBackground(game));
+        ClearBackground(WorldGetBackgroundColor(GameGetWorld(game)));
 
         DrawAllBullets(game);
         DrawPlayers(game);

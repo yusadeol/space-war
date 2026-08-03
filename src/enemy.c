@@ -39,8 +39,7 @@ Enemy *EnemyCreate(const EnemyType type) {
     enemy->position = (Vector2){
         GAME_WINDOW_WIDTH,
         GetRandomValue(
-            GAME_WORLD_BORDER,
-            GAME_WINDOW_HEIGHT - (bounds.height + GAME_WORLD_BORDER))};
+            WORLD_BORDER, GAME_WINDOW_HEIGHT - (bounds.height + WORLD_BORDER))};
 
     return enemy;
 }
@@ -99,7 +98,7 @@ void EnemyUpdate(
     enemy->shot_cooldown -= delta;
 
     if (enemy->position.x >
-        GAME_WINDOW_WIDTH - ((bounds.width + GAME_WORLD_BORDER) * 2)) {
+        GAME_WINDOW_WIDTH - ((bounds.width + WORLD_BORDER) * 2)) {
         enemy->position.x -= move_step;
     }
 

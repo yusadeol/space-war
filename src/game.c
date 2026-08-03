@@ -7,14 +7,14 @@
 struct Game {
     int window_width;
     int window_height;
-    Color world_background;
+    World *world;
     Player *players[MAX_PLAYERS];
     int player_count;
     Enemy *enemies[MAX_PLAYERS][MAX_ENEMIES];
     int enemy_count[MAX_PLAYERS];
 };
 
-Game *GameCreate() {
+Game *GameCreate(const int window_width, const int window_height) {
     Game *game = malloc(sizeof(*game));
 
     if (game == NULL) {
@@ -22,15 +22,19 @@ Game *GameCreate() {
     }
 
     *game = (Game){
-        .window_width = GAME_WINDOW_WIDTH,
-        .window_height = GAME_WINDOW_HEIGHT,
-        .world_background = GAME_WORLD_BACKGROUND,
+        .window_width = window_width,
+        .window_height = window_height,
     };
+
+    game->world =
+        WorldCreate(window_width, window_height, WORLD_BACKGROUND_COLOR);
 
     return game;
 }
 
 void GameDestroy(Game *game) {
+    WorldDestroy(game->world);
+
     for (int i = 0; i < game->player_count; i++) {
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = game->enemies[i][j];
@@ -54,8 +58,8 @@ int GameGetWindowHeight(const Game *game) {
     return game->window_height;
 }
 
-Color GameGetWorldBackground(const Game *game) {
-    return game->world_background;
+World *GameGetWorld(Game *game) {
+    return game->world;
 }
 
 bool GameAddPlayer(Game *game, Player *player) {
@@ -133,40 +137,4 @@ void GameRemoveEnemy(
     }
 
     game->enemy_count[player_index]--;
-}
-
-void GameResolveBoundaries(
-    const Game *game, Vector2 *position, const Rectangle bounds) {
-    int width_limit = game->window_width - GAME_WORLD_BORDER;
-    int height_limit = game->window_height - GAME_WORLD_BORDER;
-
-    if (position->x < GAME_WORLD_BORDER) {
-        position->x = GAME_WORLD_BORDER;
-    }
-
-    if (position->y < GAME_WORLD_BORDER) {
-        position->y = GAME_WORLD_BORDER;
-    }
-
-    if (position->x > (width_limit - bounds.width)) {
-        position->x = width_limit - bounds.width;
-    }
-
-    if (position->y > (height_limit - bounds.height)) {
-        position->y = height_limit - bounds.height;
-    }
-}
-
-bool GameIsOutOfBounds(
-    const Game *game, const Vector2 position, const Rectangle bounds) {
-    int width_limit = game->window_width - GAME_WORLD_BORDER;
-    int height_limit = game->window_height - GAME_WORLD_BORDER;
-
-    if (position.x < GAME_WORLD_BORDER || position.y < GAME_WORLD_BORDER ||
-        position.x > (width_limit - bounds.width) ||
-        position.y > (height_limit - bounds.height)) {
-        return true;
-    }
-
-    return false;
 }

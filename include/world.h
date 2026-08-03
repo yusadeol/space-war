@@ -1,0 +1,19 @@
+#pragma once
+#include <raylib.h>
+
+constexpr int WORLD_BORDER = 5;
+constexpr Color WORLD_BACKGROUND_COLOR = {0, 0, 0, 255};
+
+typedef struct World World;
+
+World *WorldCreate(
+    const int window_width, const int window_height, Color background_color);
+void WorldDestroy(World *world);
+
+Color WorldGetBackgroundColor(const World *world);
+
+void WorldResolveBoundaries(
+    const World *world, Vector2 *position, const Rectangle bounds);
+
+bool WorldIsOutOfBounds(
+    const World *world, const Vector2 position, const Rectangle bounds);
