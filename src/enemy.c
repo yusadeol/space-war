@@ -76,7 +76,7 @@ Rectangle EnemyGetBounds(const Enemy *enemy) {
 }
 
 Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
-    return GeometryGetCenterFromRect(EnemyGetBounds(enemy));
+    return GeometryGetCenterFromRectangle(EnemyGetBounds(enemy));
 }
 
 Bullet *EnemyGetBullet(Enemy *enemy, const int index) {

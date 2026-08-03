@@ -1,6 +1,6 @@
 #pragma once
 #include <raylib.h>
 
-Vector2 GeometryGetCenterFromRect(const Rectangle rec);
-Vector2 GeometryGetTopLeftFromCenter(
-    const Vector2 center, const float width, const float height);
+Vector2 GeometryGetCenterFromRectangle(const Rectangle rectangle);
+Vector2 GeometryGetCenteredPosition(
+    const Vector2 reference, const float width, const float height);

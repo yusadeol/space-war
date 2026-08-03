@@ -64,7 +64,7 @@ Rectangle PlayerGetBounds(const Player *player) {
 }
 
 Vector2 PlayerGetCenterPosition(const Player *player) {
-    return GeometryGetCenterFromRect(PlayerGetBounds(player));
+    return GeometryGetCenterFromRectangle(PlayerGetBounds(player));
 }
 
 Bullet *PlayerGetBullet(Player *player, const int index) {
