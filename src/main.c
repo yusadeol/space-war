@@ -48,9 +48,9 @@ static void UpdateEnemyEntities(Game *game, const float delta) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
             EnemyUpdate(
-                enemy, WorldGetWidth(GameGetWorld(game)),
-                *PlayerGetPosition(player), PlayerGetCenterPosition(player),
-                delta);
+                enemy, GameGetWindowHeight(game),
+                WorldGetWidth(GameGetWorld(game)), *PlayerGetPosition(player),
+                PlayerGetCenterPosition(player), delta);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);

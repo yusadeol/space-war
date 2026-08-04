@@ -96,8 +96,10 @@ int EnemyGetBulletCount(const Enemy *enemy) {
 }
 
 void EnemyUpdate(
-    Enemy *enemy, const int world_width, const Vector2 player_position,
-    const Vector2 player_center_position, const float delta) {
+    Enemy *enemy, const int window_height, const int world_width,
+    const Vector2 player_position, const Vector2 player_center_position,
+    const float delta) {
+    float move_step = ENEMY_SPEED * delta;
     Rectangle bounds = EnemyGetBounds(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
     float player_distance_y =
@@ -110,11 +112,8 @@ void EnemyUpdate(
         enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
     }
 
-    float move_step;
-
     switch (enemy->behavior) {
     case ENEMY_BEHAVIOR_PURSUIT:
-        move_step = ENEMY_SPEED * delta;
 
         if (enemy->position.x > (world_width - bounds.width)) {
             enemy->position.x -= move_step;
@@ -128,15 +127,20 @@ void EnemyUpdate(
 
         break;
     case ENEMY_BEHAVIOR_RETREAT:
-        move_step = (ENEMY_SPEED * 2) * delta;
-        if (player_distance_y < ENEMY_RETREAT_DISTANCE) {
-            if (enemy_center_position.y > player_center_position.y) {
+        move_step *= 2.0f;
+
+        if (enemy_center_position.y > player_center_position.y) {
+            if (enemy->position.y < (window_height + bounds.height)) {
                 enemy->position.y += move_step;
             } else {
-                enemy->position.y -= move_step;
+                enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
             }
         } else {
-            enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
+            if (enemy->position.y > (bounds.height * -1)) {
+                enemy->position.y -= move_step;
+            } else {
+                enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
+            }
         }
         break;
     }
@@ -149,6 +153,13 @@ void EnemyUpdate(
     }
 }
 
+static Color BlinkColor(float frequency) {
+    int blink = (int)(GetTime() * frequency);
+    bool visible = (blink % 2) != 0;
+
+    return visible ? WHITE : BLANK;
+}
+
 void EnemyDraw(const Enemy *enemy) {
 
     Rectangle source = {.width = -enemy->texture.width,
@@ -156,7 +167,12 @@ void EnemyDraw(const Enemy *enemy) {
     Rectangle destination = {enemy->position.x, enemy->position.y,
                              EnemyGetWidth(enemy), EnemyGetHeight(enemy)};
 
-    DrawTexturePro(enemy->texture, source, destination, (Vector2){}, 0, WHITE);
+    DrawTexturePro(
+        enemy->texture, source, destination, (Vector2){}, 0,
+        enemy->status == ENEMY_STATUS_DAMAGED &&
+                enemy->behavior == ENEMY_BEHAVIOR_RETREAT
+            ? BlinkColor(10.0f)
+            : WHITE);
 }
 
 bool EnemyShoot(Enemy *enemy) {
@@ -171,10 +187,17 @@ bool EnemyShoot(Enemy *enemy) {
 }
 
 void EnemyTakeDamage(Enemy *enemy) {
-    if (enemy->behavior == ENEMY_BEHAVIOR_RETREAT) {
-        enemy->status = ENEMY_STATUS_DESTROYED;
+    if (enemy->status == ENEMY_STATUS_DESTROYED) {
+        return;
     }
 
+    if (enemy->status == ENEMY_STATUS_DAMAGED) {
+        enemy->status = ENEMY_STATUS_DESTROYED;
+
+        return;
+    }
+
+    enemy->status = ENEMY_STATUS_DAMAGED;
     enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
     enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
 }
