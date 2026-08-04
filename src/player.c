@@ -10,6 +10,7 @@ struct Player {
     Vector2 position;
     Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
+    int kill_count;
 };
 
 static Texture2D PlayerTexture(const PlayerType type) {
@@ -75,6 +76,10 @@ int PlayerGetBulletCount(const Player *player) {
     return player->bullet_count;
 }
 
+int PlayerGetKillCount(const Player *player) {
+    return player->kill_count;
+}
+
 void PlayerUpdate(Player *player, const float delta) {
     float move_step = PLAYER_SPEED * delta;
 
@@ -134,4 +139,8 @@ void PlayerRemoveBullet(Player *player, const int index) {
     }
 
     player->bullet_count--;
+}
+
+void PlayerIncrementKillCount(Player *player) {
+    player->kill_count++;
 }

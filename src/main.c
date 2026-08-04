@@ -110,6 +110,24 @@ static void DrawEnemies(Game *game) {
     }
 }
 
+static void DrawHud(Game *game) {
+    int world_border = WorldGetBorder(GameGetWorld(game));
+    int cursor_position_x = world_border;
+    int cursor_position_y = world_border;
+    int gap = 20;
+
+    for (int i = 0; i < GameGetPlayerCount(game); i++) {
+        Player *player = GameGetPlayer(game, i);
+
+        const char *text = TextFormat(
+            "Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
+
+        DrawText(
+            text, cursor_position_x + (gap * i), cursor_position_y, 14, WHITE);
+        cursor_position_x += MeasureText(text, 14);
+    }
+}
+
 int main(void) {
     Game *game = GameCreate(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
     if (game == NULL) {
@@ -147,6 +165,7 @@ int main(void) {
 
         ClearBackground(WorldGetBackgroundColor(GameGetWorld(game)));
 
+        DrawHud(game);
         DrawAllBullets(game);
         DrawPlayers(game);
         DrawEnemies(game);

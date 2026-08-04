@@ -20,8 +20,10 @@ Rectangle PlayerGetBounds(const Player *player);
 Vector2 PlayerGetCenterPosition(const Player *player);
 Bullet *PlayerGetBullet(Player *player, const int index);
 int PlayerGetBulletCount(const Player *player);
+int PlayerGetKillCount(const Player *player);
 
 void PlayerUpdate(Player *player, const float delta);
 void PlayerDraw(const Player *player);
 bool PlayerShoot(Player *player);
 void PlayerRemoveBullet(Player *player, const int index);
+void PlayerIncrementKillCount(Player *player);

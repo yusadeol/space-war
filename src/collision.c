@@ -22,6 +22,7 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
                     if (EnemyGetStatus(enemy) == ENEMY_STATUS_DESTROYED) {
                         GameRemoveEnemy(game, i, k);
+                        PlayerIncrementKillCount(player);
                     }
 
                     j--;
