@@ -3,35 +3,40 @@
 A space shooter game where you pilot a spaceship against CPU-controlled enemy ships.
 Built in C as a way to explore game development closer to the metal.
 
+![Space War gameplay](assets/screenshots/gameplay.png)
+
 ## Description
 
 Space War is a 2D space combat game built with [raylib](https://www.raylib.com/) and C23.
-The player controls a spaceship, navigating the screen and firing weapons while
-staying within the battlefield boundaries. The game will feature multiple spaceship
-and bullet types.
+The player controls a spaceship, navigating the screen and firing bullets while
+staying within the battlefield. CPU-controlled enemy ships with state-based AI
+pursue the player and fire back. Each enemy takes two hits to destroy, and new
+enemies spawn when all are eliminated. Supports up to two players.
 
 Built entirely in C without a game engine, the project focuses on understanding game
 loop fundamentals, frame-independent movement, and manual resource management through
 a simple, modular codebase.
 
-### Current features
+### Features
 
 - Player movement with arrow keys
 - Shooting mechanic (space key)
+- CPU-controlled enemy ships with state-based AI (pursuit and retreat behaviors)
+- Enemy ships shoot at the player when in attack range
+- Player bullets damage enemies (two hits to destroy)
+- Enemy bullets destroy the player on hit
+- Enemies respawn when all are eliminated
+- Two bullet types
 - Boundary collision for player and bullets
 - Frame-independent movement using delta time
-
-### Planned features
-
-- CPU-controlled enemy ships with basic AI
-- Bullet-to-enemy collision detection
-- Scoring system
+- Texture-based sprites for ships and bullets
+- Multi-player support (up to 2 players)
 
 ## Build
 
 ### Dependencies
 
-- [raylib](https://www.raylib.com/) (tested with raylib 5.x)
+- [raylib](https://www.raylib.com/) (tested with raylib 6.x)
 - GCC (or any C23-compatible compiler)
 - [just](https://github.com/casey/just) (command runner)
 
