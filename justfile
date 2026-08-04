@@ -11,7 +11,7 @@ win_raylib_libs := "-L/usr/x86_64-w64-mingw32/lib -lraylib -lopengl32 -lgdi32 -l
 raylib_libs := `pkg-config --libs raylib`
 
 iwyu-check:
-    @sh -c 'for f in src/*.c; do include-what-you-use {{ cflags }} {{ raylib_cflags }} "$f" || exit 1; done'
+    @sh -c 'flags="{{ cflags }} $(pkg-config --cflags raylib)"; for f in src/*.c include/*.h; do include-what-you-use -Xiwyu --error=1 $flags "$f" || exit 1; done'
 
 clang-format:
     @clang-format -i src/*.c include/*.h
