@@ -2,7 +2,6 @@
 #include "enemy.h"
 #include "player.h"
 #include "world.h"
-#include <raylib.h>
 
 typedef struct Game Game;
 
