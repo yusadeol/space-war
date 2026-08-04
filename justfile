@@ -7,11 +7,11 @@ win_cflags := "-Wall -Wextra -Wpedantic -std=c23 -Iinclude"
 raylib_cflags := `pkg-config --cflags raylib`
 win_raylib_cflags := "-I/usr/x86_64-w64-mingw32/include"
 
-win_raylib_libs := "-L/usr/x86_64-w64-mingw32/lib -lraylib -lopengl32 -lgdi32 -lwinmm"
 raylib_libs := `pkg-config --libs raylib`
+win_raylib_libs := "-L/usr/x86_64-w64-mingw32/lib -lraylib -lopengl32 -lgdi32 -lwinmm"
 
 iwyu-check:
-    @sh -c 'flags="{{ cflags }} $(pkg-config --cflags raylib)"; for f in src/*.c include/*.h; do include-what-you-use -Xiwyu --error=1 $flags "$f" || exit 1; done'
+    @sh -c 'flags="{{ cflags }} {{ raylib_cflags }}"; for f in src/*.c include/*.h; do include-what-you-use -Xiwyu --error=1 $flags "$f" || exit 1; done'
 
 clang-format:
     @clang-format -i src/*.c include/*.h
