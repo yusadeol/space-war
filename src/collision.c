@@ -60,6 +60,10 @@ static void ResolveEnemyBulletCollisions(Game *game) {
             }
         }
     }
+
+    if (GameGetPlayerCount(game) == 0) {
+        GameRestart(game);
+    }
 }
 
 void CollisionUpdate(Game *game) {

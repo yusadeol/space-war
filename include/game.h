@@ -11,6 +11,9 @@ constexpr int GAME_WINDOW_HEIGHT = 720;
 Game *GameCreate(const int window_width, const int window_height);
 void GameDestroy(Game *game);
 
+void GameStart(Game *game);
+void GameRestart(Game *game);
+
 int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
 World *GameGetWorld(Game *game);

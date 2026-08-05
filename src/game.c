@@ -33,9 +33,7 @@ Game *GameCreate(const int window_width, const int window_height) {
     return game;
 }
 
-void GameDestroy(Game *game) {
-    WorldDestroy(game->world);
-
+static void Clear(Game *game) {
     for (int i = 0; i < game->player_count; i++) {
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = game->enemies[i][j];
@@ -47,8 +45,23 @@ void GameDestroy(Game *game) {
 
         PlayerDestroy(player);
     }
+}
 
+void GameDestroy(Game *game) {
+    Clear(game);
+    WorldDestroy(game->world);
     free(game);
+}
+
+void GameStart(Game *game) {
+    if (!GameAddPlayer(game, PlayerCreate(PLAYER_TYPE_VIPER))) {
+        TraceLog(LOG_ERROR, "Failed to add player");
+    }
+}
+
+void GameRestart(Game *game) {
+    Clear(game);
+    GameStart(game);
 }
 
 int GameGetWindowWidth(const Game *game) {

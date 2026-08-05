@@ -140,16 +140,7 @@ int main(void) {
         GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
     AssetLoadTextures();
-
-    if (!GameAddPlayer(game, PlayerCreate(PLAYER_TYPE_VIPER))) {
-        TraceLog(LOG_ERROR, "Failed to add player");
-
-        GameDestroy(game);
-        CloseWindow();
-
-        return EXIT_FAILURE;
-    }
-
+    GameStart(game);
     SpawnRandomEnemiesForPlayers(game);
 
     SetTargetFPS(60);
