@@ -3,6 +3,7 @@
 #include "bullet.h"
 #include "controller.h"
 #include "geometry.h"
+#include <assert.h>
 #include <math.h>
 #include <raylib.h>
 #include <stdlib.h>
@@ -51,31 +52,44 @@ Enemy *EnemyCreate(
 }
 
 void EnemyDestroy(Enemy *enemy) {
+    assert(enemy);
+
     for (int i = 0; i < enemy->bullet_count; i++) {
-        Bullet *bullet = enemy->bullets[i];
-        BulletDestroy(bullet);
+        EnemyRemoveBullet(enemy, i);
+
+        i--;
     }
 
     free(enemy);
 }
 
 float EnemyGetWidth(const Enemy *enemy) {
+    assert(enemy);
+
     return enemy->texture.width * ENEMY_SCALE;
 }
 
 float EnemyGetHeight(const Enemy *enemy) {
+    assert(enemy);
+
     return enemy->texture.height * ENEMY_SCALE;
 }
 
 Vector2 *EnemyGetPosition(Enemy *enemy) {
+    assert(enemy);
+
     return &enemy->position;
 }
 
 EnemyStatus EnemyGetStatus(const Enemy *enemy) {
+    assert(enemy);
+
     return enemy->status;
 }
 
 Rectangle EnemyGetBounds(const Enemy *enemy) {
+    assert(enemy);
+
     return (Rectangle){
         .x = enemy->position.x,
         .y = enemy->position.y,
@@ -85,15 +99,42 @@ Rectangle EnemyGetBounds(const Enemy *enemy) {
 }
 
 Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
+    assert(enemy);
+
     return GeometryGetCenterFromRectangle(EnemyGetBounds(enemy));
 }
 
-Bullet *EnemyGetBullet(Enemy *enemy, const int index) {
-    return enemy->bullets[index];
+Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index) {
+    assert(enemy);
+
+    if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
+        return NULL;
+    }
+
+    return enemy->bullets[bullet_index];
 }
 
 int EnemyGetBulletCount(const Enemy *enemy) {
+    assert(enemy);
+
     return enemy->bullet_count;
+}
+
+void EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
+    assert(enemy);
+
+    if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
+        return;
+    }
+
+    Bullet *bullet = enemy->bullets[bullet_index];
+    BulletDestroy(bullet);
+
+    for (int i = bullet_index; i < enemy->bullet_count - 1; i++) {
+        enemy->bullets[i] = enemy->bullets[i + 1];
+    }
+
+    enemy->bullet_count--;
 }
 
 ControllerInput Think(
@@ -172,6 +213,8 @@ void EnemyUpdate(
     const Vector2 player_position, const Vector2 player_center_position,
     const float delta) {
 
+    assert(enemy);
+
     enemy->behavior_cooldown -= delta;
     enemy->shot_cooldown -= delta;
 
@@ -200,6 +243,7 @@ static Color BlinkColor(float frequency) {
 }
 
 void EnemyDraw(const Enemy *enemy) {
+    assert(enemy);
 
     Rectangle source = {.width = -enemy->texture.width,
                         .height = enemy->texture.height};
@@ -215,6 +259,8 @@ void EnemyDraw(const Enemy *enemy) {
 }
 
 void EnemyTakeDamage(Enemy *enemy) {
+    assert(enemy);
+
     if (enemy->status == ENEMY_STATUS_DESTROYED) {
         return;
     }
@@ -228,15 +274,4 @@ void EnemyTakeDamage(Enemy *enemy) {
     enemy->status = ENEMY_STATUS_DAMAGED;
     enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
     enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
-}
-
-void EnemyRemoveBullet(Enemy *enemy, const int index) {
-    Bullet *bullet = enemy->bullets[index];
-    BulletDestroy(bullet);
-
-    for (int i = index; i < enemy->bullet_count - 1; i++) {
-        enemy->bullets[i] = enemy->bullets[i + 1];
-    }
-
-    enemy->bullet_count--;
 }

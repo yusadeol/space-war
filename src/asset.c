@@ -1,5 +1,6 @@
 #include "asset.h"
 #include <raylib.h>
+#include <stddef.h>
 
 static Texture2D textures[TEXTURE_COUNT];
 static const char *file_textures[TEXTURE_COUNT] = {
@@ -22,5 +23,9 @@ void AssetUnloadTextures(void) {
 }
 
 Texture2D *AssetGetTexture(const TextureType type) {
+    if (type < 0 || type >= TEXTURE_COUNT) {
+        return NULL;
+    }
+
     return &textures[type];
 }

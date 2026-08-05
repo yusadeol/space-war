@@ -1,6 +1,7 @@
 #include "bullet.h"
 #include "asset.h"
 #include "geometry.h"
+#include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -40,22 +41,32 @@ Bullet *BulletCreate(
 }
 
 void BulletDestroy(Bullet *bullet) {
+    assert(bullet);
+
     free(bullet);
 }
 
 float BulletGetWidth(const Bullet *bullet) {
+    assert(bullet);
+
     return bullet->texture.width * BULLET_SCALE;
 }
 
 float BulletGetHeight(const Bullet *bullet) {
+    assert(bullet);
+
     return bullet->texture.height * BULLET_SCALE;
 }
 
 Vector2 *BulletGetPosition(Bullet *bullet) {
+    assert(bullet);
+
     return &bullet->position;
 }
 
 Rectangle BulletGetBounds(const Bullet *bullet) {
+    assert(bullet);
+
     return (Rectangle){
         .x = bullet->position.x,
         .y = bullet->position.y,
@@ -65,12 +76,16 @@ Rectangle BulletGetBounds(const Bullet *bullet) {
 }
 
 void BulletUpdate(Bullet *bullet, const float delta) {
+    assert(bullet);
+
     float move_step = BULLET_SPEED * delta;
 
     bullet->position.x += move_step * bullet->direction;
 }
 
 void BulletDraw(const Bullet *bullet) {
+    assert(bullet);
+
     Rectangle source = {.width = bullet->texture.width * bullet->direction,
                         .height = bullet->texture.height};
     Rectangle destination = {bullet->position.x, bullet->position.y,

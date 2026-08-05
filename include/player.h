@@ -19,12 +19,12 @@ float PlayerGetHeight(const Player *player);
 Vector2 *PlayerGetPosition(Player *player);
 Rectangle PlayerGetBounds(const Player *player);
 Vector2 PlayerGetCenterPosition(const Player *player);
-Bullet *PlayerGetBullet(Player *player, const int index);
+Bullet *PlayerGetBullet(Player *player, const int bullet_index);
 int PlayerGetBulletCount(const Player *player);
 int PlayerGetKillCount(const Player *player);
 
 void PlayerUpdate(
     Player *player, const ControllerInput input, const float delta);
 void PlayerDraw(const Player *player);
-void PlayerRemoveBullet(Player *player, const int index);
+void PlayerRemoveBullet(Player *player, const int bullet_index);
 void PlayerIncrementKillCount(Player *player);

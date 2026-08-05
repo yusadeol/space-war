@@ -2,6 +2,7 @@
 #include "asset.h"
 #include "bullet.h"
 #include "geometry.h"
+#include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -35,27 +36,38 @@ Player *PlayerCreate(const PlayerType type) {
 }
 
 void PlayerDestroy(Player *player) {
+    assert(player);
+
     for (int i = 0; i < player->bullet_count; i++) {
-        Bullet *bullet = player->bullets[i];
-        BulletDestroy(bullet);
+        PlayerRemoveBullet(player, i);
+
+        i--;
     }
 
     free(player);
 }
 
 float PlayerGetWidth(const Player *player) {
+    assert(player);
+
     return player->texture.width * PLAYER_SCALE;
 }
 
 float PlayerGetHeight(const Player *player) {
+    assert(player);
+
     return player->texture.height * PLAYER_SCALE;
 }
 
 Vector2 *PlayerGetPosition(Player *player) {
+    assert(player);
+
     return &player->position;
 }
 
 Rectangle PlayerGetBounds(const Player *player) {
+    assert(player);
+
     return (Rectangle){
         .x = player->position.x,
         .y = player->position.y,
@@ -65,18 +77,47 @@ Rectangle PlayerGetBounds(const Player *player) {
 }
 
 Vector2 PlayerGetCenterPosition(const Player *player) {
+    assert(player);
+
     return GeometryGetCenterFromRectangle(PlayerGetBounds(player));
 }
 
-Bullet *PlayerGetBullet(Player *player, const int index) {
-    return player->bullets[index];
+Bullet *PlayerGetBullet(Player *player, const int bullet_index) {
+    assert(player);
+
+    if (bullet_index < 0 || bullet_index >= player->bullet_count) {
+        return NULL;
+    }
+
+    return player->bullets[bullet_index];
 }
 
 int PlayerGetBulletCount(const Player *player) {
+    assert(player);
+
     return player->bullet_count;
 }
 
+void PlayerRemoveBullet(Player *player, const int bullet_index) {
+    assert(player);
+
+    if (bullet_index < 0 || bullet_index >= player->bullet_count) {
+        return;
+    }
+
+    Bullet *bullet = player->bullets[bullet_index];
+    BulletDestroy(bullet);
+
+    for (int i = bullet_index; i < player->bullet_count - 1; i++) {
+        player->bullets[i] = player->bullets[i + 1];
+    }
+
+    player->bullet_count--;
+}
+
 int PlayerGetKillCount(const Player *player) {
+    assert(player);
+
     return player->kill_count;
 }
 
@@ -113,6 +154,8 @@ static void Shoot(Player *player) {
 void PlayerUpdate(
     Player *player, const ControllerInput input, const float delta) {
 
+    assert(player);
+
     Move(player, input, delta);
 
     if (input.shoot) {
@@ -121,6 +164,7 @@ void PlayerUpdate(
 }
 
 void PlayerDraw(const Player *player) {
+    assert(player);
 
     Rectangle source = {.width = player->texture.width,
                         .height = player->texture.height};
@@ -130,17 +174,8 @@ void PlayerDraw(const Player *player) {
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
-void PlayerRemoveBullet(Player *player, const int index) {
-    Bullet *bullet = player->bullets[index];
-    BulletDestroy(bullet);
-
-    for (int i = index; i < player->bullet_count - 1; i++) {
-        player->bullets[i] = player->bullets[i + 1];
-    }
-
-    player->bullet_count--;
-}
-
 void PlayerIncrementKillCount(Player *player) {
+    assert(player);
+
     player->kill_count++;
 }

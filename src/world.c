@@ -1,4 +1,5 @@
 #include "world.h"
+#include <assert.h>
 #include <stdlib.h>
 
 struct World {
@@ -28,27 +29,39 @@ World *WorldCreate(
 }
 
 void WorldDestroy(World *world) {
+    assert(world);
+
     free(world);
 }
 
 int WorldGetWidth(const World *world) {
+    assert(world);
+
     return world->width;
 }
 
 int WorldGetHeight(const World *world) {
+    assert(world);
+
     return world->height;
 }
 
 int WorldGetBorder(const World *world) {
+    assert(world);
+
     return world->border;
 }
 
 Color WorldGetBackgroundColor(const World *world) {
+    assert(world);
+
     return world->background_color;
 }
 
 void WorldResolveBoundaries(
     const World *world, Vector2 *position, const Rectangle bounds) {
+    assert(world && position);
+
     if (position->x < world->border) {
         position->x = world->border;
     }
@@ -68,6 +81,8 @@ void WorldResolveBoundaries(
 
 bool WorldIsOutOfBounds(
     const World *world, const Vector2 position, const Rectangle bounds) {
+    assert(world);
+
     if (position.x < world->border || position.y < world->border ||
         position.x > (world->width - bounds.width) ||
         position.y > (world->height - bounds.height)) {

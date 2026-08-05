@@ -3,6 +3,7 @@
 #include "enemy.h"
 #include "game.h"
 #include "player.h"
+#include <assert.h>
 #include <raylib.h>
 
 static void ResolvePlayerBulletCollisions(Game *game) {
@@ -67,6 +68,8 @@ static void ResolveEnemyBulletCollisions(Game *game) {
 }
 
 void CollisionUpdate(Game *game) {
+    assert(game);
+
     ResolvePlayerBulletCollisions(game);
     ResolveEnemyBulletCollisions(game);
 }
