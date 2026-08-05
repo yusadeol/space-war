@@ -1,6 +1,7 @@
 #include "asset.h"
 #include "bullet.h"
 #include "collision.h"
+#include "controller.h"
 #include "enemy.h"
 #include "game.h"
 #include "player.h"
@@ -14,11 +15,15 @@ static void SpawnRandomEnemiesForPlayers(Game *game) {
     }
 }
 
-static void UpdatePlayerEntities(Game *game, const float delta) {
+static void UpdatePlayers(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
-        PlayerUpdate(player, delta);
+        ControllerInput input = IsGamepadAvailable(i)
+                                    ? ControllerGetGamepadInput(i)
+                                    : ControllerGetKeyboardInput();
+
+        PlayerUpdate(player, input, delta);
         WorldResolveBoundaries(
             GameGetWorld(game), PlayerGetPosition(player),
             PlayerGetBounds(player));
@@ -40,7 +45,7 @@ static void UpdatePlayerEntities(Game *game, const float delta) {
     }
 }
 
-static void UpdateEnemyEntities(Game *game, const float delta) {
+static void UpdateEnemyies(Game *game, const float delta) {
     for (int i = 0; i < GameGetPlayerCount(game); i++) {
         Player *player = GameGetPlayer(game, i);
 
@@ -148,8 +153,8 @@ int main(void) {
     while (!WindowShouldClose()) {
         float delta = GetFrameTime();
 
-        UpdatePlayerEntities(game, delta);
-        UpdateEnemyEntities(game, delta);
+        UpdatePlayers(game, delta);
+        UpdateEnemyies(game, delta);
         CollisionUpdate(game);
 
         BeginDrawing();

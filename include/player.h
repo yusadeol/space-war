@@ -1,5 +1,6 @@
 #pragma once
 #include "bullet.h"
+#include "controller.h"
 #include <raylib.h>
 
 constexpr int MAX_PLAYERS = 2;
@@ -22,8 +23,8 @@ Bullet *PlayerGetBullet(Player *player, const int index);
 int PlayerGetBulletCount(const Player *player);
 int PlayerGetKillCount(const Player *player);
 
-void PlayerUpdate(Player *player, const float delta);
+void PlayerUpdate(
+    Player *player, const ControllerInput input, const float delta);
 void PlayerDraw(const Player *player);
-bool PlayerShoot(Player *player);
 void PlayerRemoveBullet(Player *player, const int index);
 void PlayerIncrementKillCount(Player *player);

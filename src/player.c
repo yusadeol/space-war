@@ -80,32 +80,43 @@ int PlayerGetKillCount(const Player *player) {
     return player->kill_count;
 }
 
-void PlayerUpdate(Player *player, const float delta) {
+static void
+Move(Player *player, const ControllerInput input, const float delta) {
     float move_step = PLAYER_SPEED * delta;
 
-    if (IsKeyDown(KEY_LEFT) ||
-        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
+    if (input.left && !input.right) {
         player->position.x -= move_step;
     }
 
-    if (IsKeyDown(KEY_UP) ||
-        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
+    if (input.up && !input.down) {
         player->position.y -= move_step;
     }
 
-    if (IsKeyDown(KEY_RIGHT) ||
-        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
+    if (input.right && !input.left) {
         player->position.x += move_step;
     }
 
-    if (IsKeyDown(KEY_DOWN) ||
-        IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
+    if (input.down && !input.up) {
         player->position.y += move_step;
     }
+}
 
-    if (IsKeyPressed(KEY_SPACE) ||
-        IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-        PlayerShoot(player);
+static void Shoot(Player *player) {
+    if ((player->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
+        return;
+    }
+
+    player->bullets[player->bullet_count++] = BulletCreate(
+        BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
+}
+
+void PlayerUpdate(
+    Player *player, const ControllerInput input, const float delta) {
+
+    Move(player, input, delta);
+
+    if (input.shoot) {
+        Shoot(player);
     }
 }
 
@@ -117,17 +128,6 @@ void PlayerDraw(const Player *player) {
                              PlayerGetWidth(player), PlayerGetHeight(player)};
 
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
-}
-
-bool PlayerShoot(Player *player) {
-    if ((player->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
-        return false;
-    }
-
-    player->bullets[player->bullet_count++] = BulletCreate(
-        BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
-
-    return true;
 }
 
 void PlayerRemoveBullet(Player *player, const int index) {

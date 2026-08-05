@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "asset.h"
 #include "bullet.h"
+#include "controller.h"
 #include "geometry.h"
 #include <math.h>
 #include <raylib.h>
@@ -95,15 +96,81 @@ int EnemyGetBulletCount(const Enemy *enemy) {
     return enemy->bullet_count;
 }
 
-void EnemyUpdate(
+ControllerInput Think(
     Enemy *enemy, const int window_height, const int world_width,
-    const Vector2 player_position, const Vector2 player_center_position,
-    const float delta) {
-    float move_step = ENEMY_SPEED * delta;
+    const Vector2 player_position, const Vector2 player_center_position) {
     Rectangle bounds = EnemyGetBounds(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
     float player_distance_y =
         fabsf(player_center_position.y - enemy_center_position.y);
+    ControllerInput input = {};
+
+    switch (enemy->behavior) {
+    case ENEMY_BEHAVIOR_PURSUIT:
+        if (enemy->position.x > (world_width - bounds.width)) {
+            input.left = true;
+        }
+
+        if (enemy->position.y > player_position.y) {
+            input.up = true;
+        } else {
+            input.down = true;
+        }
+
+        break;
+    case ENEMY_BEHAVIOR_RETREAT:
+        if (enemy_center_position.y > player_center_position.y) {
+            if (enemy->position.y < (window_height + bounds.height)) {
+                input.down = true;
+            }
+        } else {
+            if (enemy->position.y > (bounds.height * -1)) {
+                input.up = true;
+            }
+        }
+        break;
+    }
+
+    if (player_distance_y <= ENEMY_ATTACK_DISTANCE) {
+        input.shoot = true;
+    }
+
+    return input;
+}
+
+static void Move(Enemy *enemy, const ControllerInput input, const float delta) {
+    float move_step = ENEMY_SPEED * delta;
+
+    if (input.left && !input.right) {
+        enemy->position.x -= move_step;
+    }
+
+    if (input.up && !input.down) {
+        enemy->position.y -= move_step;
+    }
+
+    if (input.right && !input.left) {
+        enemy->position.x += move_step;
+    }
+
+    if (input.down && !input.up) {
+        enemy->position.y += move_step;
+    }
+}
+
+static void Shoot(Enemy *enemy) {
+    if ((enemy->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
+        return;
+    }
+
+    enemy->bullets[enemy->bullet_count++] = BulletCreate(
+        BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
+}
+
+void EnemyUpdate(
+    Enemy *enemy, const int window_height, const int world_width,
+    const Vector2 player_position, const Vector2 player_center_position,
+    const float delta) {
 
     enemy->behavior_cooldown -= delta;
     enemy->shot_cooldown -= delta;
@@ -112,42 +179,14 @@ void EnemyUpdate(
         enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
     }
 
-    switch (enemy->behavior) {
-    case ENEMY_BEHAVIOR_PURSUIT:
+    ControllerInput input = Think(
+        enemy, window_height, world_width, player_position,
+        player_center_position);
 
-        if (enemy->position.x > (world_width - bounds.width)) {
-            enemy->position.x -= move_step;
-        }
+    Move(enemy, input, delta);
 
-        if (enemy->position.y > player_position.y) {
-            enemy->position.y -= move_step;
-        } else {
-            enemy->position.y += move_step;
-        }
-
-        break;
-    case ENEMY_BEHAVIOR_RETREAT:
-        move_step *= 2.0f;
-
-        if (enemy_center_position.y > player_center_position.y) {
-            if (enemy->position.y < (window_height + bounds.height)) {
-                enemy->position.y += move_step;
-            } else {
-                enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
-            }
-        } else {
-            if (enemy->position.y > (bounds.height * -1)) {
-                enemy->position.y -= move_step;
-            } else {
-                enemy->behavior = ENEMY_BEHAVIOR_PURSUIT;
-            }
-        }
-        break;
-    }
-
-    if (player_distance_y <= ENEMY_ATTACK_DISTANCE &&
-        enemy->shot_cooldown <= 0.0f) {
-        EnemyShoot(enemy);
+    if (input.shoot && enemy->shot_cooldown <= 0.0f) {
+        Shoot(enemy);
 
         enemy->shot_cooldown = ENEMY_SHOT_COOLDOWN;
     }
@@ -173,17 +212,6 @@ void EnemyDraw(const Enemy *enemy) {
                 enemy->behavior == ENEMY_BEHAVIOR_RETREAT
             ? BlinkColor(10.0f)
             : WHITE);
-}
-
-bool EnemyShoot(Enemy *enemy) {
-    if ((enemy->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
-        return false;
-    }
-
-    enemy->bullets[enemy->bullet_count++] = BulletCreate(
-        BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
-
-    return true;
 }
 
 void EnemyTakeDamage(Enemy *enemy) {
