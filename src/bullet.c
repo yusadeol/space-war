@@ -10,7 +10,7 @@ struct Bullet {
     Vector2 position;
 };
 
-static Texture2D BulletTexture(const BulletType type) {
+static Texture2D GetTexture(const BulletType type) {
     switch (type) {
     case BULLET_TYPE_PULSE:
         return *AssetGetTexture(TEXTURE_BULLET_PULSE);
@@ -30,7 +30,7 @@ Bullet *BulletCreate(
         return NULL;
     }
 
-    *bullet = (Bullet){.texture = BulletTexture(type), .direction = direction};
+    *bullet = (Bullet){.texture = GetTexture(type), .direction = direction};
 
     Vector2 shooter_center = GeometryGetCenterFromRectangle(shooter_bounds);
     bullet->position = GeometryGetCenteredPosition(

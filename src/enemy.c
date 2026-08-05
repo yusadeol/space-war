@@ -17,7 +17,7 @@ struct Enemy {
     float shot_cooldown;
 };
 
-static Texture2D EnemyTexture(const EnemyType type) {
+static Texture2D GetTexture(const EnemyType type) {
     switch (type) {
     case ENEMY_TYPE_SPECTRA:
         return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
@@ -35,7 +35,7 @@ Enemy *EnemyCreate(
         return NULL;
     }
 
-    *enemy = (Enemy){.texture = EnemyTexture(type),
+    *enemy = (Enemy){.texture = GetTexture(type),
                      .status = ENEMY_STATUS_NORMAL,
                      .behavior = ENEMY_BEHAVIOR_PURSUIT,
                      .shot_cooldown = ENEMY_SHOT_COOLDOWN};

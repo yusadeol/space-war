@@ -13,7 +13,7 @@ struct Player {
     int kill_count;
 };
 
-static Texture2D PlayerTexture(const PlayerType type) {
+static Texture2D GetTexture(const PlayerType type) {
     switch (type) {
     case PLAYER_TYPE_VIPER:
         return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
@@ -29,7 +29,7 @@ Player *PlayerCreate(const PlayerType type) {
         return NULL;
     }
 
-    *player = (Player){.texture = PlayerTexture(type)};
+    *player = (Player){.texture = GetTexture(type)};
 
     return player;
 }
