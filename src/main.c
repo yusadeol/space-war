@@ -18,11 +18,12 @@ int main(void) {
 
     AssetLoadTextures();
     GameStart(game);
-    GameSpawnRandomEnemiesForPlayers(game);
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
+        GameSpawnRandomEnemiesForPlayers(game);
+
         float delta = GetFrameTime();
 
         GameUpdatePlayers(game, delta);

@@ -1,4 +1,5 @@
 #include "game.h"
+#include "array.h"
 #include "bullet.h"
 #include "controller.h"
 #include "enemy.h"
@@ -121,14 +122,13 @@ void GameRemovePlayer(Game *game, const int player_index) {
         return;
     }
 
-    Player *player = game->players[player_index];
-
     for (int i = 0; game->enemy_count[player_index]; i++) {
         GameRemoveEnemy(game, player_index, i);
 
         i--;
     }
 
+    Player *player = game->players[player_index];
     PlayerDestroy(player);
 
     for (int i = player_index; i < game->player_count - 1; i++) {
@@ -141,6 +141,17 @@ void GameRemovePlayer(Game *game, const int player_index) {
     }
 
     game->player_count--;
+}
+
+void GameRemovePlayers(
+    Game *game, int *player_indexes, const int player_index_count) {
+    qsort(
+        player_indexes, player_index_count, sizeof(*player_indexes),
+        ArrayCompareIntegerAscending);
+
+    for (int i = player_index_count - 1; i >= 0; i--) {
+        GameRemovePlayer(game, player_indexes[i]);
+    }
 }
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
@@ -205,6 +216,18 @@ void GameRemoveEnemy(
     game->enemy_count[player_index]--;
 }
 
+void GameRemoveEnemies(
+    Game *game, const int player_index, int *enemy_indexes,
+    const int enemy_index_count) {
+    qsort(
+        enemy_indexes, enemy_index_count, sizeof(*enemy_indexes),
+        ArrayCompareIntegerAscending);
+
+    for (int i = enemy_index_count - 1; i >= 0; i--) {
+        GameRemoveEnemy(game, player_index, enemy_indexes[i]);
+    }
+}
+
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
     assert(game);
 
@@ -227,7 +250,9 @@ void GameSpawnRandomEnemiesForPlayers(Game *game) {
     assert(game);
 
     for (int i = 0; i < game->player_count; i++) {
-        GameSpawnRandomEnemiesForPlayer(game, i);
+        if (GameGetEnemyCount(game, i) == 0) {
+            GameSpawnRandomEnemiesForPlayer(game, i);
+        }
     }
 }
 

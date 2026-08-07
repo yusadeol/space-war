@@ -1,4 +1,5 @@
 #include "player.h"
+#include "array.h"
 #include "asset.h"
 #include "bullet.h"
 #include "geometry.h"
@@ -115,6 +116,17 @@ void PlayerRemoveBullet(Player *player, const int bullet_index) {
     player->bullet_count--;
 }
 
+void PlayerRemoveBullets(
+    Player *player, int *bullet_indexes, const int bullet_index_count) {
+    qsort(
+        bullet_indexes, bullet_index_count, sizeof(*bullet_indexes),
+        ArrayCompareIntegerAscending);
+
+    for (int i = bullet_index_count - 1; i >= 0; i--) {
+        PlayerRemoveBullet(player, bullet_indexes[i]);
+    }
+}
+
 int PlayerGetKillCount(const Player *player) {
     assert(player);
 
@@ -174,8 +186,8 @@ void PlayerDraw(const Player *player) {
     DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
 }
 
-void PlayerIncrementKillCount(Player *player) {
+void PlayerIncrementKillCountByAmount(Player *player, const int amount) {
     assert(player);
 
-    player->kill_count++;
+    player->kill_count += amount;
 }

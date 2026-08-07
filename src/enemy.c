@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "array.h"
 #include "asset.h"
 #include "bullet.h"
 #include "controller.h"
@@ -135,6 +136,17 @@ void EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     }
 
     enemy->bullet_count--;
+}
+
+void EnemyRemoveBullets(
+    Enemy *enemy, int *bullet_indexes, const int bullet_index_count) {
+    qsort(
+        bullet_indexes, bullet_index_count, sizeof(*bullet_indexes),
+        ArrayCompareIntegerAscending);
+
+    for (int i = bullet_index_count - 1; i >= 0; i--) {
+        EnemyRemoveBullet(enemy, bullet_indexes[i]);
+    }
 }
 
 ControllerInput Think(

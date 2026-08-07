@@ -27,4 +27,6 @@ void PlayerUpdate(
     Player *player, const ControllerInput input, const float delta);
 void PlayerDraw(const Player *player);
 void PlayerRemoveBullet(Player *player, const int bullet_index);
-void PlayerIncrementKillCount(Player *player);
+void PlayerRemoveBullets(
+    Player *player, int *bullet_indexes, const int bullet_index_count);
+void PlayerIncrementKillCountByAmount(Player *player, const int amount);

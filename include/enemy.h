@@ -32,6 +32,8 @@ EnemyStatus EnemyGetStatus(const Enemy *enemy);
 Rectangle EnemyGetBounds(const Enemy *enemy);
 Vector2 EnemyGetCenterPosition(const Enemy *enemy);
 Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index);
+void EnemyRemoveBullets(
+    Enemy *enemy, int *bullet_indexes, const int bullet_index_count);
 int EnemyGetBulletCount(const Enemy *enemy);
 
 void EnemyUpdate(
