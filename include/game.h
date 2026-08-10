@@ -12,16 +12,14 @@ constexpr int GAME_HUD_GAP = 20;
 Game *GameCreate(const int window_width, const int window_height);
 void GameDestroy(Game *game);
 
-void GameStart(Game *game);
-void GameRestart(Game *game);
+void GameSetup(Game *game);
 
 int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
 World *GameGetWorld(Game *game);
 
-bool GameAddPlayer(Game *game, Player *player);
+bool GameAddPlayer(Game *game, const int player_index, Player *player);
 Player *GameGetPlayer(Game *game, const int player_index);
-int GameGetPlayerCount(const Game *game);
 bool GameRemovePlayer(Game *game, const int player_index);
 bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count);
 

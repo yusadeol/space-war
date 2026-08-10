@@ -17,64 +17,62 @@ struct Game {
     int window_height;
     World *world;
     Player *players[MAX_PLAYERS];
-    int player_count;
     Enemy *enemies[MAX_PLAYERS][MAX_ENEMIES];
     int enemy_count[MAX_PLAYERS];
 };
 
 Game *GameCreate(const int window_width, const int window_height) {
+    World *world = WorldCreate(window_width, window_height, WORLD_BORDER, WORLD_BACKGROUND_COLOR);
+    if (world == NULL) {
+        TraceLog(LOG_ERROR, "Failed to create world");
+
+        return NULL;
+    }
+
     Game *game = malloc(sizeof(*game));
 
     if (game == NULL) {
+        TraceLog(LOG_ERROR, "Failed to create game");
+        WorldDestroy(world);
+
         return NULL;
     }
 
     *game = (Game){
         .window_width = window_width,
         .window_height = window_height,
+        .world = world,
     };
 
-    game->world = WorldCreate(game->window_width, game->window_height, WORLD_BORDER, WORLD_BACKGROUND_COLOR);
-
     return game;
-}
-
-static void Clear(Game *game) {
-    for (int i = 0; i < game->player_count; i++) {
-        (void)GameRemovePlayer(game, i);
-
-        i--;
-    }
 }
 
 void GameDestroy(Game *game) {
     assert(game);
 
-    Clear(game);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        (void)GameRemovePlayer(game, i);
+    }
+
     WorldDestroy(game->world);
     free(game);
 }
 
-void GameStart(Game *game) {
+void GameSetup(Game *game) {
     assert(game);
 
     Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
     if (player == NULL) {
-        TraceLog(LOG_ERROR, "GameStart: failed to create player");
+        TraceLog(LOG_ERROR, "Failed to create player");
 
         return;
     }
 
-    if (!GameAddPlayer(game, player)) {
-        TraceLog(LOG_ERROR, "GameStart: failed to add player");
+    if (!GameAddPlayer(game, 0, player)) {
+        TraceLog(LOG_ERROR, "Failed to add player");
+
+        PlayerDestroy(player);
     }
-}
-
-void GameRestart(Game *game) {
-    assert(game);
-
-    Clear(game);
-    GameStart(game);
 }
 
 int GameGetWindowWidth(const Game *game) {
@@ -95,14 +93,18 @@ World *GameGetWorld(Game *game) {
     return game->world;
 }
 
-bool GameAddPlayer(Game *game, Player *player) {
+bool GameAddPlayer(Game *game, const int player_index, Player *player) {
     assert(game && player);
 
-    if ((game->player_count + 1) > MAX_PLAYERS) {
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
         return false;
     }
 
-    game->players[game->player_count++] = player;
+    if (game->players[player_index] != NULL) {
+        return false;
+    }
+
+    game->players[player_index] = player;
 
     return true;
 }
@@ -110,24 +112,18 @@ bool GameAddPlayer(Game *game, Player *player) {
 Player *GameGetPlayer(Game *game, const int player_index) {
     assert(game);
 
-    if (player_index < 0 || player_index >= game->player_count) {
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
         return NULL;
     }
 
     return game->players[player_index];
 }
 
-int GameGetPlayerCount(const Game *game) {
-    assert(game);
-
-    return game->player_count;
-}
-
 bool GameRemovePlayer(Game *game, const int player_index) {
     assert(game);
 
-    if (player_index < 0 || player_index >= game->player_count) {
-        TraceLog(LOG_ERROR, "GameRemovePlayer: index %d out of range [0, %d]", player_index, game->player_count - 1);
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
 
         return false;
     }
@@ -139,18 +135,10 @@ bool GameRemovePlayer(Game *game, const int player_index) {
     }
 
     Player *player = game->players[player_index];
-    PlayerDestroy(player);
-
-    for (int i = player_index; i < game->player_count - 1; i++) {
-        game->players[i] = game->players[i + 1];
-        game->enemy_count[i] = game->enemy_count[i + 1];
-
-        for (int j = 0; j < game->enemy_count[i + 1]; j++) {
-            game->enemies[i][j] = game->enemies[i + 1][j];
-        }
+    if (player != NULL) {
+        PlayerDestroy(player);
     }
-
-    game->player_count--;
+    game->players[player_index] = NULL;
 
     return true;
 }
@@ -162,7 +150,7 @@ bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_c
 
     for (int i = player_index_count - 1; i >= 0; i--) {
         if (!GameRemovePlayer(game, player_indexes[i])) {
-            TraceLog(LOG_ERROR, "GameRemovePlayers: failed to remove player at index %d", player_indexes[i]);
+            TraceLog(LOG_ERROR, "Failed to remove player at index %d", player_indexes[i]);
             all_ok = false;
         }
     }
@@ -173,7 +161,11 @@ bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_c
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     assert(game && enemy);
 
-    if (player_index < 0 || player_index >= game->player_count) {
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        return false;
+    }
+
+    if (game->players[player_index] == NULL) {
         return false;
     }
 
@@ -189,7 +181,7 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index) {
     assert(game);
 
-    if (player_index < 0 || player_index >= game->player_count) {
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
         return NULL;
     }
 
@@ -203,7 +195,7 @@ Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index) {
 int GameGetEnemyCount(const Game *game, const int player_index) {
     assert(game);
 
-    if (player_index < 0 || player_index >= game->player_count) {
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
         return 0;
     }
 
@@ -213,15 +205,14 @@ int GameGetEnemyCount(const Game *game, const int player_index) {
 bool GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) {
     assert(game);
 
-    if (player_index < 0 || player_index >= game->player_count) {
-        TraceLog(LOG_ERROR, "GameRemoveEnemy: player index %d out of range [0, %d]", player_index,
-            game->player_count - 1);
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
 
         return false;
     }
 
     if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
-        TraceLog(LOG_ERROR, "GameRemoveEnemy: enemy index %d out of range [0, %d] for player %d", enemy_index,
+        TraceLog(LOG_ERROR, "Enemy index %d out of range [0, %d] for player %d", enemy_index,
             game->enemy_count[player_index] - 1, player_index);
 
         return false;
@@ -246,8 +237,7 @@ bool GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, c
 
     for (int i = enemy_index_count - 1; i >= 0; i--) {
         if (!GameRemoveEnemy(game, player_index, enemy_indexes[i])) {
-            TraceLog(LOG_ERROR, "GameRemoveEnemies: failed to remove enemy at index %d for player %d", enemy_indexes[i],
-                player_index);
+            TraceLog(LOG_ERROR, "Failed to remove enemy at index %d for player %d", enemy_indexes[i], player_index);
             all_ok = false;
         }
     }
@@ -263,15 +253,15 @@ void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
         Enemy *enemy = EnemyCreate(ENEMY_TYPE_SPECTRA, game->window_width, WorldGetHeight(game->world),
             WorldGetBorder(game->world));
         if (enemy == NULL) {
-            TraceLog(LOG_WARNING, "GameSpawnRandomEnemiesForPlayer: failed to create enemy %d for player %d", i,
-                player_index);
+            TraceLog(LOG_WARNING, "Failed to create enemy %d for player %d", i, player_index);
 
             continue;
         }
 
         if (!GameAddEnemy(game, player_index, enemy)) {
-            TraceLog(LOG_WARNING, "GameSpawnRandomEnemiesForPlayer: failed to add enemy %d for player %d", i,
-                player_index);
+            TraceLog(LOG_WARNING, "Failed to add enemy %d for player %d", i, player_index);
+
+            EnemyDestroy(enemy);
         }
     }
 }
@@ -279,8 +269,8 @@ void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
 void GameSpawnRandomEnemiesForPlayers(Game *game) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
-        if (GameGetEnemyCount(game, i) == 0) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (game->players[i] != NULL && game->enemy_count[i] == 0) {
             GameSpawnRandomEnemiesForPlayer(game, i);
         }
     }
@@ -289,12 +279,15 @@ void GameSpawnRandomEnemiesForPlayers(Game *game) {
 void GameUpdatePlayers(Game *game, const float delta) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
-        Player *player = GameGetPlayer(game, i);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        Player *player = game->players[i];
+        if (player == NULL) {
+            continue;
+        }
 
         Controller *controller = (Controller *)GamepadCreate(i);
         if (controller == NULL) {
-            TraceLog(LOG_ERROR, "GameUpdatePlayers: failed to create gamepad controller for player %d", i);
+            TraceLog(LOG_ERROR, "Failed to create gamepad controller for player %d", i);
 
             continue;
         }
@@ -323,11 +316,14 @@ void GameUpdatePlayers(Game *game, const float delta) {
 void GameUpdateEnemyies(Game *game, const float delta) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
-        Player *player = GameGetPlayer(game, i);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        Player *player = game->players[i];
+        if (player == NULL) {
+            continue;
+        }
 
         for (int j = 0; j < game->enemy_count[i]; j++) {
-            Enemy *enemy = GameGetEnemy(game, i, j);
+            Enemy *enemy = game->enemies[i][j];
 
             EnemyUpdate(enemy, game->window_height, WorldGetWidth(game->world), *PlayerGetPosition(player),
                 PlayerGetCenterPosition(player), delta);
@@ -351,8 +347,11 @@ void GameUpdateEnemyies(Game *game, const float delta) {
 void GameDrawAllBullets(Game *game) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
-        Player *player = GameGetPlayer(game, i);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        Player *player = game->players[i];
+        if (player == NULL) {
+            continue;
+        }
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
@@ -361,7 +360,7 @@ void GameDrawAllBullets(Game *game) {
         }
 
         for (int j = 0; j < game->enemy_count[i]; j++) {
-            Enemy *enemy = GameGetEnemy(game, i, j);
+            Enemy *enemy = game->enemies[i][j];
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
@@ -375,8 +374,11 @@ void GameDrawAllBullets(Game *game) {
 void GameDrawPlayers(Game *game) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
-        Player *player = GameGetPlayer(game, i);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        Player *player = game->players[i];
+        if (player == NULL) {
+            continue;
+        }
 
         PlayerDraw(player);
     }
@@ -385,9 +387,13 @@ void GameDrawPlayers(Game *game) {
 void GameDrawEnemies(Game *game) {
     assert(game);
 
-    for (int i = 0; i < game->player_count; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (game->players[i] == NULL) {
+            continue;
+        }
+
         for (int j = 0; j < game->enemy_count[i]; j++) {
-            Enemy *enemy = GameGetEnemy(game, i, j);
+            Enemy *enemy = game->enemies[i][j];
 
             EnemyDraw(enemy);
         }
@@ -400,8 +406,11 @@ void GameDrawHud(Game *game) {
     int world_border = WorldGetBorder(game->world);
     int cursor_x = world_border;
 
-    for (int i = 0; i < game->player_count; i++) {
-        Player *player = GameGetPlayer(game, i);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        Player *player = game->players[i];
+        if (player == NULL) {
+            continue;
+        }
 
         const char *text = TextFormat("Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
 

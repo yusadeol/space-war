@@ -105,8 +105,7 @@ bool PlayerRemoveBullet(Player *player, const int bullet_index) {
     assert(player);
 
     if (bullet_index < 0 || bullet_index >= player->bullet_count) {
-        TraceLog(LOG_ERROR, "PlayerRemoveBullet: index %d out of range [0, %d]", bullet_index,
-            player->bullet_count - 1);
+        TraceLog(LOG_ERROR, "Bullet index %d out of range [0, %d]", bullet_index, player->bullet_count - 1);
 
         return false;
     }
@@ -130,7 +129,7 @@ bool PlayerRemoveBullets(Player *player, int *bullet_indexes, const int bullet_i
 
     for (int i = bullet_index_count - 1; i >= 0; i--) {
         if (!PlayerRemoveBullet(player, bullet_indexes[i])) {
-            TraceLog(LOG_ERROR, "PlayerRemoveBullets: failed to remove bullet at index %d", bullet_indexes[i]);
+            TraceLog(LOG_ERROR, "Failed to remove bullet at index %d", bullet_indexes[i]);
             all_ok = false;
         }
     }
@@ -169,12 +168,15 @@ static void Shoot(Player *player) {
         return;
     }
 
-    player->bullets[player->bullet_count++] =
-        BulletCreate(BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
+    Bullet *bullet = BulletCreate(BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
+    if (bullet == NULL) {
+        return;
+    }
+
+    player->bullets[player->bullet_count++] = bullet;
 }
 
 void PlayerUpdate(Player *player, const ControllerInput input, const float delta) {
-
     assert(player);
 
     Move(player, input, delta);

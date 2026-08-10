@@ -11,11 +11,13 @@
 #include <stdlib.h>
 
 static void ResolvePlayerBulletCollisions(Game *game) {
-    int player_count = GameGetPlayerCount(game);
     Collision collided_enemies[MAX_PLAYERS] = {};
 
-    for (int i = 0; i < player_count; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
         Player *player = GameGetPlayer(game, i);
+        if (player == NULL) {
+            continue;
+        }
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
@@ -78,8 +80,7 @@ static void ResolvePlayerBulletCollisions(Game *game) {
         Player *player = GameGetPlayer(game, collision->source_index);
 
         if (!PlayerRemoveBullets(player, collision->object_indexes, collision->object_index_count)) {
-            TraceLog(LOG_WARNING, "ResolvePlayerBulletCollisions: failed to remove all player %d bullets",
-                collision->source_index);
+            TraceLog(LOG_WARNING, "Failed to remove all player %d bullets", collision->source_index);
         }
 
         int destroyed_enemies[MAX_ENEMIES] = {};
@@ -100,9 +101,7 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
         if (destroyed_enemy_count != 0) {
             if (!GameRemoveEnemies(game, collision->source_index, destroyed_enemies, destroyed_enemy_count)) {
-                TraceLog(LOG_WARNING,
-                    "ResolvePlayerBulletCollisions: failed to remove all destroyed enemies for player %d",
-                    collision->source_index);
+                TraceLog(LOG_WARNING, "Failed to remove all destroyed enemies for player %d", collision->source_index);
             }
             PlayerIncrementKillCountByAmount(player, destroyed_enemy_count);
         }
@@ -113,18 +112,20 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 }
 
 static void ResolveEnemyBulletCollisions(Game *game) {
-    int player_count = GameGetPlayerCount(game);
     Collision collided_players[MAX_PLAYERS][MAX_ENEMIES] = {};
 
-    for (int i = 0; i < player_count; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
         for (int j = 0; j < GameGetEnemyCount(game, i); j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                for (int l = 0; l < player_count; l++) {
+                for (int l = 0; l < MAX_PLAYERS; l++) {
                     Player *player = GameGetPlayer(game, l);
+                    if (player == NULL) {
+                        continue;
+                    }
 
                     if (CheckCollisionRecs(BulletGetBounds(bullet), PlayerGetBounds(player))) {
                         Collision *collision = &collided_players[i][j];
@@ -186,9 +187,8 @@ static void ResolveEnemyBulletCollisions(Game *game) {
             Enemy *enemy = GameGetEnemy(game, i, collision->source_index);
 
             if (!EnemyRemoveBullets(enemy, collision->object_indexes, collision->object_index_count)) {
-                TraceLog(LOG_WARNING,
-                    "ResolveEnemyBulletCollisions: failed to remove all enemy %d bullets for player %d",
-                    collision->source_index, i);
+                TraceLog(LOG_WARNING, "Failed to remove all enemy %d bullets for player %d", collision->source_index,
+                    i);
             }
 
             for (int k = 0; k < collision->target_index_count; k++) {
@@ -217,7 +217,7 @@ static void ResolveEnemyBulletCollisions(Game *game) {
     if (destroyed_player_count != 0) {
         destroyed_player_count = ArrayDeduplicateInteger(destroyed_players, destroyed_player_count);
         if (!GameRemovePlayers(game, destroyed_players, destroyed_player_count)) {
-            TraceLog(LOG_WARNING, "ResolveEnemyBulletCollisions: failed to remove all destroyed players");
+            TraceLog(LOG_WARNING, "Failed to remove all destroyed players");
         }
     }
 }

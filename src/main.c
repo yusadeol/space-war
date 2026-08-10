@@ -9,15 +9,13 @@
 int main(void) {
     Game *game = GameCreate(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
     if (game == NULL) {
-        TraceLog(LOG_ERROR, "Failed to create game");
-
         return EXIT_FAILURE;
     }
 
     InitWindow(GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
     AssetLoadTextures();
-    GameStart(game);
+    GameSetup(game);
 
     SetTargetFPS(60);
 

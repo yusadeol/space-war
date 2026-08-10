@@ -123,7 +123,7 @@ bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     assert(enemy);
 
     if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
-        TraceLog(LOG_ERROR, "EnemyRemoveBullet: index %d out of range [0, %d]", bullet_index, enemy->bullet_count - 1);
+        TraceLog(LOG_ERROR, "Bullet index %d out of range [0, %d]", bullet_index, enemy->bullet_count - 1);
 
         return false;
     }
@@ -147,7 +147,7 @@ bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_inde
 
     for (int i = bullet_index_count - 1; i >= 0; i--) {
         if (!EnemyRemoveBullet(enemy, bullet_indexes[i])) {
-            TraceLog(LOG_ERROR, "EnemyRemoveBullets: failed to remove bullet at index %d", bullet_indexes[i]);
+            TraceLog(LOG_ERROR, "Failed to remove bullet at index %d", bullet_indexes[i]);
             all_ok = false;
         }
     }
@@ -220,8 +220,12 @@ static void Shoot(Enemy *enemy) {
         return;
     }
 
-    enemy->bullets[enemy->bullet_count++] =
-        BulletCreate(BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
+    Bullet *bullet = BulletCreate(BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
+    if (bullet == NULL) {
+        return;
+    }
+
+    enemy->bullets[enemy->bullet_count++] = bullet;
 }
 
 void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
