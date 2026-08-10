@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: false
 AlignConsecutiveDeclarations:
   AlignFunctionDeclarations: true
 AlignOperands: DontAlign
@@ -9,9 +9,6 @@ AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakBeforeMultilineStrings: true
 BinPackLongBracedList: false
-BraceWrapping:
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
 BreakAdjacentStringLiterals: false
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Attach
