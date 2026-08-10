@@ -1,4 +1,5 @@
 #include "game.h"
+
 #include "array.h"
 #include "bullet.h"
 #include "controller.h"
@@ -6,6 +7,7 @@
 #include "gamepad.h"
 #include "player.h"
 #include "world.h"
+
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
@@ -32,9 +34,7 @@ Game *GameCreate(const int window_width, const int window_height) {
         .window_height = window_height,
     };
 
-    game->world = WorldCreate(
-        game->window_width, game->window_height, WORLD_BORDER,
-        WORLD_BACKGROUND_COLOR);
+    game->world = WorldCreate(game->window_width, game->window_height, WORLD_BORDER, WORLD_BACKGROUND_COLOR);
 
     return game;
 }
@@ -144,11 +144,8 @@ void GameRemovePlayer(Game *game, const int player_index) {
     game->player_count--;
 }
 
-void GameRemovePlayers(
-    Game *game, int *player_indexes, const int player_index_count) {
-    qsort(
-        player_indexes, player_index_count, sizeof(*player_indexes),
-        ArrayCompareIntegerAscending);
+void GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count) {
+    qsort(player_indexes, player_index_count, sizeof(*player_indexes), ArrayCompareIntegerAscending);
 
     for (int i = player_index_count - 1; i >= 0; i--) {
         GameRemovePlayer(game, player_indexes[i]);
@@ -195,8 +192,7 @@ int GameGetEnemyCount(const Game *game, const int player_index) {
     return game->enemy_count[player_index];
 }
 
-void GameRemoveEnemy(
-    Game *game, const int player_index, const int enemy_index) {
+void GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) {
     assert(game);
 
     if (player_index < 0 || player_index >= game->player_count) {
@@ -217,12 +213,8 @@ void GameRemoveEnemy(
     game->enemy_count[player_index]--;
 }
 
-void GameRemoveEnemies(
-    Game *game, const int player_index, int *enemy_indexes,
-    const int enemy_index_count) {
-    qsort(
-        enemy_indexes, enemy_index_count, sizeof(*enemy_indexes),
-        ArrayCompareIntegerAscending);
+void GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, const int enemy_index_count) {
+    qsort(enemy_indexes, enemy_index_count, sizeof(*enemy_indexes), ArrayCompareIntegerAscending);
 
     for (int i = enemy_index_count - 1; i >= 0; i--) {
         GameRemoveEnemy(game, player_index, enemy_indexes[i]);
@@ -234,15 +226,10 @@ void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
 
     int enemy_amount = GetRandomValue(1, MAX_ENEMIES);
     for (int i = 0; i < enemy_amount; i++) {
-        if (!GameAddEnemy(
-                game, player_index,
-                EnemyCreate(
-                    ENEMY_TYPE_SPECTRA, game->window_width,
-                    WorldGetHeight(game->world),
+        if (!GameAddEnemy(game, player_index,
+                EnemyCreate(ENEMY_TYPE_SPECTRA, game->window_width, WorldGetHeight(game->world),
                     WorldGetBorder(game->world)))) {
-            TraceLog(
-                LOG_WARNING, "Failed to add enemy %d for player %d", i,
-                player_index);
+            TraceLog(LOG_WARNING, "Failed to add enemy %d for player %d", i, player_index);
         }
     }
 }
@@ -265,9 +252,7 @@ void GameUpdatePlayers(Game *game, const float delta) {
 
         Controller *controller = (Controller *)GamepadCreate(i);
         if (controller == NULL) {
-            TraceLog(
-                LOG_ERROR, "Failed to create gamepad controller for player %d",
-                i);
+            TraceLog(LOG_ERROR, "Failed to create gamepad controller for player %d", i);
 
             continue;
         }
@@ -276,15 +261,12 @@ void GameUpdatePlayers(Game *game, const float delta) {
 
         controller->Destroy(controller);
 
-        WorldResolveBoundaries(
-            game->world, PlayerGetPosition(player), PlayerGetBounds(player));
+        WorldResolveBoundaries(game->world, PlayerGetPosition(player), PlayerGetBounds(player));
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            if (WorldIsOutOfBounds(
-                    game->world, *BulletGetPosition(bullet),
-                    BulletGetBounds(bullet))) {
+            if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
                 PlayerRemoveBullet(player, j);
 
                 j--;
@@ -305,17 +287,13 @@ void GameUpdateEnemyies(Game *game, const float delta) {
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = GameGetEnemy(game, i, j);
 
-            EnemyUpdate(
-                enemy, game->window_height, WorldGetWidth(game->world),
-                *PlayerGetPosition(player), PlayerGetCenterPosition(player),
-                delta);
+            EnemyUpdate(enemy, game->window_height, WorldGetWidth(game->world), *PlayerGetPosition(player),
+                PlayerGetCenterPosition(player), delta);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                if (WorldIsOutOfBounds(
-                        game->world, *BulletGetPosition(bullet),
-                        BulletGetBounds(bullet))) {
+                if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
                     EnemyRemoveBullet(enemy, k);
 
                     k--;
@@ -383,8 +361,7 @@ void GameDrawHud(Game *game) {
     for (int i = 0; i < game->player_count; i++) {
         Player *player = GameGetPlayer(game, i);
 
-        const char *text = TextFormat(
-            "Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
+        const char *text = TextFormat("Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
 
         DrawText(text, cursor_x + (GAME_HUD_GAP * i), world_border, 14, WHITE);
         cursor_x += MeasureText(text, 14);

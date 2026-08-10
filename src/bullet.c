@@ -1,6 +1,8 @@
 #include "bullet.h"
+
 #include "asset.h"
 #include "geometry.h"
+
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
@@ -22,9 +24,7 @@ static Texture2D GetTexture(const BulletType type) {
     return (Texture2D){};
 }
 
-Bullet *BulletCreate(
-    const BulletType type, const BulletDirection direction,
-    const Rectangle shooter_bounds) {
+Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Rectangle shooter_bounds) {
     Bullet *bullet = malloc(sizeof(*bullet));
 
     if (bullet == NULL) {
@@ -34,8 +34,7 @@ Bullet *BulletCreate(
     *bullet = (Bullet){.texture = GetTexture(type), .direction = direction};
 
     Vector2 shooter_center = GeometryGetCenterFromRectangle(shooter_bounds);
-    bullet->position = GeometryGetCenteredPosition(
-        shooter_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
+    bullet->position = GeometryGetCenteredPosition(shooter_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
 
     return bullet;
 }
@@ -86,10 +85,8 @@ void BulletUpdate(Bullet *bullet, const float delta) {
 void BulletDraw(const Bullet *bullet) {
     assert(bullet);
 
-    Rectangle source = {.width = bullet->texture.width * bullet->direction,
-                        .height = bullet->texture.height};
-    Rectangle destination = {bullet->position.x, bullet->position.y,
-                             BulletGetWidth(bullet), BulletGetHeight(bullet)};
+    Rectangle source = {.width = bullet->texture.width * bullet->direction, .height = bullet->texture.height};
+    Rectangle destination = {bullet->position.x, bullet->position.y, BulletGetWidth(bullet), BulletGetHeight(bullet)};
 
     DrawTexturePro(bullet->texture, source, destination, (Vector2){}, 0, WHITE);
 }

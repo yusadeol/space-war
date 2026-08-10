@@ -1,9 +1,11 @@
 #include "collision.h"
+
 #include "array.h"
 #include "bullet.h"
 #include "enemy.h"
 #include "game.h"
 #include "player.h"
+
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
@@ -21,18 +23,15 @@ static void ResolvePlayerBulletCollisions(Game *game) {
             for (int k = 0; k < GameGetEnemyCount(game, i); k++) {
                 Enemy *enemy = GameGetEnemy(game, i, k);
 
-                if (CheckCollisionRecs(
-                        BulletGetBounds(bullet), EnemyGetBounds(enemy))) {
+                if (CheckCollisionRecs(BulletGetBounds(bullet), EnemyGetBounds(enemy))) {
                     Collision *collision = &collided_enemies[i];
-                    if (collision->target_indexes == NULL &&
-                        collision->object_indexes == NULL) {
+                    if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
                         int *enemies = malloc(sizeof(*enemies) * MAX_ENEMIES);
                         if (enemies == NULL) {
                             continue;
                         }
 
-                        int *bullets =
-                            malloc(sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
+                        int *bullets = malloc(sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
                         if (bullets == NULL) {
                             free(enemies);
 
@@ -47,27 +46,19 @@ static void ResolvePlayerBulletCollisions(Game *game) {
                             .object_index_capacity = MAX_SIMULTANEOUS_BULLETS,
                         };
 
-                        collision
-                            ->target_indexes[collision->target_index_count++] =
-                            k;
-                        collision
-                            ->object_indexes[collision->object_index_count++] =
-                            j;
+                        collision->target_indexes[collision->target_index_count++] = k;
+                        collision->object_indexes[collision->object_index_count++] = j;
 
                         continue;
                     }
 
-                    if ((collision->target_index_count + 1) >
-                            collision->target_index_capacity ||
-                        (collision->object_index_count + 1) >
-                            collision->object_index_capacity) {
+                    if ((collision->target_index_count + 1) > collision->target_index_capacity
+                        || (collision->object_index_count + 1) > collision->object_index_capacity) {
                         continue;
                     }
 
-                    collision->target_indexes[collision->target_index_count++] =
-                        k;
-                    collision->object_indexes[collision->object_index_count++] =
-                        j;
+                    collision->target_indexes[collision->target_index_count++] = k;
+                    collision->object_indexes[collision->object_index_count++] = j;
                 }
             }
         }
@@ -75,27 +66,24 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
         Collision *collision = &collided_enemies[i];
-        if (collision->target_indexes == NULL &&
-            collision->object_indexes == NULL) {
+        if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
             continue;
         }
 
-        collision->target_index_count = ArrayDeduplicateInteger(
-            collision->target_indexes, collision->target_index_count);
-        collision->object_index_count = ArrayDeduplicateInteger(
-            collision->object_indexes, collision->object_index_count);
+        collision->target_index_count =
+            ArrayDeduplicateInteger(collision->target_indexes, collision->target_index_count);
+        collision->object_index_count =
+            ArrayDeduplicateInteger(collision->object_indexes, collision->object_index_count);
 
         Player *player = GameGetPlayer(game, collision->source_index);
 
-        PlayerRemoveBullets(
-            player, collision->object_indexes, collision->object_index_count);
+        PlayerRemoveBullets(player, collision->object_indexes, collision->object_index_count);
 
         int destroyed_enemies[MAX_ENEMIES] = {};
         int destroyed_enemy_count = 0;
 
         for (int j = 0; j < collision->target_index_count; j++) {
-            Enemy *enemy = GameGetEnemy(
-                game, collision->source_index, collision->target_indexes[j]);
+            Enemy *enemy = GameGetEnemy(game, collision->source_index, collision->target_indexes[j]);
             EnemyTakeDamage(enemy);
 
             if (EnemyGetStatus(enemy) == ENEMY_STATUS_DESTROYED) {
@@ -103,15 +91,12 @@ static void ResolvePlayerBulletCollisions(Game *game) {
                     break;
                 }
 
-                destroyed_enemies[destroyed_enemy_count++] =
-                    collision->target_indexes[j];
+                destroyed_enemies[destroyed_enemy_count++] = collision->target_indexes[j];
             }
         }
 
         if (destroyed_enemy_count != 0) {
-            GameRemoveEnemies(
-                game, collision->source_index, destroyed_enemies,
-                destroyed_enemy_count);
+            GameRemoveEnemies(game, collision->source_index, destroyed_enemies, destroyed_enemy_count);
             PlayerIncrementKillCountByAmount(player, destroyed_enemy_count);
         }
 
@@ -134,19 +119,15 @@ static void ResolveEnemyBulletCollisions(Game *game) {
                 for (int l = 0; l < player_count; l++) {
                     Player *player = GameGetPlayer(game, l);
 
-                    if (CheckCollisionRecs(
-                            BulletGetBounds(bullet), PlayerGetBounds(player))) {
+                    if (CheckCollisionRecs(BulletGetBounds(bullet), PlayerGetBounds(player))) {
                         Collision *collision = &collided_players[i][j];
-                        if (collision->target_indexes == NULL &&
-                            collision->object_indexes == NULL) {
-                            int *players =
-                                malloc(sizeof(*players) * MAX_PLAYERS);
+                        if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
+                            int *players = malloc(sizeof(*players) * MAX_PLAYERS);
                             if (players == NULL) {
                                 continue;
                             }
 
-                            int *bullets = malloc(
-                                sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
+                            int *bullets = malloc(sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
                             if (bullets == NULL) {
                                 free(players);
 
@@ -158,31 +139,22 @@ static void ResolveEnemyBulletCollisions(Game *game) {
                                 .target_indexes = players,
                                 .target_index_capacity = MAX_PLAYERS,
                                 .object_indexes = bullets,
-                                .object_index_capacity =
-                                    MAX_SIMULTANEOUS_BULLETS,
+                                .object_index_capacity = MAX_SIMULTANEOUS_BULLETS,
                             };
 
-                            collision->target_indexes
-                                [collision->target_index_count++] = l;
-                            collision->object_indexes
-                                [collision->object_index_count++] = k;
+                            collision->target_indexes[collision->target_index_count++] = l;
+                            collision->object_indexes[collision->object_index_count++] = k;
 
                             continue;
                         }
 
-                        if ((collision->target_index_count + 1) >
-                                collision->target_index_capacity ||
-                            (collision->object_index_count + 1) >
-                                collision->object_index_capacity) {
+                        if ((collision->target_index_count + 1) > collision->target_index_capacity
+                            || (collision->object_index_count + 1) > collision->object_index_capacity) {
                             continue;
                         }
 
-                        collision
-                            ->target_indexes[collision->target_index_count++] =
-                            l;
-                        collision
-                            ->object_indexes[collision->object_index_count++] =
-                            k;
+                        collision->target_indexes[collision->target_index_count++] = l;
+                        collision->object_indexes[collision->object_index_count++] = k;
                     }
                 }
             }
@@ -195,21 +167,18 @@ static void ResolveEnemyBulletCollisions(Game *game) {
     for (int i = 0; i < MAX_PLAYERS; i++) {
         for (int j = 0; j < MAX_ENEMIES; j++) {
             Collision *collision = &collided_players[i][j];
-            if (collision->target_indexes == NULL &&
-                collision->object_indexes == NULL) {
+            if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
                 continue;
             }
 
-            collision->target_index_count = ArrayDeduplicateInteger(
-                collision->target_indexes, collision->target_index_count);
-            collision->object_index_count = ArrayDeduplicateInteger(
-                collision->object_indexes, collision->object_index_count);
+            collision->target_index_count =
+                ArrayDeduplicateInteger(collision->target_indexes, collision->target_index_count);
+            collision->object_index_count =
+                ArrayDeduplicateInteger(collision->object_indexes, collision->object_index_count);
 
             Enemy *enemy = GameGetEnemy(game, i, collision->source_index);
 
-            EnemyRemoveBullets(
-                enemy, collision->object_indexes,
-                collision->object_index_count);
+            EnemyRemoveBullets(enemy, collision->object_indexes, collision->object_index_count);
 
             for (int k = 0; k < collision->target_index_count; k++) {
                 if ((destroyed_player_count + 1) > MAX_PLAYERS) {
@@ -225,8 +194,7 @@ static void ResolveEnemyBulletCollisions(Game *game) {
                 }
 
                 if (!exists) {
-                    destroyed_players[destroyed_player_count++] =
-                        collision->target_indexes[k];
+                    destroyed_players[destroyed_player_count++] = collision->target_indexes[k];
                 }
             }
 
@@ -236,8 +204,7 @@ static void ResolveEnemyBulletCollisions(Game *game) {
     }
 
     if (destroyed_player_count != 0) {
-        destroyed_player_count =
-            ArrayDeduplicateInteger(destroyed_players, destroyed_player_count);
+        destroyed_player_count = ArrayDeduplicateInteger(destroyed_players, destroyed_player_count);
         GameRemovePlayers(game, destroyed_players, destroyed_player_count);
     }
 }

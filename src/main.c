@@ -2,6 +2,7 @@
 #include "collision.h"
 #include "game.h"
 #include "world.h"
+
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -13,8 +14,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    InitWindow(
-        GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
+    InitWindow(GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
     AssetLoadTextures();
     GameStart(game);

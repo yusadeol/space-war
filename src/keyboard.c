@@ -1,5 +1,7 @@
 #include "keyboard.h"
+
 #include "controller.h"
+
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -34,8 +36,7 @@ Keyboard *KeyboardCreate() {
         return NULL;
     }
 
-    *keyboard =
-        (Keyboard){.controller = {.GetInput = GetInput, .Destroy = Destroy}};
+    *keyboard = (Keyboard){.controller = {.GetInput = GetInput, .Destroy = Destroy}};
 
     return keyboard;
 }

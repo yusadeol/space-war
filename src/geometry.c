@@ -7,8 +7,7 @@ Vector2 GeometryGetCenterFromRectangle(const Rectangle rectangle) {
     };
 }
 
-Vector2 GeometryGetCenteredPosition(
-    const Vector2 reference, const float width, const float height) {
+Vector2 GeometryGetCenteredPosition(const Vector2 reference, const float width, const float height) {
     return (Vector2){
         reference.x - width / 2.0f,
         reference.y - height / 2.0f,

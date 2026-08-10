@@ -1,5 +1,7 @@
 #include "gamepad.h"
+
 #include "controller.h"
+
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -12,16 +14,11 @@ static ControllerInput GetInput(const Controller *controller) {
     const Gamepad *gamepad = (const Gamepad *)controller;
 
     return (ControllerInput){
-        .left = IsGamepadButtonDown(
-            gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_LEFT),
-        .up = IsGamepadButtonDown(
-            gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_UP),
-        .right = IsGamepadButtonDown(
-            gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_RIGHT),
-        .down = IsGamepadButtonDown(
-            gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_DOWN),
-        .shoot = IsGamepadButtonPressed(
-            gamepad->gamepad_index, GAMEPAD_BUTTON_RIGHT_FACE_DOWN),
+        .left = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_LEFT),
+        .up = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_UP),
+        .right = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_RIGHT),
+        .down = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_DOWN),
+        .shoot = IsGamepadButtonPressed(gamepad->gamepad_index, GAMEPAD_BUTTON_RIGHT_FACE_DOWN),
     };
 }
 

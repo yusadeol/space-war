@@ -23,16 +23,13 @@ bool GameAddPlayer(Game *game, Player *player);
 Player *GameGetPlayer(Game *game, const int player_index);
 int GameGetPlayerCount(const Game *game);
 void GameRemovePlayer(Game *game, const int player_index);
-void GameRemovePlayers(
-    Game *game, int *player_indexes, const int player_index_count);
+void GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count);
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);
 int GameGetEnemyCount(const Game *game, const int player_index);
 void GameRemoveEnemy(Game *game, const int player_index, const int enemy_index);
-void GameRemoveEnemies(
-    Game *game, const int player_index, int *enemy_indexes,
-    const int enemy_index_count);
+void GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, const int enemy_index_count);
 
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index);
 void GameSpawnRandomEnemiesForPlayers(Game *game);

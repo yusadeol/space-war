@@ -14,9 +14,7 @@ typedef enum {
 
 typedef struct Bullet Bullet;
 
-Bullet *BulletCreate(
-    const BulletType type, const BulletDirection direction,
-    const Rectangle shooter_bounds);
+Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Rectangle shooter_bounds);
 void BulletDestroy(Bullet *bullet);
 
 float BulletGetWidth(const Bullet *bullet);
