@@ -222,6 +222,8 @@ static void Shoot(Enemy *enemy) {
 
     Bullet *bullet = BulletCreate(BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
     if (bullet == NULL) {
+        TraceLog(LOG_ERROR, "Failed to create enemy bullet");
+
         return;
     }
 
@@ -272,6 +274,8 @@ void EnemyTakeDamage(Enemy *enemy) {
     assert(enemy);
 
     if (enemy->status == ENEMY_STATUS_DESTROYED) {
+        TraceLog(LOG_WARNING, "Attempted to damage an already destroyed enemy");
+
         return;
     }
 

@@ -176,6 +176,8 @@ static void Shoot(Player *player) {
 
     Bullet *bullet = BulletCreate(BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
     if (bullet == NULL) {
+        TraceLog(LOG_ERROR, "Failed to create player bullet");
+
         return;
     }
 

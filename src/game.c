@@ -70,7 +70,7 @@ void GameStart(Game *game) {
 
         Controller *controller = (Controller *)GamepadCreate(i);
         if (controller == NULL) {
-            TraceLog(LOG_ERROR, "Failed to create controller");
+            TraceLog(LOG_ERROR, "Failed to create controller for player %d", i);
 
             continue;
         }
@@ -98,13 +98,13 @@ void GameHandlePlayerJoins(Game *game) {
         if (input.start) {
             Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
             if (player == NULL) {
-                TraceLog(LOG_ERROR, "Failed to create player");
+                TraceLog(LOG_ERROR, "Failed to create player %d", i);
 
                 continue;
             }
 
             if (!GameAddPlayer(game, i, player)) {
-                TraceLog(LOG_ERROR, "Failed to add player");
+                TraceLog(LOG_ERROR, "Failed to add player %d", i);
 
                 PlayerDestroy(player);
             }
@@ -134,10 +134,14 @@ bool GameAddPlayer(Game *game, const int player_index, Player *player) {
     assert(game && player);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
+
         return false;
     }
 
     if (game->players[player_index] != NULL) {
+        TraceLog(LOG_WARNING, "Player slot %d is already occupied", player_index);
+
         return false;
     }
 
@@ -199,10 +203,14 @@ bool GameAddPlayerController(Game *game, const int player_index, Controller *con
     assert(game && controller);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
+
         return false;
     }
 
     if (game->player_controllers[player_index] != NULL) {
+        TraceLog(LOG_WARNING, "Player controller slot %d is already occupied", player_index);
+
         return false;
     }
 
@@ -243,14 +251,20 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     assert(game && enemy);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
+
         return false;
     }
 
     if (game->players[player_index] == NULL) {
+        TraceLog(LOG_WARNING, "Cannot add enemy for player %d: player does not exist", player_index);
+
         return false;
     }
 
     if ((game->enemy_count[player_index] + 1) > MAX_ENEMIES) {
+        TraceLog(LOG_WARNING, "Enemy capacity reached for player %d (%d)", player_index, MAX_ENEMIES);
+
         return false;
     }
 

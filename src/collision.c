@@ -30,11 +30,14 @@ static void ResolvePlayerBulletCollisions(Game *game) {
                     if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
                         int *enemies = malloc(sizeof(*enemies) * MAX_ENEMIES);
                         if (enemies == NULL) {
+                            TraceLog(LOG_ERROR, "Failed to allocate collision enemies array for player %d", i);
+
                             continue;
                         }
 
                         int *bullets = malloc(sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
                         if (bullets == NULL) {
+                            TraceLog(LOG_ERROR, "Failed to allocate collision bullets array for player %d", i);
                             free(enemies);
 
                             continue;
@@ -56,6 +59,11 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
                     if ((collision->target_index_count + 1) > collision->target_index_capacity
                         || (collision->object_index_count + 1) > collision->object_index_capacity) {
+                        TraceLog(LOG_WARNING,
+                            "Collision target/object arrays overflow for player %d (targets: %d/%d, objects: %d/%d)", i,
+                            collision->target_index_count, collision->target_index_capacity,
+                            collision->object_index_count, collision->object_index_capacity);
+
                         continue;
                     }
 
@@ -92,6 +100,9 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
             if (EnemyGetStatus(enemy) == ENEMY_STATUS_DESTROYED) {
                 if ((destroyed_enemy_count + 1) > MAX_ENEMIES) {
+                    TraceLog(LOG_WARNING, "Destroyed enemies capacity reached for player %d (%d)",
+                        collision->source_index, MAX_ENEMIES);
+
                     break;
                 }
 
@@ -132,11 +143,16 @@ static void ResolveEnemyBulletCollisions(Game *game) {
                         if (collision->target_indexes == NULL && collision->object_indexes == NULL) {
                             int *players = malloc(sizeof(*players) * MAX_PLAYERS);
                             if (players == NULL) {
+                                TraceLog(LOG_ERROR, "Failed to allocate collision players array for player %d enemy %d",
+                                    i, j);
+
                                 continue;
                             }
 
                             int *bullets = malloc(sizeof(*bullets) * MAX_SIMULTANEOUS_BULLETS);
                             if (bullets == NULL) {
+                                TraceLog(LOG_ERROR, "Failed to allocate collision bullets array for player %d enemy %d",
+                                    i, j);
                                 free(players);
 
                                 continue;
@@ -158,6 +174,12 @@ static void ResolveEnemyBulletCollisions(Game *game) {
 
                         if ((collision->target_index_count + 1) > collision->target_index_capacity
                             || (collision->object_index_count + 1) > collision->object_index_capacity) {
+                            TraceLog(LOG_WARNING,
+                                "Collision target/object arrays overflow for player %d enemy %d (targets: %d/%d, "
+                                "objects: %d/%d)",
+                                i, j, collision->target_index_count, collision->target_index_capacity,
+                                collision->object_index_count, collision->object_index_capacity);
+
                             continue;
                         }
 
