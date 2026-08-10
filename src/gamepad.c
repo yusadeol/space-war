@@ -2,6 +2,7 @@
 
 #include "controller.h"
 
+#include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -23,6 +24,8 @@ static ControllerInput GetInput(const Controller *controller) {
 }
 
 void GamepadDestroy(Gamepad *gamepad) {
+    assert(gamepad);
+
     free(gamepad);
 }
 

@@ -2,6 +2,7 @@
 
 #include "controller.h"
 
+#include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
@@ -20,6 +21,8 @@ static ControllerInput GetInput(const Controller *) {
 }
 
 void KeyboardDestroy(Keyboard *keyboard) {
+    assert(keyboard);
+
     free(keyboard);
 }
 
