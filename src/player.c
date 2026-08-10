@@ -42,7 +42,7 @@ void PlayerDestroy(Player *player) {
     assert(player);
 
     for (int i = 0; i < player->bullet_count; i++) {
-        PlayerRemoveBullet(player, i);
+        (void)PlayerRemoveBullet(player, i);
 
         i--;
     }
@@ -101,11 +101,14 @@ int PlayerGetBulletCount(const Player *player) {
     return player->bullet_count;
 }
 
-void PlayerRemoveBullet(Player *player, const int bullet_index) {
+bool PlayerRemoveBullet(Player *player, const int bullet_index) {
     assert(player);
 
     if (bullet_index < 0 || bullet_index >= player->bullet_count) {
-        return;
+        TraceLog(LOG_ERROR, "PlayerRemoveBullet: index %d out of range [0, %d]", bullet_index,
+            player->bullet_count - 1);
+
+        return false;
     }
 
     Bullet *bullet = player->bullets[bullet_index];
@@ -116,14 +119,23 @@ void PlayerRemoveBullet(Player *player, const int bullet_index) {
     }
 
     player->bullet_count--;
+
+    return true;
 }
 
-void PlayerRemoveBullets(Player *player, int *bullet_indexes, const int bullet_index_count) {
+bool PlayerRemoveBullets(Player *player, int *bullet_indexes, const int bullet_index_count) {
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
 
+    bool all_ok = true;
+
     for (int i = bullet_index_count - 1; i >= 0; i--) {
-        PlayerRemoveBullet(player, bullet_indexes[i]);
+        if (!PlayerRemoveBullet(player, bullet_indexes[i])) {
+            TraceLog(LOG_ERROR, "PlayerRemoveBullets: failed to remove bullet at index %d", bullet_indexes[i]);
+            all_ok = false;
+        }
     }
+
+    return all_ok;
 }
 
 int PlayerGetKillCount(const Player *player) {

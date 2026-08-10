@@ -77,7 +77,10 @@ static void ResolvePlayerBulletCollisions(Game *game) {
 
         Player *player = GameGetPlayer(game, collision->source_index);
 
-        PlayerRemoveBullets(player, collision->object_indexes, collision->object_index_count);
+        if (!PlayerRemoveBullets(player, collision->object_indexes, collision->object_index_count)) {
+            TraceLog(LOG_WARNING, "ResolvePlayerBulletCollisions: failed to remove all player %d bullets",
+                collision->source_index);
+        }
 
         int destroyed_enemies[MAX_ENEMIES] = {};
         int destroyed_enemy_count = 0;
@@ -96,7 +99,11 @@ static void ResolvePlayerBulletCollisions(Game *game) {
         }
 
         if (destroyed_enemy_count != 0) {
-            GameRemoveEnemies(game, collision->source_index, destroyed_enemies, destroyed_enemy_count);
+            if (!GameRemoveEnemies(game, collision->source_index, destroyed_enemies, destroyed_enemy_count)) {
+                TraceLog(LOG_WARNING,
+                    "ResolvePlayerBulletCollisions: failed to remove all destroyed enemies for player %d",
+                    collision->source_index);
+            }
             PlayerIncrementKillCountByAmount(player, destroyed_enemy_count);
         }
 
@@ -178,7 +185,11 @@ static void ResolveEnemyBulletCollisions(Game *game) {
 
             Enemy *enemy = GameGetEnemy(game, i, collision->source_index);
 
-            EnemyRemoveBullets(enemy, collision->object_indexes, collision->object_index_count);
+            if (!EnemyRemoveBullets(enemy, collision->object_indexes, collision->object_index_count)) {
+                TraceLog(LOG_WARNING,
+                    "ResolveEnemyBulletCollisions: failed to remove all enemy %d bullets for player %d",
+                    collision->source_index, i);
+            }
 
             for (int k = 0; k < collision->target_index_count; k++) {
                 if ((destroyed_player_count + 1) > MAX_PLAYERS) {
@@ -205,7 +216,9 @@ static void ResolveEnemyBulletCollisions(Game *game) {
 
     if (destroyed_player_count != 0) {
         destroyed_player_count = ArrayDeduplicateInteger(destroyed_players, destroyed_player_count);
-        GameRemovePlayers(game, destroyed_players, destroyed_player_count);
+        if (!GameRemovePlayers(game, destroyed_players, destroyed_player_count)) {
+            TraceLog(LOG_WARNING, "ResolveEnemyBulletCollisions: failed to remove all destroyed players");
+        }
     }
 }
 

@@ -27,11 +27,11 @@ EnemyStatus EnemyGetStatus(const Enemy *enemy);
 Rectangle EnemyGetBounds(const Enemy *enemy);
 Vector2 EnemyGetCenterPosition(const Enemy *enemy);
 Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index);
-void EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count);
+bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count);
 int EnemyGetBulletCount(const Enemy *enemy);
 
 void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
     const Vector2 player_center_position, const float delta);
 void EnemyDraw(const Enemy *enemy);
 void EnemyTakeDamage(Enemy *enemy);
-void EnemyRemoveBullet(Enemy *enemy, const int bullet_index);
+bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index);

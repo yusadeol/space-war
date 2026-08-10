@@ -41,7 +41,7 @@ Game *GameCreate(const int window_width, const int window_height) {
 
 static void Clear(Game *game) {
     for (int i = 0; i < game->player_count; i++) {
-        GameRemovePlayer(game, i);
+        (void)GameRemovePlayer(game, i);
 
         i--;
     }
@@ -58,8 +58,15 @@ void GameDestroy(Game *game) {
 void GameStart(Game *game) {
     assert(game);
 
-    if (!GameAddPlayer(game, PlayerCreate(PLAYER_TYPE_VIPER))) {
-        TraceLog(LOG_ERROR, "Failed to add player");
+    Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
+    if (player == NULL) {
+        TraceLog(LOG_ERROR, "GameStart: failed to create player");
+
+        return;
+    }
+
+    if (!GameAddPlayer(game, player)) {
+        TraceLog(LOG_ERROR, "GameStart: failed to add player");
     }
 }
 
@@ -116,15 +123,17 @@ int GameGetPlayerCount(const Game *game) {
     return game->player_count;
 }
 
-void GameRemovePlayer(Game *game, const int player_index) {
+bool GameRemovePlayer(Game *game, const int player_index) {
     assert(game);
 
     if (player_index < 0 || player_index >= game->player_count) {
-        return;
+        TraceLog(LOG_ERROR, "GameRemovePlayer: index %d out of range [0, %d]", player_index, game->player_count - 1);
+
+        return false;
     }
 
     for (int i = 0; game->enemy_count[player_index]; i++) {
-        GameRemoveEnemy(game, player_index, i);
+        (void)GameRemoveEnemy(game, player_index, i);
 
         i--;
     }
@@ -142,14 +151,23 @@ void GameRemovePlayer(Game *game, const int player_index) {
     }
 
     game->player_count--;
+
+    return true;
 }
 
-void GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count) {
+bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count) {
     qsort(player_indexes, player_index_count, sizeof(*player_indexes), ArrayCompareIntegerAscending);
 
+    bool all_ok = true;
+
     for (int i = player_index_count - 1; i >= 0; i--) {
-        GameRemovePlayer(game, player_indexes[i]);
+        if (!GameRemovePlayer(game, player_indexes[i])) {
+            TraceLog(LOG_ERROR, "GameRemovePlayers: failed to remove player at index %d", player_indexes[i]);
+            all_ok = false;
+        }
     }
+
+    return all_ok;
 }
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
@@ -192,15 +210,21 @@ int GameGetEnemyCount(const Game *game, const int player_index) {
     return game->enemy_count[player_index];
 }
 
-void GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) {
+bool GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) {
     assert(game);
 
     if (player_index < 0 || player_index >= game->player_count) {
-        return;
+        TraceLog(LOG_ERROR, "GameRemoveEnemy: player index %d out of range [0, %d]", player_index,
+            game->player_count - 1);
+
+        return false;
     }
 
     if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
-        return;
+        TraceLog(LOG_ERROR, "GameRemoveEnemy: enemy index %d out of range [0, %d] for player %d", enemy_index,
+            game->enemy_count[player_index] - 1, player_index);
+
+        return false;
     }
 
     Enemy *enemy = game->enemies[player_index][enemy_index];
@@ -211,14 +235,24 @@ void GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) 
     }
 
     game->enemy_count[player_index]--;
+
+    return true;
 }
 
-void GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, const int enemy_index_count) {
+bool GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, const int enemy_index_count) {
     qsort(enemy_indexes, enemy_index_count, sizeof(*enemy_indexes), ArrayCompareIntegerAscending);
 
+    bool all_ok = true;
+
     for (int i = enemy_index_count - 1; i >= 0; i--) {
-        GameRemoveEnemy(game, player_index, enemy_indexes[i]);
+        if (!GameRemoveEnemy(game, player_index, enemy_indexes[i])) {
+            TraceLog(LOG_ERROR, "GameRemoveEnemies: failed to remove enemy at index %d for player %d", enemy_indexes[i],
+                player_index);
+            all_ok = false;
+        }
     }
+
+    return all_ok;
 }
 
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
@@ -226,10 +260,18 @@ void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {
 
     int enemy_amount = GetRandomValue(1, MAX_ENEMIES);
     for (int i = 0; i < enemy_amount; i++) {
-        if (!GameAddEnemy(game, player_index,
-                EnemyCreate(ENEMY_TYPE_SPECTRA, game->window_width, WorldGetHeight(game->world),
-                    WorldGetBorder(game->world)))) {
-            TraceLog(LOG_WARNING, "Failed to add enemy %d for player %d", i, player_index);
+        Enemy *enemy = EnemyCreate(ENEMY_TYPE_SPECTRA, game->window_width, WorldGetHeight(game->world),
+            WorldGetBorder(game->world));
+        if (enemy == NULL) {
+            TraceLog(LOG_WARNING, "GameSpawnRandomEnemiesForPlayer: failed to create enemy %d for player %d", i,
+                player_index);
+
+            continue;
+        }
+
+        if (!GameAddEnemy(game, player_index, enemy)) {
+            TraceLog(LOG_WARNING, "GameSpawnRandomEnemiesForPlayer: failed to add enemy %d for player %d", i,
+                player_index);
         }
     }
 }
@@ -252,7 +294,7 @@ void GameUpdatePlayers(Game *game, const float delta) {
 
         Controller *controller = (Controller *)GamepadCreate(i);
         if (controller == NULL) {
-            TraceLog(LOG_ERROR, "Failed to create gamepad controller for player %d", i);
+            TraceLog(LOG_ERROR, "GameUpdatePlayers: failed to create gamepad controller for player %d", i);
 
             continue;
         }
@@ -267,7 +309,7 @@ void GameUpdatePlayers(Game *game, const float delta) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
             if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
-                PlayerRemoveBullet(player, j);
+                (void)PlayerRemoveBullet(player, j);
 
                 j--;
                 continue;
@@ -294,7 +336,7 @@ void GameUpdateEnemyies(Game *game, const float delta) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
                 if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
-                    EnemyRemoveBullet(enemy, k);
+                    (void)EnemyRemoveBullet(enemy, k);
 
                     k--;
                     continue;

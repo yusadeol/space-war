@@ -54,7 +54,7 @@ void EnemyDestroy(Enemy *enemy) {
     assert(enemy);
 
     for (int i = 0; i < enemy->bullet_count; i++) {
-        EnemyRemoveBullet(enemy, i);
+        (void)EnemyRemoveBullet(enemy, i);
 
         i--;
     }
@@ -119,11 +119,13 @@ int EnemyGetBulletCount(const Enemy *enemy) {
     return enemy->bullet_count;
 }
 
-void EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
+bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     assert(enemy);
 
     if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
-        return;
+        TraceLog(LOG_ERROR, "EnemyRemoveBullet: index %d out of range [0, %d]", bullet_index, enemy->bullet_count - 1);
+
+        return false;
     }
 
     Bullet *bullet = enemy->bullets[bullet_index];
@@ -134,14 +136,23 @@ void EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     }
 
     enemy->bullet_count--;
+
+    return true;
 }
 
-void EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count) {
+bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count) {
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
 
+    bool all_ok = true;
+
     for (int i = bullet_index_count - 1; i >= 0; i--) {
-        EnemyRemoveBullet(enemy, bullet_indexes[i]);
+        if (!EnemyRemoveBullet(enemy, bullet_indexes[i])) {
+            TraceLog(LOG_ERROR, "EnemyRemoveBullets: failed to remove bullet at index %d", bullet_indexes[i]);
+            all_ok = false;
+        }
     }
+
+    return all_ok;
 }
 
 ControllerInput Think(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
