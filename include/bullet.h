@@ -19,7 +19,7 @@ void BulletDestroy(Bullet *bullet);
 
 float BulletGetWidth(const Bullet *bullet);
 float BulletGetHeight(const Bullet *bullet);
-Vector2 *BulletGetPosition(Bullet *bullet);
+Vector2 BulletGetPosition(const Bullet *bullet);
 Rectangle BulletGetBounds(const Bullet *bullet);
 
 void BulletUpdate(Bullet *bullet, const float delta);

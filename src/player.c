@@ -62,10 +62,16 @@ float PlayerGetHeight(const Player *player) {
     return player->texture.height * PLAYER_SCALE;
 }
 
-Vector2 *PlayerGetPosition(Player *player) {
+Vector2 PlayerGetPosition(const Player *player) {
     assert(player);
 
-    return &player->position;
+    return player->position;
+}
+
+void PlayerSetPosition(Player *player, const Vector2 position) {
+    assert(player);
+
+    player->position = position;
 }
 
 Rectangle PlayerGetBounds(const Player *player) {

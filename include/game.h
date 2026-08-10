@@ -16,7 +16,7 @@ void GameSetup(Game *game);
 
 int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
-World *GameGetWorld(Game *game);
+const World *GameGetWorld(const Game *game);
 
 bool GameAddPlayer(Game *game, const int player_index, Player *player);
 Player *GameGetPlayer(Game *game, const int player_index);

@@ -22,7 +22,7 @@ void EnemyDestroy(Enemy *enemy);
 
 float EnemyGetWidth(const Enemy *enemy);
 float EnemyGetHeight(const Enemy *enemy);
-Vector2 *EnemyGetPosition(Enemy *enemy);
+Vector2 EnemyGetPosition(const Enemy *enemy);
 EnemyStatus EnemyGetStatus(const Enemy *enemy);
 Rectangle EnemyGetBounds(const Enemy *enemy);
 Vector2 EnemyGetCenterPosition(const Enemy *enemy);

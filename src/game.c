@@ -87,7 +87,7 @@ int GameGetWindowHeight(const Game *game) {
     return game->window_height;
 }
 
-World *GameGetWorld(Game *game) {
+const World *GameGetWorld(const Game *game) {
     assert(game);
 
     return game->world;
@@ -296,12 +296,13 @@ void GameUpdatePlayers(Game *game, const float delta) {
 
         controller->Destroy(controller);
 
-        WorldResolveBoundaries(game->world, PlayerGetPosition(player), PlayerGetBounds(player));
+        PlayerSetPosition(player,
+            WorldResolveBoundaries(game->world, PlayerGetPosition(player), PlayerGetBounds(player)));
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
+            if (WorldIsOutOfBounds(game->world, BulletGetPosition(bullet), BulletGetBounds(bullet))) {
                 (void)PlayerRemoveBullet(player, j);
 
                 j--;
@@ -325,13 +326,13 @@ void GameUpdateEnemyies(Game *game, const float delta) {
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = game->enemies[i][j];
 
-            EnemyUpdate(enemy, game->window_height, WorldGetWidth(game->world), *PlayerGetPosition(player),
+            EnemyUpdate(enemy, game->window_height, WorldGetWidth(game->world), PlayerGetPosition(player),
                 PlayerGetCenterPosition(player), delta);
 
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                if (WorldIsOutOfBounds(game->world, *BulletGetPosition(bullet), BulletGetBounds(bullet))) {
+                if (WorldIsOutOfBounds(game->world, BulletGetPosition(bullet), BulletGetBounds(bullet))) {
                     (void)EnemyRemoveBullet(enemy, k);
 
                     k--;

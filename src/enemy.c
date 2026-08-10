@@ -74,10 +74,10 @@ float EnemyGetHeight(const Enemy *enemy) {
     return enemy->texture.height * ENEMY_SCALE;
 }
 
-Vector2 *EnemyGetPosition(Enemy *enemy) {
+Vector2 EnemyGetPosition(const Enemy *enemy) {
     assert(enemy);
 
-    return &enemy->position;
+    return enemy->position;
 }
 
 EnemyStatus EnemyGetStatus(const Enemy *enemy) {

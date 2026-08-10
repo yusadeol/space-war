@@ -14,6 +14,6 @@ int WorldGetHeight(const World *world);
 int WorldGetBorder(const World *world);
 Color WorldGetBackgroundColor(const World *world);
 
-void WorldResolveBoundaries(const World *world, Vector2 *position, const Rectangle bounds);
+Vector2 WorldResolveBoundaries(const World *world, const Vector2 position, const Rectangle bounds);
 
 bool WorldIsOutOfBounds(const World *world, const Vector2 position, const Rectangle bounds);

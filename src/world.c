@@ -57,24 +57,28 @@ Color WorldGetBackgroundColor(const World *world) {
     return world->background_color;
 }
 
-void WorldResolveBoundaries(const World *world, Vector2 *position, const Rectangle bounds) {
-    assert(world && position);
+Vector2 WorldResolveBoundaries(const World *world, const Vector2 position, const Rectangle bounds) {
+    assert(world);
 
-    if (position->x < world->border) {
-        position->x = world->border;
+    Vector2 resolved = position;
+
+    if (resolved.x < world->border) {
+        resolved.x = world->border;
     }
 
-    if (position->y < world->border) {
-        position->y = world->border;
+    if (resolved.y < world->border) {
+        resolved.y = world->border;
     }
 
-    if (position->x > (world->width - bounds.width)) {
-        position->x = world->width - bounds.width;
+    if (resolved.x > (world->width - bounds.width)) {
+        resolved.x = world->width - bounds.width;
     }
 
-    if (position->y > (world->height - bounds.height)) {
-        position->y = world->height - bounds.height;
+    if (resolved.y > (world->height - bounds.height)) {
+        resolved.y = world->height - bounds.height;
     }
+
+    return resolved;
 }
 
 bool WorldIsOutOfBounds(const World *world, const Vector2 position, const Rectangle bounds) {

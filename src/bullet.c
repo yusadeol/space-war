@@ -57,10 +57,10 @@ float BulletGetHeight(const Bullet *bullet) {
     return bullet->texture.height * BULLET_SCALE;
 }
 
-Vector2 *BulletGetPosition(Bullet *bullet) {
+Vector2 BulletGetPosition(const Bullet *bullet) {
     assert(bullet);
 
-    return &bullet->position;
+    return bullet->position;
 }
 
 Rectangle BulletGetBounds(const Bullet *bullet) {
