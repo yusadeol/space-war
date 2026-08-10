@@ -3,6 +3,7 @@
 #include "bullet.h"
 #include "controller.h"
 #include "enemy.h"
+#include "gamepad.h"
 #include "player.h"
 #include "world.h"
 #include <assert.h>
@@ -262,11 +263,19 @@ void GameUpdatePlayers(Game *game, const float delta) {
     for (int i = 0; i < game->player_count; i++) {
         Player *player = GameGetPlayer(game, i);
 
-        ControllerInput input = IsGamepadAvailable(i)
-                                    ? ControllerGetGamepadInput(i)
-                                    : ControllerGetKeyboardInput();
+        Controller *controller = (Controller *)GamepadCreate(i);
+        if (controller == NULL) {
+            TraceLog(
+                LOG_ERROR, "Failed to create gamepad controller for player %d",
+                i);
 
-        PlayerUpdate(player, input, delta);
+            continue;
+        }
+
+        PlayerUpdate(player, controller->GetInput(controller), delta);
+
+        controller->Destroy(controller);
+
         WorldResolveBoundaries(
             game->world, PlayerGetPosition(player), PlayerGetBounds(player));
 

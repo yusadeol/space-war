@@ -8,5 +8,9 @@ typedef struct {
     bool shoot;
 } ControllerInput;
 
-ControllerInput ControllerGetKeyboardInput();
-ControllerInput ControllerGetGamepadInput(const int gamepad);
+typedef struct Controller Controller;
+
+struct Controller {
+    ControllerInput (*GetInput)(const Controller *controller);
+    void (*Destroy)(Controller *controller);
+};
