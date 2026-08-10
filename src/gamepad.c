@@ -20,6 +20,7 @@ static ControllerInput GetInput(const Controller *controller) {
         .right = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_RIGHT),
         .down = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_DOWN),
         .shoot = IsGamepadButtonPressed(gamepad->gamepad_index, GAMEPAD_BUTTON_RIGHT_FACE_DOWN),
+        .start = IsGamepadButtonPressed(gamepad->gamepad_index, GAMEPAD_BUTTON_MIDDLE_RIGHT),
     };
 }
 

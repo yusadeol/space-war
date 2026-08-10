@@ -17,6 +17,7 @@ static ControllerInput GetInput(const Controller *) {
         .right = IsKeyDown(KEY_RIGHT),
         .down = IsKeyDown(KEY_DOWN),
         .shoot = IsKeyPressed(KEY_SPACE),
+        .start = IsKeyPressed(KEY_ENTER),
     };
 }
 

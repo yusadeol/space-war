@@ -6,6 +6,7 @@ typedef struct {
     bool right;
     bool down;
     bool shoot;
+    bool start;
 } ControllerInput;
 
 typedef struct Controller Controller;
