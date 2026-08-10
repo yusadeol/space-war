@@ -17,6 +17,7 @@ struct Game {
     int window_height;
     World *world;
     Player *players[MAX_PLAYERS];
+    Controller *player_controllers[MAX_PLAYERS];
     Enemy *enemies[MAX_PLAYERS][MAX_ENEMIES];
     int enemy_count[MAX_PLAYERS];
 };
@@ -51,6 +52,7 @@ void GameDestroy(Game *game) {
     assert(game);
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
+        (void)GameRemovePlayerController(game, i);
         (void)GameRemovePlayer(game, i);
     }
 
@@ -58,20 +60,55 @@ void GameDestroy(Game *game) {
     free(game);
 }
 
-void GameSetup(Game *game) {
+void GameStart(Game *game) {
     assert(game);
 
-    Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
-    if (player == NULL) {
-        TraceLog(LOG_ERROR, "Failed to create player");
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (game->player_controllers[i] != NULL) {
+            continue;
+        }
 
-        return;
+        Controller *controller = (Controller *)GamepadCreate(i);
+        if (controller == NULL) {
+            TraceLog(LOG_ERROR, "Failed to create controller");
+
+            continue;
+        }
+
+        if (!GameAddPlayerController(game, i, controller)) {
+            controller->Destroy(controller);
+        }
     }
+}
 
-    if (!GameAddPlayer(game, 0, player)) {
-        TraceLog(LOG_ERROR, "Failed to add player");
+void GameHandlePlayerJoins(Game *game) {
+    assert(game);
 
-        PlayerDestroy(player);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (game->players[i] != NULL) {
+            continue;
+        }
+
+        Controller *controller = game->player_controllers[i];
+        if (controller == NULL) {
+            continue;
+        }
+
+        ControllerInput input = controller->GetInput(controller);
+        if (input.start) {
+            Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
+            if (player == NULL) {
+                TraceLog(LOG_ERROR, "Failed to create player");
+
+                continue;
+            }
+
+            if (!GameAddPlayer(game, i, player)) {
+                TraceLog(LOG_ERROR, "Failed to add player");
+
+                PlayerDestroy(player);
+            }
+        }
     }
 }
 
@@ -156,6 +193,50 @@ bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_c
     }
 
     return all_ok;
+}
+
+bool GameAddPlayerController(Game *game, const int player_index, Controller *controller) {
+    assert(game && controller);
+
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        return false;
+    }
+
+    if (game->player_controllers[player_index] != NULL) {
+        return false;
+    }
+
+    game->player_controllers[player_index] = controller;
+
+    return true;
+}
+
+Controller *GameGetPlayerController(Game *game, const int player_index) {
+    assert(game);
+
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        return NULL;
+    }
+
+    return game->player_controllers[player_index];
+}
+
+bool GameRemovePlayerController(Game *game, const int player_index) {
+    assert(game);
+
+    if (player_index < 0 || player_index >= MAX_PLAYERS) {
+        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
+
+        return false;
+    }
+
+    Controller *controller = game->player_controllers[player_index];
+    if (controller != NULL) {
+        controller->Destroy(controller);
+    }
+    game->player_controllers[player_index] = NULL;
+
+    return true;
 }
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
@@ -285,16 +366,12 @@ void GameUpdatePlayers(Game *game, const float delta) {
             continue;
         }
 
-        Controller *controller = (Controller *)GamepadCreate(i);
+        Controller *controller = game->player_controllers[i];
         if (controller == NULL) {
-            TraceLog(LOG_ERROR, "Failed to create gamepad controller for player %d", i);
-
             continue;
         }
 
         PlayerUpdate(player, controller->GetInput(controller), delta);
-
-        controller->Destroy(controller);
 
         PlayerSetPosition(player,
             WorldResolveBoundaries(game->world, PlayerGetPosition(player), PlayerGetBounds(player)));
@@ -408,12 +485,14 @@ void GameDrawHud(Game *game) {
     int cursor_x = world_border;
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
+        const char *text;
+
         Player *player = game->players[i];
         if (player == NULL) {
-            continue;
+            text = TextFormat("Player %d: Press START to join", i + 1);
+        } else {
+            text = TextFormat("Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
         }
-
-        const char *text = TextFormat("Player %d kill count: %d", i + 1, PlayerGetKillCount(player));
 
         DrawText(text, cursor_x + (GAME_HUD_GAP * i), world_border, 14, WHITE);
         cursor_x += MeasureText(text, 14);

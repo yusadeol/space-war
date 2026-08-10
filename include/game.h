@@ -1,4 +1,5 @@
 #pragma once
+#include "controller.h"
 #include "enemy.h"
 #include "player.h"
 #include "world.h"
@@ -12,7 +13,8 @@ constexpr int GAME_HUD_GAP = 20;
 Game *GameCreate(const int window_width, const int window_height);
 void GameDestroy(Game *game);
 
-void GameSetup(Game *game);
+void GameStart(Game *game);
+void GameHandlePlayerJoins(Game *game);
 
 int GameGetWindowWidth(const Game *game);
 int GameGetWindowHeight(const Game *game);
@@ -22,6 +24,10 @@ bool GameAddPlayer(Game *game, const int player_index, Player *player);
 Player *GameGetPlayer(Game *game, const int player_index);
 bool GameRemovePlayer(Game *game, const int player_index);
 bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count);
+
+bool GameAddPlayerController(Game *game, const int player_index, Controller *controller);
+Controller *GameGetPlayerController(Game *game, const int player_index);
+bool GameRemovePlayerController(Game *game, const int player_index);
 
 bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy);
 Enemy *GameGetEnemy(Game *game, const int player_index, const int enemy_index);

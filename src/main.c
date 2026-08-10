@@ -15,11 +15,12 @@ int main(void) {
     InitWindow(GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
     AssetLoadTextures();
-    GameSetup(game);
+    GameStart(game);
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
+        GameHandlePlayerJoins(game);
         GameSpawnRandomEnemiesForPlayers(game);
 
         float delta = GetFrameTime();
