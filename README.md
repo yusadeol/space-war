@@ -19,18 +19,18 @@ a simple, modular codebase.
 
 ### Features
 
-- Player movement with arrow keys
-- Shooting mechanic (space key)
+- Local multi-player support (up to 2 players)
+- Two distinct player ship types (Viper and Raptor)
+- Keyboard and gamepad support (plug-and-play, auto-detected)
 - CPU-controlled enemy ships with state-based AI (pursuit and retreat behaviors)
 - Enemy ships shoot at the player when in attack range
 - Player bullets damage enemies (two hits to destroy)
 - Enemy bullets destroy the player on hit
 - Enemies respawn when all are eliminated
-- Two bullet types
-- Boundary collision for player and bullets
+- Kill count tracked per player and displayed in HUD
+- Boundary collision for players, enemies, and bullets
 - Frame-independent movement using delta time
 - Texture-based sprites for ships and bullets
-- Multi-player support (up to 2 players)
 
 ## Build
 
