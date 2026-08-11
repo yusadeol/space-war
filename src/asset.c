@@ -7,8 +7,10 @@ static Texture2D textures[TEXTURE_COUNT];
 static const char *file_textures[TEXTURE_COUNT] = {
     [TEXTURE_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.png",
     [TEXTURE_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.png",
+    [TEXTURE_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.png",
     [TEXTURE_BULLET_PULSE] = "assets/textures/bullets/pulse.png",
     [TEXTURE_BULLET_BOLT] = "assets/textures/bullets/bolt.png",
+    [TEXTURE_BULLET_HAMMER] = "assets/textures/bullets/hammer.png",
 };
 
 void AssetLoadTextures(void) {

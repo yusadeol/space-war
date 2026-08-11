@@ -28,7 +28,7 @@ static Texture2D GetTexture(const EnemyType type) {
         return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
     }
 
-    return (Texture2D){};
+    return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
 }
 
 Enemy *EnemyCreate(const EnemyType type, const int window_width, const int world_height, const int world_border) {

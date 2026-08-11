@@ -19,9 +19,11 @@ static Texture2D GetTexture(const BulletType type) {
         return *AssetGetTexture(TEXTURE_BULLET_PULSE);
     case BULLET_TYPE_BOLT:
         return *AssetGetTexture(TEXTURE_BULLET_BOLT);
+    case BULLET_TYPE_HAMMER:
+        return *AssetGetTexture(TEXTURE_BULLET_HAMMER);
     }
 
-    return (Texture2D){};
+    return *AssetGetTexture(TEXTURE_BULLET_PULSE);
 }
 
 Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Rectangle shooter_bounds) {

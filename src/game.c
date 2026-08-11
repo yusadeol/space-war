@@ -13,6 +13,8 @@
 #include <raylib.h>
 #include <stdlib.h>
 
+static const PlayerType player_types[MAX_PLAYERS] = {PLAYER_TYPE_VIPER, PLAYER_TYPE_RAPTOR};
+
 struct Game {
     int window_width;
     int window_height;
@@ -107,7 +109,7 @@ void GameHandlePlayerJoins(Game *game) {
 
         ControllerInput input = controller->GetInput(controller);
         if (input.start) {
-            Player *player = PlayerCreate(PLAYER_TYPE_VIPER);
+            Player *player = PlayerCreate(player_types[i]);
             if (player == NULL) {
                 TraceLog(LOG_ERROR, "Failed to create player %d", i);
 

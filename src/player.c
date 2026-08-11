@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 struct Player {
+    PlayerType type;
     Texture2D texture;
     Vector2 position;
     Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
@@ -21,9 +22,22 @@ static Texture2D GetTexture(const PlayerType type) {
     switch (type) {
     case PLAYER_TYPE_VIPER:
         return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
+    case PLAYER_TYPE_RAPTOR:
+        return *AssetGetTexture(TEXTURE_SPACESHIP_RAPTOR);
     }
 
-    return (Texture2D){};
+    return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
+}
+
+static BulletType GetBulletType(const PlayerType type) {
+    switch (type) {
+    case PLAYER_TYPE_VIPER:
+        return BULLET_TYPE_PULSE;
+    case PLAYER_TYPE_RAPTOR:
+        return BULLET_TYPE_HAMMER;
+    }
+
+    return BULLET_TYPE_PULSE;
 }
 
 Player *PlayerCreate(const PlayerType type) {
@@ -33,7 +47,7 @@ Player *PlayerCreate(const PlayerType type) {
         return NULL;
     }
 
-    *player = (Player){.texture = GetTexture(type)};
+    *player = (Player){.type = type, .texture = GetTexture(type)};
 
     return player;
 }
@@ -174,7 +188,7 @@ static void Shoot(Player *player) {
         return;
     }
 
-    Bullet *bullet = BulletCreate(BULLET_TYPE_PULSE, BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
+    Bullet *bullet = BulletCreate(GetBulletType(player->type), BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
     if (bullet == NULL) {
         TraceLog(LOG_ERROR, "Failed to create player bullet");
 

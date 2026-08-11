@@ -8,7 +8,7 @@ constexpr int MAX_PLAYERS = 2;
 constexpr float PLAYER_SPEED = 400.0f;
 constexpr float PLAYER_SCALE = 1.0f;
 
-typedef enum { PLAYER_TYPE_VIPER } PlayerType;
+typedef enum { PLAYER_TYPE_VIPER, PLAYER_TYPE_RAPTOR } PlayerType;
 
 typedef struct Player Player;
 

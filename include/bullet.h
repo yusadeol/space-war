@@ -5,7 +5,7 @@ constexpr int MAX_SIMULTANEOUS_BULLETS = 50;
 constexpr float BULLET_SPEED = 800.0f;
 constexpr float BULLET_SCALE = 1.0f;
 
-typedef enum { BULLET_TYPE_PULSE, BULLET_TYPE_BOLT } BulletType;
+typedef enum { BULLET_TYPE_PULSE, BULLET_TYPE_BOLT, BULLET_TYPE_HAMMER } BulletType;
 
 typedef enum {
     BULLET_DIRECTION_LEFT = -1,
