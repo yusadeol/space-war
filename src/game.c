@@ -5,6 +5,7 @@
 #include "controller.h"
 #include "enemy.h"
 #include "gamepad.h"
+#include "keyboard.h"
 #include "player.h"
 #include "world.h"
 
@@ -60,6 +61,16 @@ void GameDestroy(Game *game) {
     free(game);
 }
 
+static Controller *CreatePlayerController(int player_index) {
+    Controller *controller = (Controller *)GamepadCreate(player_index);
+
+    if (controller == NULL && player_index == 0) {
+        controller = (Controller *)KeyboardCreate();
+    }
+
+    return controller;
+}
+
 void GameStart(Game *game) {
     assert(game);
 
@@ -68,7 +79,7 @@ void GameStart(Game *game) {
             continue;
         }
 
-        Controller *controller = (Controller *)GamepadCreate(i);
+        Controller *controller = CreatePlayerController(i);
         if (controller == NULL) {
             TraceLog(LOG_ERROR, "Failed to create controller for player %d", i);
 
