@@ -30,13 +30,15 @@ a simple, modular codebase.
 - Kill count tracked per player and displayed in HUD
 - Boundary collision for players, enemies, and bullets
 - Frame-independent movement using delta time
-- Texture-based sprites for ships and bullets
+- Texture-based sprites for ships
+- Animated (frame-based) sprites for bullets
 
 ## Build
 
 ### Dependencies
 
 - [raylib](https://www.raylib.com/) (tested with raylib 6.x)
+- [yyjson](https://github.com/ibireme/yyjson) (JSON parsing for bullet sprite frames)
 - GCC (or any C23-compatible compiler)
 - [just](https://github.com/casey/just) (command runner)
 
