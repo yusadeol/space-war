@@ -89,6 +89,8 @@ void GameStart(Game *game) {
         }
 
         if (!GameAddPlayerController(game, i, controller)) {
+            TraceLog(LOG_ERROR, "Failed to add controller for player %d", i);
+
             controller->Destroy(controller);
         }
     }
@@ -147,8 +149,6 @@ bool GameAddPlayer(Game *game, const int player_index, Player *player) {
     assert(game && player);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
-
         return false;
     }
 
@@ -177,8 +177,6 @@ bool GameRemovePlayer(Game *game, const int player_index) {
     assert(game);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
-
         return false;
     }
 
@@ -216,8 +214,6 @@ bool GameAddPlayerController(Game *game, const int player_index, Controller *con
     assert(game && controller);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
-
         return false;
     }
 
@@ -246,8 +242,6 @@ bool GameRemovePlayerController(Game *game, const int player_index) {
     assert(game);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
-
         return false;
     }
 
@@ -264,8 +258,6 @@ bool GameAddEnemy(Game *game, const int player_index, Enemy *enemy) {
     assert(game && enemy);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS - 1);
-
         return false;
     }
 
@@ -314,15 +306,10 @@ bool GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) 
     assert(game);
 
     if (player_index < 0 || player_index >= MAX_PLAYERS) {
-        TraceLog(LOG_ERROR, "Player index %d out of range [0, %d]", player_index, MAX_PLAYERS);
-
         return false;
     }
 
     if (enemy_index < 0 || enemy_index >= game->enemy_count[player_index]) {
-        TraceLog(LOG_ERROR, "Enemy index %d out of range [0, %d] for player %d", enemy_index,
-            game->enemy_count[player_index] - 1, player_index);
-
         return false;
     }
 

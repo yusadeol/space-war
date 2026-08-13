@@ -123,8 +123,6 @@ bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     assert(enemy);
 
     if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
-        TraceLog(LOG_ERROR, "Bullet index %d out of range [0, %d]", bullet_index, enemy->bullet_count - 1);
-
         return false;
     }
 

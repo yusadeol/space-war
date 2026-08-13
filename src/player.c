@@ -125,8 +125,6 @@ bool PlayerRemoveBullet(Player *player, const int bullet_index) {
     assert(player);
 
     if (bullet_index < 0 || bullet_index >= player->bullet_count) {
-        TraceLog(LOG_ERROR, "Bullet index %d out of range [0, %d]", bullet_index, player->bullet_count - 1);
-
         return false;
     }
 
