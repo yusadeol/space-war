@@ -33,10 +33,10 @@ int main(void) {
 
         ClearBackground(WorldGetBackgroundColor(GameGetWorld(game)));
 
-        GameDrawHud(game);
         GameDrawAllBullets(game);
         GameDrawPlayers(game);
         GameDrawEnemies(game);
+        GameDrawHud(game);
 
         EndDrawing();
     }
