@@ -1,5 +1,6 @@
 #include "bullet.h"
 
+#include "animation.h"
 #include "asset.h"
 #include "geometry.h"
 
@@ -11,6 +12,7 @@ struct Bullet {
     Texture2D texture;
     BulletDirection direction;
     Vector2 position;
+    Animation *animation;
 };
 
 static Texture2D GetTexture(const BulletType type) {
@@ -26,16 +28,39 @@ static Texture2D GetTexture(const BulletType type) {
     return *AssetGetTexture(TEXTURE_BULLET_PULSE);
 }
 
-Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Rectangle shooter_bounds) {
-    Bullet *bullet = malloc(sizeof(*bullet));
+static Frame *GetFrames(const BulletType type, int *frame_count) {
+    switch (type) {
+    case BULLET_TYPE_PULSE:
+        return AssetGetFrames(TEXTURE_BULLET_PULSE, frame_count);
+    case BULLET_TYPE_BOLT:
+        return AssetGetFrames(TEXTURE_BULLET_BOLT, frame_count);
+    case BULLET_TYPE_HAMMER:
+        return AssetGetFrames(TEXTURE_BULLET_HAMMER, frame_count);
+    }
 
-    if (bullet == NULL) {
+    return AssetGetFrames(TEXTURE_BULLET_PULSE, frame_count);
+}
+
+Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Rectangle shooter_bounds) {
+    int frame_count;
+    Frame *frames = GetFrames(type, &frame_count);
+    Animation *animation = AnimationCreate(frames, frame_count);
+    if (animation == NULL) {
         return NULL;
     }
 
-    *bullet = (Bullet){.texture = GetTexture(type), .direction = direction};
+    Bullet *bullet = malloc(sizeof(*bullet));
+
+    if (bullet == NULL) {
+        AnimationDestroy(animation);
+
+        return NULL;
+    }
 
     Vector2 shooter_center = GeometryGetCenterFromRectangle(shooter_bounds);
+
+    *bullet = (Bullet){.texture = GetTexture(type), .direction = direction, .animation = animation};
+
     bullet->position = GeometryGetCenteredPosition(shooter_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
 
     return bullet;
@@ -44,19 +69,24 @@ Bullet *BulletCreate(const BulletType type, const BulletDirection direction, con
 void BulletDestroy(Bullet *bullet) {
     assert(bullet);
 
+    AnimationDestroy(bullet->animation);
     free(bullet);
 }
 
 float BulletGetWidth(const Bullet *bullet) {
     assert(bullet);
 
-    return bullet->texture.width * BULLET_SCALE;
+    Frame frame = AnimationGetCurrentFrame(bullet->animation);
+
+    return frame.width * BULLET_SCALE;
 }
 
 float BulletGetHeight(const Bullet *bullet) {
     assert(bullet);
 
-    return bullet->texture.height * BULLET_SCALE;
+    Frame frame = AnimationGetCurrentFrame(bullet->animation);
+
+    return frame.height * BULLET_SCALE;
 }
 
 Vector2 BulletGetPosition(const Bullet *bullet) {
@@ -79,15 +109,24 @@ Rectangle BulletGetBounds(const Bullet *bullet) {
 void BulletUpdate(Bullet *bullet, const float delta) {
     assert(bullet);
 
-    float move_step = BULLET_SPEED * delta;
+    Vector2 previous_frame_center = GeometryGetCenterFromRectangle(BulletGetBounds(bullet));
 
+    AnimationUpdate(bullet->animation, delta);
+
+    float move_step = BULLET_SPEED * delta;
+    Vector2 centered_position =
+        GeometryGetCenteredPosition(previous_frame_center, BulletGetWidth(bullet), BulletGetHeight(bullet));
+
+    bullet->position = centered_position;
     bullet->position.x += move_step * bullet->direction;
 }
 
 void BulletDraw(const Bullet *bullet) {
     assert(bullet);
 
-    Rectangle source = {.width = bullet->texture.width * bullet->direction, .height = bullet->texture.height};
+    Frame frame = AnimationGetCurrentFrame(bullet->animation);
+
+    Rectangle source = {.x = frame.x, .y = frame.y, .width = frame.width * bullet->direction, .height = frame.height};
     Rectangle destination = {bullet->position.x, bullet->position.y, BulletGetWidth(bullet), BulletGetHeight(bullet)};
 
     DrawTexturePro(bullet->texture, source, destination, (Vector2){}, 0, WHITE);

@@ -1,4 +1,6 @@
 #pragma once
+#include "animation.h"
+
 #include <raylib.h>
 
 typedef enum {
@@ -16,3 +18,4 @@ void AssetLoadTextures(void);
 void AssetUnloadTextures(void);
 
 Texture2D *AssetGetTexture(const TextureType type);
+Frame *AssetGetFrames(const TextureType type, int *frame_count);

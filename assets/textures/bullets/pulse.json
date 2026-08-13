@@ -1,0 +1,98 @@
+{
+    "frames": [
+        {
+            "x": 33,
+            "y": 21,
+            "width": 6,
+            "height": 6
+        },
+        {
+            "x": 105,
+            "y": 20,
+            "width": 9,
+            "height": 9
+        },
+        {
+            "x": 167,
+            "y": 19,
+            "width": 30,
+            "height": 11
+        },
+        {
+            "x": 232,
+            "y": 18,
+            "width": 46,
+            "height": 12
+        },
+        {
+            "x": 13,
+            "y": 68,
+            "width": 46,
+            "height": 11
+        },
+        {
+            "x": 94,
+            "y": 70,
+            "width": 31,
+            "height": 6
+        },
+        {
+            "x": 151,
+            "y": 67,
+            "width": 62,
+            "height": 13
+        },
+        {
+            "x": 225,
+            "y": 62,
+            "width": 60,
+            "height": 22
+        },
+        {
+            "x": 0,
+            "y": 98,
+            "width": 73,
+            "height": 49
+        },
+        {
+            "x": 78,
+            "y": 101,
+            "width": 63,
+            "height": 43
+        },
+        {
+            "x": 158,
+            "y": 104,
+            "width": 49,
+            "height": 36
+        },
+        {
+            "x": 242,
+            "y": 106,
+            "width": 27,
+            "height": 32
+        },
+        {
+            "x": 26,
+            "y": 160,
+            "width": 21,
+            "height": 23
+        },
+        {
+            "x": 101,
+            "y": 161,
+            "width": 16,
+            "height": 20
+        }
+    ],
+    "meta": {
+        "app": "GAPTools Texture Packer",
+        "version": "1.0",
+        "format": "RGBA8888",
+        "size": {
+            "width": 292,
+            "height": 196
+        },
+        "scale": 1
+    }
+}
