@@ -12,6 +12,6 @@ typedef struct {
 typedef struct Controller Controller;
 
 struct Controller {
-    ControllerInput (*GetInput)(const Controller *controller);
-    void (*Destroy)(Controller *controller);
+    ControllerInput (*GetInput)(const Controller* controller);
+    void (*Destroy)(Controller* controller);
 };

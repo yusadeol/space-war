@@ -1,16 +1,16 @@
 #include "keyboard.h"
 
-#include "controller.h"
-
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
+
+#include "controller.h"
 
 struct Keyboard {
     Controller controller;
 };
 
-static ControllerInput GetInput(const Controller *) {
+static ControllerInput GetInput(const Controller*) {
     return (ControllerInput){
         .left_held = IsKeyDown(KEY_LEFT),
         .up_held = IsKeyDown(KEY_UP),
@@ -21,20 +21,20 @@ static ControllerInput GetInput(const Controller *) {
     };
 }
 
-void KeyboardDestroy(Keyboard *keyboard) {
+void KeyboardDestroy(Keyboard* keyboard) {
     assert(keyboard);
 
     free(keyboard);
 }
 
-static void Destroy(Controller *controller) {
-    Keyboard *keyboard = (Keyboard *)controller;
+static void Destroy(Controller* controller) {
+    Keyboard* keyboard = (Keyboard*)controller;
 
     KeyboardDestroy(keyboard);
 }
 
-Keyboard *KeyboardCreate(void) {
-    Keyboard *keyboard = malloc(sizeof(*keyboard));
+Keyboard* KeyboardCreate(void) {
+    Keyboard* keyboard = malloc(sizeof(*keyboard));
 
     if (keyboard == NULL) {
         return NULL;

@@ -1,8 +1,8 @@
 #include "array.h"
 
-int ArrayCompareIntegerAscending(const void *a, const void *b) {
-    const int x = *(const int *)a;
-    const int y = *(const int *)b;
+int ArrayCompareIntegerAscending(const void* a, const void* b) {
+    const int x = *(const int*)a;
+    const int y = *(const int*)b;
 
     if (x < y) {
         return -1;
@@ -15,7 +15,7 @@ int ArrayCompareIntegerAscending(const void *a, const void *b) {
     return 0;
 }
 
-int ArrayDeduplicateInteger(int *array, const int count) {
+int ArrayDeduplicateInteger(int* array, const int count) {
     int new_count = 0;
 
     for (int i = 0; i < count; i++) {

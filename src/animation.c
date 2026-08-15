@@ -1,25 +1,25 @@
 #include "animation.h"
 
-#include "sprite.h"
-
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
+#include "sprite.h"
+
 struct Animation {
-    const Sprite *sprite;
+    const Sprite* sprite;
     int current_frame;
     float frame_duration;
     float frame_countdown;
     bool is_finished;
 };
 
-Animation *AnimationCreate(const Sprite *sprite, const float frame_duration) {
+Animation* AnimationCreate(const Sprite* sprite, const float frame_duration) {
     if (sprite == NULL) {
         return NULL;
     }
 
-    Animation *animation = malloc(sizeof(*animation));
+    Animation* animation = malloc(sizeof(*animation));
     if (animation == NULL) {
         return NULL;
     }
@@ -29,18 +29,18 @@ Animation *AnimationCreate(const Sprite *sprite, const float frame_duration) {
     return animation;
 }
 
-void AnimationDestroy(Animation *animation) {
+void AnimationDestroy(Animation* animation) {
     assert(animation);
 
     free(animation);
 }
 
-void AnimationSetFrame(Animation *animation, const int frame_index) {
+void AnimationSetFrame(Animation* animation, const int frame_index) {
     assert(animation);
 
     if (frame_index < 0 || frame_index >= SpriteGetFrameCount(animation->sprite)) {
         TraceLog(LOG_ERROR, "Invalid frame index %d for sprite with %d frames", frame_index,
-            SpriteGetFrameCount(animation->sprite));
+                 SpriteGetFrameCount(animation->sprite));
 
         return;
     }
@@ -48,13 +48,13 @@ void AnimationSetFrame(Animation *animation, const int frame_index) {
     animation->current_frame = frame_index;
 }
 
-Frame AnimationGetCurrentFrame(const Animation *animation) {
+Frame AnimationGetCurrentFrame(const Animation* animation) {
     assert(animation);
 
     return SpriteGetFrame(animation->sprite, animation->current_frame);
 }
 
-void AnimationUpdate(Animation *animation, const float delta) {
+void AnimationUpdate(Animation* animation, const float delta) {
     assert(animation);
 
     animation->frame_countdown -= delta;
@@ -72,7 +72,7 @@ void AnimationUpdate(Animation *animation, const float delta) {
     }
 }
 
-void AnimationReset(Animation *animation) {
+void AnimationReset(Animation* animation) {
     assert(animation);
 
     animation->current_frame = 0;
@@ -80,7 +80,7 @@ void AnimationReset(Animation *animation) {
     animation->is_finished = false;
 }
 
-bool AnimationIsFinished(const Animation *animation) {
+bool AnimationIsFinished(const Animation* animation) {
     assert(animation);
 
     return animation->is_finished;

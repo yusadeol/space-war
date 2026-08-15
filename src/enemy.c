@@ -1,5 +1,10 @@
 #include "enemy.h"
 
+#include <assert.h>
+#include <math.h>
+#include <raylib.h>
+#include <stdlib.h>
+
 #include "animation.h"
 #include "array.h"
 #include "asset.h"
@@ -9,31 +14,26 @@
 #include "geometry.h"
 #include "sprite.h"
 
-#include <assert.h>
-#include <math.h>
-#include <raylib.h>
-#include <stdlib.h>
-
 static constexpr float FRAME_DURATION = 0.05f;
 
 struct Enemy {
-    Sprite *sprite;
-    Animation *animation;
+    Sprite* sprite;
+    Animation* animation;
     BulletType bullet_type;
     EnemyDirection direction;
     Vector2 position;
     EnemyStatus status;
     EnemyBehavior behavior;
     float behavior_cooldown;
-    Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
+    Bullet* bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
     float shot_cooldown;
 };
 
-static Sprite *GetSprite(const EnemyType type) {
+static Sprite* GetSprite(const EnemyType type) {
     switch (type) {
-    case ENEMY_TYPE_SPECTRA:
-        return AssetGetSprite(ASSET_SPACESHIP_SPECTRA);
+        case ENEMY_TYPE_SPECTRA:
+            return AssetGetSprite(ASSET_SPACESHIP_SPECTRA);
     }
 
     return AssetGetSprite(ASSET_SPACESHIP_SPECTRA);
@@ -41,27 +41,27 @@ static Sprite *GetSprite(const EnemyType type) {
 
 static BulletType GetBulletType(const EnemyType type) {
     switch (type) {
-    case ENEMY_TYPE_SPECTRA:
-        return BULLET_TYPE_BOLT;
+        case ENEMY_TYPE_SPECTRA:
+            return BULLET_TYPE_BOLT;
     }
 
     return BULLET_TYPE_BOLT;
 }
 
-Enemy *EnemyCreate(const EnemyType type, const int window_width, const int world_height, const int world_border) {
-    Sprite *sprite = GetSprite(type);
+Enemy* EnemyCreate(const EnemyType type, const int window_width, const int world_height, const int world_border) {
+    Sprite* sprite = GetSprite(type);
     if (sprite == NULL) {
         return NULL;
     }
 
-    Animation *animation = AnimationCreate(sprite, FRAME_DURATION);
+    Animation* animation = AnimationCreate(sprite, FRAME_DURATION);
     if (animation == NULL) {
         SpriteDestroy(sprite);
 
         return NULL;
     }
 
-    Enemy *enemy = malloc(sizeof(*enemy));
+    Enemy* enemy = malloc(sizeof(*enemy));
     if (enemy == NULL) {
         AnimationDestroy(animation);
         SpriteDestroy(sprite);
@@ -70,12 +70,12 @@ Enemy *EnemyCreate(const EnemyType type, const int window_width, const int world
     }
 
     *enemy = (Enemy){.sprite = sprite,
-        .animation = animation,
-        .bullet_type = GetBulletType(type),
-        .direction = ENEMY_DIRECTION_LEFT,
-        .status = ENEMY_STATUS_NORMAL,
-        .behavior = ENEMY_BEHAVIOR_PURSUIT,
-        .shot_cooldown = ENEMY_SHOT_COOLDOWN};
+                     .animation = animation,
+                     .bullet_type = GetBulletType(type),
+                     .direction = ENEMY_DIRECTION_LEFT,
+                     .status = ENEMY_STATUS_NORMAL,
+                     .behavior = ENEMY_BEHAVIOR_PURSUIT,
+                     .shot_cooldown = ENEMY_SHOT_COOLDOWN};
 
     Rectangle bounds = EnemyGetBounds(enemy);
 
@@ -84,7 +84,7 @@ Enemy *EnemyCreate(const EnemyType type, const int window_width, const int world
     return enemy;
 }
 
-void EnemyDestroy(Enemy *enemy) {
+void EnemyDestroy(Enemy* enemy) {
     assert(enemy);
 
     for (int i = 0; i < enemy->bullet_count; i++) {
@@ -98,7 +98,7 @@ void EnemyDestroy(Enemy *enemy) {
     free(enemy);
 }
 
-float EnemyGetWidth(const Enemy *enemy) {
+float EnemyGetWidth(const Enemy* enemy) {
     assert(enemy);
 
     Frame frame = AnimationGetCurrentFrame(enemy->animation);
@@ -106,7 +106,7 @@ float EnemyGetWidth(const Enemy *enemy) {
     return frame.width * ENEMY_SCALE;
 }
 
-float EnemyGetHeight(const Enemy *enemy) {
+float EnemyGetHeight(const Enemy* enemy) {
     assert(enemy);
 
     Frame frame = AnimationGetCurrentFrame(enemy->animation);
@@ -114,13 +114,13 @@ float EnemyGetHeight(const Enemy *enemy) {
     return frame.height * ENEMY_SCALE;
 }
 
-Vector2 EnemyGetPosition(const Enemy *enemy) {
+Vector2 EnemyGetPosition(const Enemy* enemy) {
     assert(enemy);
 
     return enemy->position;
 }
 
-Rectangle EnemyGetBounds(const Enemy *enemy) {
+Rectangle EnemyGetBounds(const Enemy* enemy) {
     assert(enemy);
 
     return (Rectangle){
@@ -131,19 +131,19 @@ Rectangle EnemyGetBounds(const Enemy *enemy) {
     };
 }
 
-Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
+Vector2 EnemyGetCenterPosition(const Enemy* enemy) {
     assert(enemy);
 
     return GeometryGetCenterFromRectangle(EnemyGetBounds(enemy));
 }
 
-EnemyStatus EnemyGetStatus(const Enemy *enemy) {
+EnemyStatus EnemyGetStatus(const Enemy* enemy) {
     assert(enemy);
 
     return enemy->status;
 }
 
-Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index) {
+Bullet* EnemyGetBullet(Enemy* enemy, const int bullet_index) {
     assert(enemy);
 
     if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
@@ -153,20 +153,20 @@ Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index) {
     return enemy->bullets[bullet_index];
 }
 
-int EnemyGetBulletCount(const Enemy *enemy) {
+int EnemyGetBulletCount(const Enemy* enemy) {
     assert(enemy);
 
     return enemy->bullet_count;
 }
 
-bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
+bool EnemyRemoveBullet(Enemy* enemy, const int bullet_index) {
     assert(enemy);
 
     if (bullet_index < 0 || bullet_index >= enemy->bullet_count) {
         return false;
     }
 
-    Bullet *bullet = enemy->bullets[bullet_index];
+    Bullet* bullet = enemy->bullets[bullet_index];
     BulletDestroy(bullet);
 
     for (int i = bullet_index; i < enemy->bullet_count - 1; i++) {
@@ -178,7 +178,7 @@ bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
     return true;
 }
 
-bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count) {
+bool EnemyRemoveBullets(Enemy* enemy, int* bullet_indexes, const int bullet_index_count) {
     assert(enemy);
 
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
@@ -195,37 +195,37 @@ bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_inde
     return all_succeeded;
 }
 
-ControllerInput Think(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
-    const Vector2 player_center_position) {
+ControllerInput Think(Enemy* enemy, const int window_height, const int world_width, const Vector2 player_position,
+                      const Vector2 player_center_position) {
     Rectangle bounds = EnemyGetBounds(enemy);
     Vector2 enemy_center_position = EnemyGetCenterPosition(enemy);
     float player_distance_y = fabsf(player_center_position.y - enemy_center_position.y);
     ControllerInput input = {};
 
     switch (enemy->behavior) {
-    case ENEMY_BEHAVIOR_PURSUIT:
-        if (enemy->position.x > (world_width - bounds.width)) {
-            input.left_held = true;
-        }
+        case ENEMY_BEHAVIOR_PURSUIT:
+            if (enemy->position.x > (world_width - bounds.width)) {
+                input.left_held = true;
+            }
 
-        if (enemy->position.y > player_position.y) {
-            input.up_held = true;
-        } else {
-            input.down_held = true;
-        }
-
-        break;
-    case ENEMY_BEHAVIOR_RETREAT:
-        if (enemy_center_position.y > player_center_position.y) {
-            if (enemy->position.y < (window_height + bounds.height)) {
+            if (enemy->position.y > player_position.y) {
+                input.up_held = true;
+            } else {
                 input.down_held = true;
             }
-        } else {
-            if (enemy->position.y > (bounds.height * -1)) {
-                input.up_held = true;
+
+            break;
+        case ENEMY_BEHAVIOR_RETREAT:
+            if (enemy_center_position.y > player_center_position.y) {
+                if (enemy->position.y < (window_height + bounds.height)) {
+                    input.down_held = true;
+                }
+            } else {
+                if (enemy->position.y > (bounds.height * -1)) {
+                    input.up_held = true;
+                }
             }
-        }
-        break;
+            break;
     }
 
     if (player_distance_y <= ENEMY_ATTACK_DISTANCE) {
@@ -235,7 +235,7 @@ ControllerInput Think(Enemy *enemy, const int window_height, const int world_wid
     return input;
 }
 
-static void Move(Enemy *enemy, const ControllerInput input, const float delta) {
+static void Move(Enemy* enemy, const ControllerInput input, const float delta) {
     float move_step = ENEMY_SPEED * delta;
 
     if (input.left_held && !input.right_held) {
@@ -255,12 +255,12 @@ static void Move(Enemy *enemy, const ControllerInput input, const float delta) {
     }
 }
 
-static void Shoot(Enemy *enemy) {
+static void Shoot(Enemy* enemy) {
     if ((enemy->bullet_count + 1) > MAX_SIMULTANEOUS_BULLETS) {
         return;
     }
 
-    Bullet *bullet = BulletCreate(enemy->bullet_type, BULLET_DIRECTION_LEFT, EnemyGetCenterPosition(enemy));
+    Bullet* bullet = BulletCreate(enemy->bullet_type, BULLET_DIRECTION_LEFT, EnemyGetCenterPosition(enemy));
     if (bullet == NULL) {
         TraceLog(LOG_ERROR, "Failed to create enemy bullet");
 
@@ -270,28 +270,28 @@ static void Shoot(Enemy *enemy) {
     enemy->bullets[enemy->bullet_count++] = bullet;
 }
 
-void EnemyTakeDamage(Enemy *enemy) {
+void EnemyTakeDamage(Enemy* enemy) {
     assert(enemy);
 
     switch (enemy->status) {
-    case ENEMY_STATUS_NORMAL:
-        enemy->status = ENEMY_STATUS_DAMAGED;
-        enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
-        enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
-        break;
-    case ENEMY_STATUS_DAMAGED:
-        enemy->status = ENEMY_STATUS_DESTROYED;
+        case ENEMY_STATUS_NORMAL:
+            enemy->status = ENEMY_STATUS_DAMAGED;
+            enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
+            enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
+            break;
+        case ENEMY_STATUS_DAMAGED:
+            enemy->status = ENEMY_STATUS_DESTROYED;
 
-        AnimationSetFrame(enemy->animation, 1);
-        break;
-    case ENEMY_STATUS_DESTROYED:
-    case ENEMY_STATUS_EXPLODED:
-        break;
+            AnimationSetFrame(enemy->animation, 1);
+            break;
+        case ENEMY_STATUS_DESTROYED:
+        case ENEMY_STATUS_EXPLODED:
+            break;
     }
 }
 
-void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
-    const Vector2 player_center_position, const float delta) {
+void EnemyUpdate(Enemy* enemy, const int window_height, const int world_width, const Vector2 player_position,
+                 const Vector2 player_center_position, const float delta) {
     assert(enemy);
 
     if (enemy->status == ENEMY_STATUS_DESTROYED) {
@@ -329,7 +329,7 @@ void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, c
     }
 }
 
-void EnemyDraw(const Enemy *enemy) {
+void EnemyDraw(const Enemy* enemy) {
     assert(enemy);
 
     Frame frame = AnimationGetCurrentFrame(enemy->animation);

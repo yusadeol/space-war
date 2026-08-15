@@ -11,19 +11,19 @@ typedef enum { BULLET_STATUS_NORMAL, BULLET_STATUS_DESTROYED } BulletStatus;
 
 typedef struct Bullet Bullet;
 
-Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Vector2 shooter_center_position);
-void BulletDestroy(Bullet *bullet);
+Bullet* BulletCreate(const BulletType type, const BulletDirection direction, const Vector2 shooter_center_position);
+void BulletDestroy(Bullet* bullet);
 
-float BulletGetWidth(const Bullet *bullet);
-float BulletGetHeight(const Bullet *bullet);
+float BulletGetWidth(const Bullet* bullet);
+float BulletGetHeight(const Bullet* bullet);
 
-Vector2 BulletGetPosition(const Bullet *bullet);
-Rectangle BulletGetBounds(const Bullet *bullet);
-Vector2 BulletGetCenterPosition(const Bullet *bullet);
+Vector2 BulletGetPosition(const Bullet* bullet);
+Rectangle BulletGetBounds(const Bullet* bullet);
+Vector2 BulletGetCenterPosition(const Bullet* bullet);
 
-BulletStatus BulletGetStatus(const Bullet *bullet);
+BulletStatus BulletGetStatus(const Bullet* bullet);
 
-void BulletHit(Bullet *bullet);
+void BulletHit(Bullet* bullet);
 
-void BulletUpdate(Bullet *bullet, const float delta);
-void BulletDraw(const Bullet *bullet);
+void BulletUpdate(Bullet* bullet, const float delta);
+void BulletDraw(const Bullet* bullet);

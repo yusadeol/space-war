@@ -1,12 +1,12 @@
+#include <raylib.h>
+#include <stdlib.h>
+
 #include "collision.h"
 #include "game.h"
 #include "world.h"
 
-#include <raylib.h>
-#include <stdlib.h>
-
 int main(void) {
-    Game *game = GameCreate(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
+    Game* game = GameCreate(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
     if (game == NULL) {
         return EXIT_FAILURE;
     }
@@ -40,8 +40,8 @@ int main(void) {
     }
 
     GameEnd(game);
-
     GameDestroy(game);
+
     CloseWindow();
 
     return EXIT_SUCCESS;

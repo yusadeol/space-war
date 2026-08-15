@@ -1,14 +1,14 @@
 #include "asset.h"
 
-#include "sprite.h"
-
 #include <raylib.h>
 #include <stdlib.h>
 #include <yyjson.h>
 
-static Texture2D *textures[ASSET_COUNT];
+#include "sprite.h"
 
-static const char *file_textures[ASSET_COUNT] = {
+static Texture2D* textures[ASSET_COUNT];
+
+static const char* file_textures[ASSET_COUNT] = {
     [ASSET_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.png",
     [ASSET_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.png",
     [ASSET_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.png",
@@ -18,9 +18,9 @@ static const char *file_textures[ASSET_COUNT] = {
     [ASSET_BULLET_HAMMER] = "assets/textures/bullets/hammer.png",
 };
 
-static Metadata *metadatas[ASSET_COUNT];
+static Metadata* metadatas[ASSET_COUNT];
 
-static const char *file_metadatas[ASSET_COUNT] = {
+static const char* file_metadatas[ASSET_COUNT] = {
     [ASSET_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.json",
     [ASSET_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.json",
     [ASSET_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.json",
@@ -38,7 +38,7 @@ void AssetLoadTextures(void) {
             continue;
         }
 
-        Texture2D *texture = malloc(sizeof(*texture));
+        Texture2D* texture = malloc(sizeof(*texture));
         if (texture == NULL) {
             TraceLog(LOG_ERROR, "Failed to allocate texture for asset type %d", i);
 
@@ -52,13 +52,14 @@ void AssetLoadTextures(void) {
 
 void AssetUnloadTextures(void) {
     for (int i = 0; i < ASSET_COUNT; i++) {
-        Texture2D *texture = textures[i];
+        Texture2D* texture = textures[i];
         if (texture == NULL) {
             continue;
         }
 
         UnloadTexture(*texture);
         free(texture);
+
         textures[i] = NULL;
     }
 }
@@ -68,7 +69,7 @@ Texture2D AssetGetTexture(const AssetType type) {
         return (Texture2D){};
     }
 
-    Texture2D *texture = textures[type];
+    Texture2D* texture = textures[type];
     if (texture == NULL) {
         return (Texture2D){};
     }
@@ -86,14 +87,14 @@ void AssetLoadMetadatas(void) {
 
         yyjson_read_err error;
 
-        yyjson_doc *json = yyjson_read_file(file_metadatas[i], 0, NULL, &error);
+        yyjson_doc* json = yyjson_read_file(file_metadatas[i], 0, NULL, &error);
         if (json == NULL) {
             TraceLog(LOG_ERROR, "Failed to read metadata file %s: %s", file_metadatas[i], error.msg);
 
             continue;
         }
 
-        yyjson_val *json_root = yyjson_doc_get_root(json);
+        yyjson_val* json_root = yyjson_doc_get_root(json);
         if (json_root == NULL) {
             TraceLog(LOG_ERROR, "Failed to parse metadata file %s", file_metadatas[i]);
             yyjson_doc_free(json);
@@ -101,7 +102,7 @@ void AssetLoadMetadatas(void) {
             continue;
         }
 
-        Metadata *metadata = malloc(sizeof(*metadata));
+        Metadata* metadata = malloc(sizeof(*metadata));
         if (metadata == NULL) {
             TraceLog(LOG_ERROR, "Failed to allocate metadata for asset type %d", i);
             yyjson_doc_free(json);
@@ -109,7 +110,7 @@ void AssetLoadMetadatas(void) {
             continue;
         }
 
-        yyjson_val *json_meta = yyjson_obj_get(json_root, "meta");
+        yyjson_val* json_meta = yyjson_obj_get(json_root, "meta");
         if (json_meta == NULL) {
             TraceLog(LOG_ERROR, "Metadata file %s is missing the meta key", file_metadatas[i]);
             yyjson_doc_free(json);
@@ -118,7 +119,7 @@ void AssetLoadMetadatas(void) {
             continue;
         }
 
-        yyjson_val *json_size = yyjson_obj_get(json_meta, "size");
+        yyjson_val* json_size = yyjson_obj_get(json_meta, "size");
         if (json_size == NULL) {
             TraceLog(LOG_ERROR, "Metadata file %s is missing the size key", file_metadatas[i]);
             yyjson_doc_free(json);
@@ -127,8 +128,8 @@ void AssetLoadMetadatas(void) {
             continue;
         }
 
-        yyjson_val *width = yyjson_obj_get(json_size, "width");
-        yyjson_val *height = yyjson_obj_get(json_size, "height");
+        yyjson_val* width = yyjson_obj_get(json_size, "width");
+        yyjson_val* height = yyjson_obj_get(json_size, "height");
 
         if (width == NULL || height == NULL) {
             TraceLog(LOG_ERROR, "Metadata file %s is missing the width or height key", file_metadatas[i]);
@@ -143,7 +144,7 @@ void AssetLoadMetadatas(void) {
             .height = yyjson_get_num(height),
         };
 
-        yyjson_val *json_frames = yyjson_obj_get(json_root, "frames");
+        yyjson_val* json_frames = yyjson_obj_get(json_root, "frames");
         if (json_frames == NULL) {
             TraceLog(LOG_ERROR, "Metadata file %s is missing the frames key", file_metadatas[i]);
             yyjson_doc_free(json);
@@ -161,7 +162,7 @@ void AssetLoadMetadatas(void) {
             continue;
         }
 
-        Frame *frames = malloc(sizeof(*frames) * json_frame_count);
+        Frame* frames = malloc(sizeof(*frames) * json_frame_count);
         if (frames == NULL) {
             TraceLog(LOG_ERROR, "Failed to allocate frames array for asset type %d", i);
             yyjson_doc_free(json);
@@ -173,12 +174,12 @@ void AssetLoadMetadatas(void) {
         bool has_invalid_frame = false;
 
         for (int j = 0; j < json_frame_count; j++) {
-            yyjson_val *frame = yyjson_arr_get(json_frames, j);
+            yyjson_val* frame = yyjson_arr_get(json_frames, j);
 
-            yyjson_val *x = yyjson_obj_get(frame, "x");
-            yyjson_val *y = yyjson_obj_get(frame, "y");
-            yyjson_val *width = yyjson_obj_get(frame, "width");
-            yyjson_val *height = yyjson_obj_get(frame, "height");
+            yyjson_val* x = yyjson_obj_get(frame, "x");
+            yyjson_val* y = yyjson_obj_get(frame, "y");
+            yyjson_val* width = yyjson_obj_get(frame, "width");
+            yyjson_val* height = yyjson_obj_get(frame, "height");
 
             if (x == NULL || y == NULL || width == NULL || height == NULL) {
                 TraceLog(LOG_ERROR, "Metadata file %s has a frame with missing fields", file_metadatas[i]);
@@ -214,13 +215,14 @@ void AssetLoadMetadatas(void) {
 
 void AssetUnloadMetadatas(void) {
     for (int i = 0; i < ASSET_COUNT; i++) {
-        Metadata *metadata = metadatas[i];
+        Metadata* metadata = metadatas[i];
         if (metadata == NULL) {
             continue;
         }
 
         free(metadata->frames);
         free(metadata);
+
         metadatas[i] = NULL;
     }
 }
@@ -230,7 +232,7 @@ Metadata AssetGetMetadata(const AssetType type) {
         return (Metadata){};
     }
 
-    Metadata *metadata = metadatas[type];
+    Metadata* metadata = metadatas[type];
     if (metadata == NULL) {
         return (Metadata){};
     }
@@ -238,7 +240,7 @@ Metadata AssetGetMetadata(const AssetType type) {
     return *metadatas[type];
 }
 
-Sprite *AssetGetSprite(const AssetType type) {
+Sprite* AssetGetSprite(const AssetType type) {
     Texture2D texture = AssetGetTexture(type);
     if (texture.id == 0) {
         return NULL;

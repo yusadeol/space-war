@@ -10,9 +10,8 @@ struct World {
     Color background_color;
 };
 
-World *WorldCreate(const int window_width, const int window_height, const int border, Color background_color) {
-    World *world = malloc(sizeof(*world));
-
+World* WorldCreate(const int window_width, const int window_height, const int border, Color background_color) {
+    World* world = malloc(sizeof(*world));
     if (world == NULL) {
         return NULL;
     }
@@ -27,37 +26,37 @@ World *WorldCreate(const int window_width, const int window_height, const int bo
     return world;
 }
 
-void WorldDestroy(World *world) {
+void WorldDestroy(World* world) {
     assert(world);
 
     free(world);
 }
 
-int WorldGetWidth(const World *world) {
+int WorldGetWidth(const World* world) {
     assert(world);
 
     return world->width;
 }
 
-int WorldGetHeight(const World *world) {
+int WorldGetHeight(const World* world) {
     assert(world);
 
     return world->height;
 }
 
-int WorldGetBorder(const World *world) {
+int WorldGetBorder(const World* world) {
     assert(world);
 
     return world->border;
 }
 
-Color WorldGetBackgroundColor(const World *world) {
+Color WorldGetBackgroundColor(const World* world) {
     assert(world);
 
     return world->background_color;
 }
 
-Vector2 WorldResolveBoundaries(const World *world, const Rectangle bounds) {
+Vector2 WorldResolveBoundaries(const World* world, const Rectangle bounds) {
     assert(world);
 
     Vector2 resolved = {
@@ -84,11 +83,11 @@ Vector2 WorldResolveBoundaries(const World *world, const Rectangle bounds) {
     return resolved;
 }
 
-bool WorldIsOutOfBounds(const World *world, const Rectangle bounds) {
+bool WorldIsOutOfBounds(const World* world, const Rectangle bounds) {
     assert(world);
 
-    if (bounds.x < world->border || bounds.y < world->border || bounds.x > (world->width - bounds.width)
-        || bounds.y > (world->height - bounds.height)) {
+    if (bounds.x < world->border || bounds.y < world->border || bounds.x > (world->width - bounds.width) ||
+        bounds.y > (world->height - bounds.height)) {
         return true;
     }
 

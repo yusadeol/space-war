@@ -1,18 +1,18 @@
 #include "gamepad.h"
 
-#include "controller.h"
-
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
+
+#include "controller.h"
 
 struct Gamepad {
     Controller controller;
     int gamepad_index;
 };
 
-static ControllerInput GetInput(const Controller *controller) {
-    const Gamepad *gamepad = (const Gamepad *)controller;
+static ControllerInput GetInput(const Controller* controller) {
+    const Gamepad* gamepad = (const Gamepad*)controller;
 
     return (ControllerInput){
         .left_held = IsGamepadButtonDown(gamepad->gamepad_index, GAMEPAD_BUTTON_LEFT_FACE_LEFT),
@@ -24,25 +24,24 @@ static ControllerInput GetInput(const Controller *controller) {
     };
 }
 
-void GamepadDestroy(Gamepad *gamepad) {
+void GamepadDestroy(Gamepad* gamepad) {
     assert(gamepad);
 
     free(gamepad);
 }
 
-static void Destroy(Controller *controller) {
-    Gamepad *gamepad = (Gamepad *)controller;
+static void Destroy(Controller* controller) {
+    Gamepad* gamepad = (Gamepad*)controller;
 
     GamepadDestroy(gamepad);
 }
 
-Gamepad *GamepadCreate(const int gamepad_index) {
+Gamepad* GamepadCreate(const int gamepad_index) {
     if (!IsGamepadAvailable(gamepad_index)) {
         return NULL;
     }
 
-    Gamepad *gamepad = malloc(sizeof(*gamepad));
-
+    Gamepad* gamepad = malloc(sizeof(*gamepad));
     if (gamepad == NULL) {
         return NULL;
     }

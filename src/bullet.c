@@ -1,51 +1,51 @@
 #include "bullet.h"
 
+#include <assert.h>
+#include <raylib.h>
+#include <stdlib.h>
+
 #include "animation.h"
 #include "asset.h"
 #include "geometry.h"
 #include "sprite.h"
 
-#include <assert.h>
-#include <raylib.h>
-#include <stdlib.h>
-
 static constexpr float FRAME_DURATION = 0.1f;
 
 struct Bullet {
-    Sprite *sprite;
-    Animation *animation;
+    Sprite* sprite;
+    Animation* animation;
     BulletDirection direction;
     Vector2 position;
     BulletStatus status;
 };
 
-static Sprite *GetSprite(const BulletType type) {
+static Sprite* GetSprite(const BulletType type) {
     switch (type) {
-    case BULLET_TYPE_PULSE:
-        return AssetGetSprite(ASSET_BULLET_PULSE);
-    case BULLET_TYPE_BOLT:
-        return AssetGetSprite(ASSET_BULLET_BOLT);
-    case BULLET_TYPE_HAMMER:
-        return AssetGetSprite(ASSET_BULLET_HAMMER);
+        case BULLET_TYPE_PULSE:
+            return AssetGetSprite(ASSET_BULLET_PULSE);
+        case BULLET_TYPE_BOLT:
+            return AssetGetSprite(ASSET_BULLET_BOLT);
+        case BULLET_TYPE_HAMMER:
+            return AssetGetSprite(ASSET_BULLET_HAMMER);
     }
 
     return AssetGetSprite(ASSET_BULLET_PULSE);
 }
 
-Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Vector2 shooter_center_position) {
-    Sprite *sprite = GetSprite(type);
+Bullet* BulletCreate(const BulletType type, const BulletDirection direction, const Vector2 shooter_center_position) {
+    Sprite* sprite = GetSprite(type);
     if (sprite == NULL) {
         return NULL;
     }
 
-    Animation *animation = AnimationCreate(sprite, FRAME_DURATION);
+    Animation* animation = AnimationCreate(sprite, FRAME_DURATION);
     if (animation == NULL) {
         SpriteDestroy(sprite);
 
         return NULL;
     }
 
-    Bullet *bullet = malloc(sizeof(*bullet));
+    Bullet* bullet = malloc(sizeof(*bullet));
     if (bullet == NULL) {
         AnimationDestroy(animation);
         SpriteDestroy(sprite);
@@ -66,7 +66,7 @@ Bullet *BulletCreate(const BulletType type, const BulletDirection direction, con
     return bullet;
 }
 
-void BulletDestroy(Bullet *bullet) {
+void BulletDestroy(Bullet* bullet) {
     assert(bullet);
 
     AnimationDestroy(bullet->animation);
@@ -74,7 +74,7 @@ void BulletDestroy(Bullet *bullet) {
     free(bullet);
 }
 
-float BulletGetWidth(const Bullet *bullet) {
+float BulletGetWidth(const Bullet* bullet) {
     assert(bullet);
 
     Frame frame = AnimationGetCurrentFrame(bullet->animation);
@@ -82,7 +82,7 @@ float BulletGetWidth(const Bullet *bullet) {
     return frame.width * BULLET_SCALE;
 }
 
-float BulletGetHeight(const Bullet *bullet) {
+float BulletGetHeight(const Bullet* bullet) {
     assert(bullet);
 
     Frame frame = AnimationGetCurrentFrame(bullet->animation);
@@ -90,13 +90,13 @@ float BulletGetHeight(const Bullet *bullet) {
     return frame.height * BULLET_SCALE;
 }
 
-Vector2 BulletGetPosition(const Bullet *bullet) {
+Vector2 BulletGetPosition(const Bullet* bullet) {
     assert(bullet);
 
     return bullet->position;
 }
 
-Rectangle BulletGetBounds(const Bullet *bullet) {
+Rectangle BulletGetBounds(const Bullet* bullet) {
     assert(bullet);
 
     return (Rectangle){
@@ -107,19 +107,19 @@ Rectangle BulletGetBounds(const Bullet *bullet) {
     };
 }
 
-Vector2 BulletGetCenterPosition(const Bullet *bullet) {
+Vector2 BulletGetCenterPosition(const Bullet* bullet) {
     assert(bullet);
 
     return GeometryGetCenterFromRectangle(BulletGetBounds(bullet));
 }
 
-BulletStatus BulletGetStatus(const Bullet *bullet) {
+BulletStatus BulletGetStatus(const Bullet* bullet) {
     assert(bullet);
 
     return bullet->status;
 }
 
-void BulletHit(Bullet *bullet) {
+void BulletHit(Bullet* bullet) {
     assert(bullet);
 
     if (bullet->status == BULLET_STATUS_DESTROYED) {
@@ -129,7 +129,7 @@ void BulletHit(Bullet *bullet) {
     bullet->status = BULLET_STATUS_DESTROYED;
 }
 
-void BulletUpdate(Bullet *bullet, const float delta) {
+void BulletUpdate(Bullet* bullet, const float delta) {
     assert(bullet);
 
     Vector2 previous_center_position = BulletGetCenterPosition(bullet);
@@ -144,7 +144,7 @@ void BulletUpdate(Bullet *bullet, const float delta) {
     bullet->position.x += move_step * bullet->direction;
 }
 
-void BulletDraw(const Bullet *bullet) {
+void BulletDraw(const Bullet* bullet) {
     assert(bullet);
 
     Frame frame = AnimationGetCurrentFrame(bullet->animation);

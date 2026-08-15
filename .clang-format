@@ -1,32 +1,8 @@
 ---
-Language: Cpp
-AlignAfterOpenBracket: false
-AlignConsecutiveDeclarations:
-  AlignFunctionDeclarations: true
-AlignOperands: DontAlign
-AllowAllArgumentsOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortFunctionsOnASingleLine: None
-AlwaysBreakBeforeMultilineStrings: true
-BinPackLongBracedList: false
-BreakAdjacentStringLiterals: false
-BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Attach
-BreakBeforeTernaryOperators: true
-ColumnLimit: 120
-ForEachMacros:
-  - foreach
-IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex: '^".*"'
-    Priority: 1
-  - Regex: '^<.*>'
-    Priority: 2
-IncludeIsMainRegex: '.*'
-IndentWidth: 4
-InsertNewlineAtEOF: true
-LineEnding: DeriveLF
-PointerAlignment: Right
-WhitespaceSensitiveMacros:
-  - PP_STRINGIZE
-  - STRINGIZE
+Language:        Cpp
+BasedOnStyle:    Google
+DerivePointerAlignment: false
+PointerAlignment: Left
+IndentWidth:     4
+ColumnLimit:     120
+---

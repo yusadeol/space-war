@@ -2,5 +2,5 @@
 
 typedef struct Keyboard Keyboard;
 
-void KeyboardDestroy(Keyboard *keyboard);
-Keyboard *KeyboardCreate(void);
+void KeyboardDestroy(Keyboard* keyboard);
+Keyboard* KeyboardCreate(void);

@@ -1,4 +1,4 @@
 #pragma once
 #include "game.h"
 
-void CollisionUpdate(Game *game);
+void CollisionUpdate(Game* game);

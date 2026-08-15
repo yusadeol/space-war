@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sprite.h"
-
 #include <raylib.h>
+
+#include "sprite.h"
 
 typedef enum {
     ASSET_SPACESHIP_VIPER,
@@ -24,4 +24,4 @@ void AssetLoadMetadatas(void);
 void AssetUnloadMetadatas(void);
 Metadata AssetGetMetadata(const AssetType type);
 
-Sprite *AssetGetSprite(const AssetType type);
+Sprite* AssetGetSprite(const AssetType type);

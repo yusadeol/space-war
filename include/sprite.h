@@ -10,7 +10,7 @@ typedef struct {
 } Frame;
 
 typedef struct {
-    Frame *frames;
+    Frame* frames;
     int frame_count;
     float width;
     float height;
@@ -18,10 +18,10 @@ typedef struct {
 
 typedef struct Sprite Sprite;
 
-Sprite *SpriteCreate(Texture2D texture, Metadata metadata);
-void SpriteDestroy(Sprite *sprite);
+Sprite* SpriteCreate(Texture2D texture, Metadata metadata);
+void SpriteDestroy(Sprite* sprite);
 
-Texture2D SpriteGetTexture(const Sprite *sprite);
+Texture2D SpriteGetTexture(const Sprite* sprite);
 
-Frame SpriteGetFrame(const Sprite *sprite, const int frame_index);
-int SpriteGetFrameCount(const Sprite *sprite);
+Frame SpriteGetFrame(const Sprite* sprite, const int frame_index);
+int SpriteGetFrameCount(const Sprite* sprite);
