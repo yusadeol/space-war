@@ -1,38 +1,30 @@
 #include "animation.h"
 
+#include "sprite.h"
+
 #include <assert.h>
+#include <raylib.h>
 #include <stdlib.h>
 
 struct Animation {
-    Frame *frames;
-    int frame_count;
+    const Sprite *sprite;
     int current_frame;
-    float timer;
+    float frame_duration;
+    float frame_countdown;
+    bool is_finished;
 };
 
-Animation *AnimationCreate(Frame *frames, const int frame_count) {
-    if (frames == NULL) {
-        return NULL;
-    }
-
-    if (frame_count <= 0) {
-        free(frames);
-
+Animation *AnimationCreate(const Sprite *sprite, const float frame_duration) {
+    if (sprite == NULL) {
         return NULL;
     }
 
     Animation *animation = malloc(sizeof(*animation));
     if (animation == NULL) {
-        free(frames);
-
         return NULL;
     }
 
-    *animation = (Animation){
-        .frames = frames,
-        .frame_count = frame_count,
-        .timer = ANIMATION_FRAME_TIMER,
-    };
+    *animation = (Animation){.sprite = sprite, .frame_duration = frame_duration, .frame_countdown = frame_duration};
 
     return animation;
 }
@@ -40,19 +32,39 @@ Animation *AnimationCreate(Frame *frames, const int frame_count) {
 void AnimationDestroy(Animation *animation) {
     assert(animation);
 
-    free(animation->frames);
     free(animation);
+}
+
+void AnimationSetFrame(Animation *animation, const int frame_index) {
+    assert(animation);
+
+    if (frame_index < 0 || frame_index >= SpriteGetFrameCount(animation->sprite)) {
+        TraceLog(LOG_ERROR, "Invalid frame index %d for sprite with %d frames", frame_index,
+            SpriteGetFrameCount(animation->sprite));
+
+        return;
+    }
+
+    animation->current_frame = frame_index;
+}
+
+Frame AnimationGetCurrentFrame(const Animation *animation) {
+    assert(animation);
+
+    return SpriteGetFrame(animation->sprite, animation->current_frame);
 }
 
 void AnimationUpdate(Animation *animation, const float delta) {
     assert(animation);
 
-    animation->timer -= delta;
+    animation->frame_countdown -= delta;
 
-    if (animation->timer <= 0.0f) {
-        animation->timer = ANIMATION_FRAME_TIMER;
+    if (animation->frame_countdown <= 0.0f) {
+        animation->frame_countdown = animation->frame_duration;
 
-        if (animation->current_frame >= (animation->frame_count - 1)) {
+        if (animation->current_frame >= (SpriteGetFrameCount(animation->sprite) - 1)) {
+            animation->is_finished = true;
+
             return;
         }
 
@@ -60,8 +72,16 @@ void AnimationUpdate(Animation *animation, const float delta) {
     }
 }
 
-Frame AnimationGetCurrentFrame(const Animation *animation) {
+void AnimationReset(Animation *animation) {
     assert(animation);
 
-    return animation->frames[animation->current_frame];
+    animation->current_frame = 0;
+    animation->frame_countdown = animation->frame_duration;
+    animation->is_finished = false;
+}
+
+bool AnimationIsFinished(const Animation *animation) {
+    assert(animation);
+
+    return animation->is_finished;
 }

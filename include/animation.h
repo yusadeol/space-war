@@ -1,18 +1,16 @@
 #pragma once
 
-constexpr float ANIMATION_FRAME_TIMER = 0.1f;
-
-typedef struct {
-    float x;
-    float y;
-    float width;
-    float height;
-} Frame;
+#include "sprite.h"
 
 typedef struct Animation Animation;
 
-Animation *AnimationCreate(Frame *frames, const int frame_count);
+Animation *AnimationCreate(const Sprite *sprite, const float frame_duration);
 void AnimationDestroy(Animation *animation);
 
-void AnimationUpdate(Animation *animation, const float delta);
+void AnimationSetFrame(Animation *animation, const int frame_index);
 Frame AnimationGetCurrentFrame(const Animation *animation);
+
+void AnimationUpdate(Animation *animation, const float delta);
+void AnimationReset(Animation *animation);
+
+bool AnimationIsFinished(const Animation *animation);
