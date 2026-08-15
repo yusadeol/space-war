@@ -205,31 +205,31 @@ ControllerInput Think(Enemy *enemy, const int window_height, const int world_wid
     switch (enemy->behavior) {
     case ENEMY_BEHAVIOR_PURSUIT:
         if (enemy->position.x > (world_width - bounds.width)) {
-            input.left = true;
+            input.left_held = true;
         }
 
         if (enemy->position.y > player_position.y) {
-            input.up = true;
+            input.up_held = true;
         } else {
-            input.down = true;
+            input.down_held = true;
         }
 
         break;
     case ENEMY_BEHAVIOR_RETREAT:
         if (enemy_center_position.y > player_center_position.y) {
             if (enemy->position.y < (window_height + bounds.height)) {
-                input.down = true;
+                input.down_held = true;
             }
         } else {
             if (enemy->position.y > (bounds.height * -1)) {
-                input.up = true;
+                input.up_held = true;
             }
         }
         break;
     }
 
     if (player_distance_y <= ENEMY_ATTACK_DISTANCE) {
-        input.shoot = true;
+        input.shoot_pressed = true;
     }
 
     return input;
@@ -238,19 +238,19 @@ ControllerInput Think(Enemy *enemy, const int window_height, const int world_wid
 static void Move(Enemy *enemy, const ControllerInput input, const float delta) {
     float move_step = ENEMY_SPEED * delta;
 
-    if (input.left && !input.right) {
+    if (input.left_held && !input.right_held) {
         enemy->position.x -= move_step;
     }
 
-    if (input.up && !input.down) {
+    if (input.up_held && !input.down_held) {
         enemy->position.y -= move_step;
     }
 
-    if (input.right && !input.left) {
+    if (input.right_held && !input.left_held) {
         enemy->position.x += move_step;
     }
 
-    if (input.down && !input.up) {
+    if (input.down_held && !input.up_held) {
         enemy->position.y += move_step;
     }
 }
@@ -322,7 +322,7 @@ void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, c
 
     Move(enemy, input, delta);
 
-    if (input.shoot && enemy->shot_cooldown <= 0.0f) {
+    if (input.shoot_pressed && enemy->shot_cooldown <= 0.0f) {
         Shoot(enemy);
 
         enemy->shot_cooldown = ENEMY_SHOT_COOLDOWN;

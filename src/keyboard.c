@@ -12,12 +12,12 @@ struct Keyboard {
 
 static ControllerInput GetInput(const Controller *) {
     return (ControllerInput){
-        .left = IsKeyDown(KEY_LEFT),
-        .up = IsKeyDown(KEY_UP),
-        .right = IsKeyDown(KEY_RIGHT),
-        .down = IsKeyDown(KEY_DOWN),
-        .shoot = IsKeyPressed(KEY_SPACE),
-        .start = IsKeyPressed(KEY_ENTER),
+        .left_held = IsKeyDown(KEY_LEFT),
+        .up_held = IsKeyDown(KEY_UP),
+        .right_held = IsKeyDown(KEY_RIGHT),
+        .down_held = IsKeyDown(KEY_DOWN),
+        .shoot_pressed = IsKeyPressed(KEY_SPACE),
+        .start_pressed = IsKeyPressed(KEY_ENTER),
     };
 }
 

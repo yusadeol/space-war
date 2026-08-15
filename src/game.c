@@ -121,7 +121,7 @@ void GameHandlePlayerJoins(Game *game) {
         }
 
         ControllerInput input = controller->GetInput(controller);
-        if (input.start) {
+        if (input.start_pressed) {
             Player *player = PlayerCreate(player_types[i]);
             if (player == NULL) {
                 TraceLog(LOG_ERROR, "Failed to create player %d", i);

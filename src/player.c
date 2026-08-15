@@ -212,19 +212,19 @@ int PlayerGetKillCount(const Player *player) {
 static void Move(Player *player, const ControllerInput input, const float delta) {
     float move_step = PLAYER_SPEED * delta;
 
-    if (input.left && !input.right) {
+    if (input.left_held && !input.right_held) {
         player->position.x -= move_step;
     }
 
-    if (input.up && !input.down) {
+    if (input.up_held && !input.down_held) {
         player->position.y -= move_step;
     }
 
-    if (input.right && !input.left) {
+    if (input.right_held && !input.left_held) {
         player->position.x += move_step;
     }
 
-    if (input.down && !input.up) {
+    if (input.down_held && !input.up_held) {
         player->position.y += move_step;
     }
 }
@@ -281,7 +281,7 @@ void PlayerUpdate(Player *player, const ControllerInput input, const float delta
 
     Move(player, input, delta);
 
-    if (input.shoot) {
+    if (input.shoot_pressed) {
         Shoot(player);
     }
 }

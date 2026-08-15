@@ -1,12 +1,12 @@
 #pragma once
 
 typedef struct {
-    bool left;
-    bool up;
-    bool right;
-    bool down;
-    bool shoot;
-    bool start;
+    bool left_held;
+    bool up_held;
+    bool right_held;
+    bool down_held;
+    bool shoot_pressed;
+    bool start_pressed;
 } ControllerInput;
 
 typedef struct Controller Controller;
