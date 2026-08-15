@@ -1,32 +1,39 @@
 #include "player.h"
 
+#include "animation.h"
 #include "array.h"
 #include "asset.h"
 #include "bullet.h"
 #include "geometry.h"
+#include "sprite.h"
 
 #include <assert.h>
 #include <raylib.h>
 #include <stdlib.h>
 
+static constexpr float FRAME_DURATION = 0.05f;
+
 struct Player {
-    PlayerType type;
-    Texture2D texture;
+    Sprite *sprite;
+    Animation *animation;
+    BulletType bullet_type;
+    PlayerDirection direction;
     Vector2 position;
+    PlayerStatus status;
     Bullet *bullets[MAX_SIMULTANEOUS_BULLETS];
     int bullet_count;
     int kill_count;
 };
 
-static Texture2D GetTexture(const PlayerType type) {
+static Sprite *GetSprite(const PlayerType type) {
     switch (type) {
     case PLAYER_TYPE_VIPER:
-        return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
+        return AssetGetSprite(TEXTURE_SPACESHIP_VIPER);
     case PLAYER_TYPE_RAPTOR:
-        return *AssetGetTexture(TEXTURE_SPACESHIP_RAPTOR);
+        return AssetGetSprite(TEXTURE_SPACESHIP_RAPTOR);
     }
 
-    return *AssetGetTexture(TEXTURE_SPACESHIP_VIPER);
+    return AssetGetSprite(TEXTURE_SPACESHIP_VIPER);
 }
 
 static BulletType GetBulletType(const PlayerType type) {
@@ -41,13 +48,34 @@ static BulletType GetBulletType(const PlayerType type) {
 }
 
 Player *PlayerCreate(const PlayerType type) {
-    Player *player = malloc(sizeof(*player));
-
-    if (player == NULL) {
+    Sprite *sprite = GetSprite(type);
+    if (sprite == NULL) {
         return NULL;
     }
 
-    *player = (Player){.type = type, .texture = GetTexture(type)};
+    Animation *animation = AnimationCreate(sprite, FRAME_DURATION);
+    if (animation == NULL) {
+        SpriteDestroy(sprite);
+
+        return NULL;
+    }
+
+    Player *player = malloc(sizeof(*player));
+
+    if (player == NULL) {
+        AnimationDestroy(animation);
+        SpriteDestroy(sprite);
+
+        return NULL;
+    }
+
+    *player = (Player){
+        .sprite = sprite,
+        .animation = animation,
+        .bullet_type = GetBulletType(type),
+        .direction = PLAYER_DIRECTION_RIGHT,
+        .status = PLAYER_STATUS_NORMAL,
+    };
 
     return player;
 }
@@ -61,31 +89,37 @@ void PlayerDestroy(Player *player) {
         i--;
     }
 
+    AnimationDestroy(player->animation);
+    SpriteDestroy(player->sprite);
     free(player);
 }
 
 float PlayerGetWidth(const Player *player) {
     assert(player);
 
-    return player->texture.width * PLAYER_SCALE;
+    Frame frame = AnimationGetCurrentFrame(player->animation);
+
+    return frame.width * PLAYER_SCALE;
 }
 
 float PlayerGetHeight(const Player *player) {
     assert(player);
 
-    return player->texture.height * PLAYER_SCALE;
-}
+    Frame frame = AnimationGetCurrentFrame(player->animation);
 
-Vector2 PlayerGetPosition(const Player *player) {
-    assert(player);
-
-    return player->position;
+    return frame.height * PLAYER_SCALE;
 }
 
 void PlayerSetPosition(Player *player, const Vector2 position) {
     assert(player);
 
     player->position = position;
+}
+
+Vector2 PlayerGetPosition(const Player *player) {
+    assert(player);
+
+    return player->position;
 }
 
 Rectangle PlayerGetBounds(const Player *player) {
@@ -103,6 +137,12 @@ Vector2 PlayerGetCenterPosition(const Player *player) {
     assert(player);
 
     return GeometryGetCenterFromRectangle(PlayerGetBounds(player));
+}
+
+PlayerStatus PlayerGetStatus(const Player *player) {
+    assert(player);
+
+    return player->status;
 }
 
 Bullet *PlayerGetBullet(Player *player, const int bullet_index) {
@@ -141,6 +181,8 @@ bool PlayerRemoveBullet(Player *player, const int bullet_index) {
 }
 
 bool PlayerRemoveBullets(Player *player, int *bullet_indexes, const int bullet_index_count) {
+    assert(player);
+
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
 
     bool all_ok = true;
@@ -153,6 +195,12 @@ bool PlayerRemoveBullets(Player *player, int *bullet_indexes, const int bullet_i
     }
 
     return all_ok;
+}
+
+void PlayerIncrementKillCount(Player *player) {
+    assert(player);
+
+    player->kill_count++;
 }
 
 int PlayerGetKillCount(const Player *player) {
@@ -186,7 +234,7 @@ static void Shoot(Player *player) {
         return;
     }
 
-    Bullet *bullet = BulletCreate(GetBulletType(player->type), BULLET_DIRECTION_RIGHT, PlayerGetBounds(player));
+    Bullet *bullet = BulletCreate(player->bullet_type, BULLET_DIRECTION_RIGHT, PlayerGetCenterPosition(player));
     if (bullet == NULL) {
         TraceLog(LOG_ERROR, "Failed to create player bullet");
 
@@ -196,8 +244,40 @@ static void Shoot(Player *player) {
     player->bullets[player->bullet_count++] = bullet;
 }
 
+void PlayerTakeDamage(Player *player) {
+    assert(player);
+
+    switch (player->status) {
+    case PLAYER_STATUS_NORMAL:
+        player->status = PLAYER_STATUS_DESTROYED;
+
+        AnimationSetFrame(player->animation, 1);
+        break;
+    case PLAYER_STATUS_DESTROYED:
+    case PLAYER_STATUS_EXPLODED:
+        break;
+    }
+}
+
 void PlayerUpdate(Player *player, const ControllerInput input, const float delta) {
     assert(player);
+
+    if (player->status == PLAYER_STATUS_DESTROYED) {
+        Vector2 previous_center_position = PlayerGetCenterPosition(player);
+
+        AnimationUpdate(player->animation, delta);
+
+        Vector2 centered_position =
+            GeometryGetCenteredPosition(previous_center_position, PlayerGetWidth(player), PlayerGetHeight(player));
+
+        player->position = centered_position;
+
+        if (AnimationIsFinished(player->animation)) {
+            player->status = PLAYER_STATUS_EXPLODED;
+        }
+
+        return;
+    }
 
     Move(player, input, delta);
 
@@ -209,14 +289,10 @@ void PlayerUpdate(Player *player, const ControllerInput input, const float delta
 void PlayerDraw(const Player *player) {
     assert(player);
 
-    Rectangle source = {.width = player->texture.width, .height = player->texture.height};
+    Frame frame = AnimationGetCurrentFrame(player->animation);
+
+    Rectangle source = {.x = frame.x, .y = frame.y, .width = frame.width * player->direction, .height = frame.height};
     Rectangle destination = {player->position.x, player->position.y, PlayerGetWidth(player), PlayerGetHeight(player)};
 
-    DrawTexturePro(player->texture, source, destination, (Vector2){}, 0, WHITE);
-}
-
-void PlayerIncrementKillCountByAmount(Player *player, const int amount) {
-    assert(player);
-
-    player->kill_count += amount;
+    DrawTexturePro(SpriteGetTexture(player->sprite), source, destination, (Vector2){}, 0, WHITE);
 }

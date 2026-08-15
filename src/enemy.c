@@ -1,18 +1,26 @@
 #include "enemy.h"
 
+#include "animation.h"
 #include "array.h"
 #include "asset.h"
 #include "bullet.h"
 #include "controller.h"
+#include "effect.h"
 #include "geometry.h"
+#include "sprite.h"
 
 #include <assert.h>
 #include <math.h>
 #include <raylib.h>
 #include <stdlib.h>
 
+static constexpr float FRAME_DURATION = 0.05f;
+
 struct Enemy {
-    Texture2D texture;
+    Sprite *sprite;
+    Animation *animation;
+    BulletType bullet_type;
+    EnemyDirection direction;
     Vector2 position;
     EnemyStatus status;
     EnemyBehavior behavior;
@@ -22,23 +30,49 @@ struct Enemy {
     float shot_cooldown;
 };
 
-static Texture2D GetTexture(const EnemyType type) {
+static Sprite *GetSprite(const EnemyType type) {
     switch (type) {
     case ENEMY_TYPE_SPECTRA:
-        return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
+        return AssetGetSprite(TEXTURE_SPACESHIP_SPECTRA);
     }
 
-    return *AssetGetTexture(TEXTURE_SPACESHIP_SPECTRA);
+    return AssetGetSprite(TEXTURE_SPACESHIP_SPECTRA);
+}
+
+static BulletType GetBulletType(const EnemyType type) {
+    switch (type) {
+    case ENEMY_TYPE_SPECTRA:
+        return BULLET_TYPE_BOLT;
+    }
+
+    return BULLET_TYPE_BOLT;
 }
 
 Enemy *EnemyCreate(const EnemyType type, const int window_width, const int world_height, const int world_border) {
-    Enemy *enemy = malloc(sizeof(*enemy));
-
-    if (enemy == NULL) {
+    Sprite *sprite = GetSprite(type);
+    if (sprite == NULL) {
         return NULL;
     }
 
-    *enemy = (Enemy){.texture = GetTexture(type),
+    Animation *animation = AnimationCreate(sprite, FRAME_DURATION);
+    if (animation == NULL) {
+        SpriteDestroy(sprite);
+
+        return NULL;
+    }
+
+    Enemy *enemy = malloc(sizeof(*enemy));
+    if (enemy == NULL) {
+        AnimationDestroy(animation);
+        SpriteDestroy(sprite);
+
+        return NULL;
+    }
+
+    *enemy = (Enemy){.sprite = sprite,
+        .animation = animation,
+        .bullet_type = GetBulletType(type),
+        .direction = ENEMY_DIRECTION_LEFT,
         .status = ENEMY_STATUS_NORMAL,
         .behavior = ENEMY_BEHAVIOR_PURSUIT,
         .shot_cooldown = ENEMY_SHOT_COOLDOWN};
@@ -59,31 +93,31 @@ void EnemyDestroy(Enemy *enemy) {
         i--;
     }
 
+    AnimationDestroy(enemy->animation);
+    SpriteDestroy(enemy->sprite);
     free(enemy);
 }
 
 float EnemyGetWidth(const Enemy *enemy) {
     assert(enemy);
 
-    return enemy->texture.width * ENEMY_SCALE;
+    Frame frame = AnimationGetCurrentFrame(enemy->animation);
+
+    return frame.width * ENEMY_SCALE;
 }
 
 float EnemyGetHeight(const Enemy *enemy) {
     assert(enemy);
 
-    return enemy->texture.height * ENEMY_SCALE;
+    Frame frame = AnimationGetCurrentFrame(enemy->animation);
+
+    return frame.height * ENEMY_SCALE;
 }
 
 Vector2 EnemyGetPosition(const Enemy *enemy) {
     assert(enemy);
 
     return enemy->position;
-}
-
-EnemyStatus EnemyGetStatus(const Enemy *enemy) {
-    assert(enemy);
-
-    return enemy->status;
 }
 
 Rectangle EnemyGetBounds(const Enemy *enemy) {
@@ -101,6 +135,12 @@ Vector2 EnemyGetCenterPosition(const Enemy *enemy) {
     assert(enemy);
 
     return GeometryGetCenterFromRectangle(EnemyGetBounds(enemy));
+}
+
+EnemyStatus EnemyGetStatus(const Enemy *enemy) {
+    assert(enemy);
+
+    return enemy->status;
 }
 
 Bullet *EnemyGetBullet(Enemy *enemy, const int bullet_index) {
@@ -139,6 +179,8 @@ bool EnemyRemoveBullet(Enemy *enemy, const int bullet_index) {
 }
 
 bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_index_count) {
+    assert(enemy);
+
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
 
     bool all_ok = true;
@@ -218,7 +260,7 @@ static void Shoot(Enemy *enemy) {
         return;
     }
 
-    Bullet *bullet = BulletCreate(BULLET_TYPE_BOLT, BULLET_DIRECTION_LEFT, EnemyGetBounds(enemy));
+    Bullet *bullet = BulletCreate(enemy->bullet_type, BULLET_DIRECTION_LEFT, EnemyGetCenterPosition(enemy));
     if (bullet == NULL) {
         TraceLog(LOG_ERROR, "Failed to create enemy bullet");
 
@@ -228,10 +270,46 @@ static void Shoot(Enemy *enemy) {
     enemy->bullets[enemy->bullet_count++] = bullet;
 }
 
+void EnemyTakeDamage(Enemy *enemy) {
+    assert(enemy);
+
+    switch (enemy->status) {
+    case ENEMY_STATUS_NORMAL:
+        enemy->status = ENEMY_STATUS_DAMAGED;
+        enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
+        enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
+        break;
+    case ENEMY_STATUS_DAMAGED:
+        enemy->status = ENEMY_STATUS_DESTROYED;
+
+        AnimationSetFrame(enemy->animation, 1);
+        break;
+    case ENEMY_STATUS_DESTROYED:
+    case ENEMY_STATUS_EXPLODED:
+        break;
+    }
+}
+
 void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,
     const Vector2 player_center_position, const float delta) {
-
     assert(enemy);
+
+    if (enemy->status == ENEMY_STATUS_DESTROYED) {
+        Vector2 previous_center_position = EnemyGetCenterPosition(enemy);
+
+        AnimationUpdate(enemy->animation, delta);
+
+        Vector2 centered_position =
+            GeometryGetCenteredPosition(previous_center_position, EnemyGetWidth(enemy), EnemyGetHeight(enemy));
+
+        enemy->position = centered_position;
+
+        if (AnimationIsFinished(enemy->animation)) {
+            enemy->status = ENEMY_STATUS_EXPLODED;
+        }
+
+        return;
+    }
 
     enemy->behavior_cooldown -= delta;
     enemy->shot_cooldown -= delta;
@@ -251,39 +329,18 @@ void EnemyUpdate(Enemy *enemy, const int window_height, const int world_width, c
     }
 }
 
-static Color BlinkColor(float frequency) {
-    int blink = (int)(GetTime() * frequency);
-    bool visible = (blink % 2) != 0;
-
-    return visible ? WHITE : BLANK;
-}
-
 void EnemyDraw(const Enemy *enemy) {
     assert(enemy);
 
-    Rectangle source = {.width = -enemy->texture.width, .height = enemy->texture.height};
+    Frame frame = AnimationGetCurrentFrame(enemy->animation);
+
+    Rectangle source = {.x = frame.x, .y = frame.y, .width = frame.width * enemy->direction, .height = frame.height};
     Rectangle destination = {enemy->position.x, enemy->position.y, EnemyGetWidth(enemy), EnemyGetHeight(enemy)};
 
-    DrawTexturePro(enemy->texture, source, destination, (Vector2){}, 0,
-        enemy->status == ENEMY_STATUS_DAMAGED && enemy->behavior == ENEMY_BEHAVIOR_RETREAT ? BlinkColor(10.0f) : WHITE);
-}
-
-void EnemyTakeDamage(Enemy *enemy) {
-    assert(enemy);
-
-    if (enemy->status == ENEMY_STATUS_DESTROYED) {
-        TraceLog(LOG_WARNING, "Attempted to damage an already destroyed enemy");
-
-        return;
+    Color color = WHITE;
+    if (enemy->status == ENEMY_STATUS_DAMAGED && enemy->behavior == ENEMY_BEHAVIOR_RETREAT) {
+        color = EffectBlinkColor(10.0f);
     }
 
-    if (enemy->status == ENEMY_STATUS_DAMAGED) {
-        enemy->status = ENEMY_STATUS_DESTROYED;
-
-        return;
-    }
-
-    enemy->status = ENEMY_STATUS_DAMAGED;
-    enemy->behavior = ENEMY_BEHAVIOR_RETREAT;
-    enemy->behavior_cooldown = ENEMY_BEHAVIOR_COOLDOWN;
+    DrawTexturePro(SpriteGetTexture(enemy->sprite), source, destination, (Vector2){}, 0, color);
 }
