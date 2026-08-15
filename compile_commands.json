@@ -1,5 +1,21 @@
 [
   {
+    "file": "src/animation.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/animation.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
     "file": "src/array.c",
     "arguments": [
       "/usr/sbin/gcc",
@@ -57,6 +73,22 @@
       "-std=c23",
       "-Iinclude",
       "src/collision.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
+    "file": "src/effect.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/effect.c",
       "-o",
       "build/space-war"
     ],
@@ -169,6 +201,22 @@
       "-std=c23",
       "-Iinclude",
       "src/player.c",
+      "-o",
+      "build/space-war"
+    ],
+    "directory": "/home/jarvis/work/c/space-war",
+    "output": "build/space-war"
+  },
+  {
+    "file": "src/sprite.c",
+    "arguments": [
+      "/usr/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-std=c23",
+      "-Iinclude",
+      "src/sprite.c",
       "-o",
       "build/space-war"
     ],
