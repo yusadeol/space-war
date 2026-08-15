@@ -3,4 +3,4 @@
 typedef struct Keyboard Keyboard;
 
 void KeyboardDestroy(Keyboard *keyboard);
-Keyboard *KeyboardCreate();
+Keyboard *KeyboardCreate(void);

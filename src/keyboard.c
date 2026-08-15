@@ -33,7 +33,7 @@ static void Destroy(Controller *controller) {
     KeyboardDestroy(keyboard);
 }
 
-Keyboard *KeyboardCreate() {
+Keyboard *KeyboardCreate(void) {
     Keyboard *keyboard = malloc(sizeof(*keyboard));
 
     if (keyboard == NULL) {
