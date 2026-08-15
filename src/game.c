@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "array.h"
+#include "asset.h"
 #include "bullet.h"
 #include "controller.h"
 #include "enemy.h"
@@ -76,6 +77,9 @@ static Controller *CreatePlayerController(int player_index) {
 void GameStart(Game *game) {
     assert(game);
 
+    AssetLoadTextures();
+    AssetLoadMetadatas();
+
     for (int i = 0; i < MAX_PLAYERS; i++) {
         if (game->player_controllers[i] != NULL) {
             continue;
@@ -94,6 +98,13 @@ void GameStart(Game *game) {
             controller->Destroy(controller);
         }
     }
+}
+
+void GameEnd(Game *game) {
+    assert(game);
+
+    AssetUnloadTextures();
+    AssetUnloadMetadatas();
 }
 
 void GameHandlePlayerJoins(Game *game) {
@@ -196,6 +207,8 @@ bool GameRemovePlayer(Game *game, const int player_index) {
 }
 
 bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_count) {
+    assert(game);
+
     qsort(player_indexes, player_index_count, sizeof(*player_indexes), ArrayCompareIntegerAscending);
 
     bool all_ok = true;
@@ -326,6 +339,8 @@ bool GameRemoveEnemy(Game *game, const int player_index, const int enemy_index) 
 }
 
 bool GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, const int enemy_index_count) {
+    assert(game);
+
     qsort(enemy_indexes, enemy_index_count, sizeof(*enemy_indexes), ArrayCompareIntegerAscending);
 
     bool all_ok = true;
@@ -387,16 +402,14 @@ void GameUpdatePlayers(Game *game, const float delta) {
 
         PlayerUpdate(player, controller->GetInput(controller), delta);
 
-        PlayerSetPosition(player,
-            WorldResolveBoundaries(game->world, PlayerGetPosition(player), PlayerGetBounds(player)));
+        if (PlayerGetStatus(player) == PLAYER_STATUS_NORMAL) {
+            PlayerSetPosition(player, WorldResolveBoundaries(game->world, PlayerGetBounds(player)));
+        }
 
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            if (WorldIsOutOfBounds(game->world, BulletGetPosition(bullet), BulletGetBounds(bullet))) {
-                (void)PlayerRemoveBullet(player, j);
-
-                j--;
+            if (WorldIsOutOfBounds(game->world, BulletGetBounds(bullet))) {
                 continue;
             }
 
@@ -405,7 +418,7 @@ void GameUpdatePlayers(Game *game, const float delta) {
     }
 }
 
-void GameUpdateEnemyies(Game *game, const float delta) {
+void GameUpdateEnemies(Game *game, const float delta) {
     assert(game);
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -423,10 +436,7 @@ void GameUpdateEnemyies(Game *game, const float delta) {
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                if (WorldIsOutOfBounds(game->world, BulletGetPosition(bullet), BulletGetBounds(bullet))) {
-                    (void)EnemyRemoveBullet(enemy, k);
-
-                    k--;
+                if (WorldIsOutOfBounds(game->world, BulletGetBounds(bullet))) {
                     continue;
                 }
 
@@ -436,8 +446,9 @@ void GameUpdateEnemyies(Game *game, const float delta) {
     }
 }
 
-void GameDrawAllBullets(Game *game) {
-    assert(game);
+void GameCull(Game *game) {
+    int exploded_players[MAX_PLAYERS] = {};
+    int exploded_player_count = 0;
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
         Player *player = game->players[i];
@@ -445,22 +456,61 @@ void GameDrawAllBullets(Game *game) {
             continue;
         }
 
+        if (PlayerGetStatus(player) == PLAYER_STATUS_EXPLODED) {
+            exploded_players[exploded_player_count++] = i;
+
+            continue;
+        }
+
+        int destroyed_bullets[MAX_SIMULTANEOUS_BULLETS] = {};
+        int destroyed_bullet_count = 0;
+
         for (int j = 0; j < PlayerGetBulletCount(player); j++) {
             Bullet *bullet = PlayerGetBullet(player, j);
 
-            BulletDraw(bullet);
+            if (WorldIsOutOfBounds(game->world, BulletGetBounds(bullet))
+                || BulletGetStatus(bullet) == BULLET_STATUS_DESTROYED) {
+                destroyed_bullets[destroyed_bullet_count++] = j;
+
+                continue;
+            }
         }
+
+        PlayerRemoveBullets(player, destroyed_bullets, destroyed_bullet_count);
+
+        int exploded_enemies[MAX_ENEMIES] = {};
+        int exploded_enemy_count = 0;
 
         for (int j = 0; j < game->enemy_count[i]; j++) {
             Enemy *enemy = game->enemies[i][j];
 
+            if (EnemyGetStatus(enemy) == ENEMY_STATUS_EXPLODED) {
+                exploded_enemies[exploded_enemy_count++] = j;
+
+                continue;
+            }
+
+            int destroyed_bullets[MAX_SIMULTANEOUS_BULLETS] = {};
+            int destroyed_bullet_count = 0;
+
             for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
                 Bullet *bullet = EnemyGetBullet(enemy, k);
 
-                BulletDraw(bullet);
+                if (WorldIsOutOfBounds(game->world, BulletGetBounds(bullet))
+                    || BulletGetStatus(bullet) == BULLET_STATUS_DESTROYED) {
+                    destroyed_bullets[destroyed_bullet_count++] = k;
+
+                    continue;
+                }
             }
+
+            EnemyRemoveBullets(enemy, destroyed_bullets, destroyed_bullet_count);
         }
+
+        GameRemoveEnemies(game, i, exploded_enemies, exploded_enemy_count);
     }
+
+    GameRemovePlayers(game, exploded_players, exploded_player_count);
 }
 
 void GameDrawPlayers(Game *game) {
@@ -473,6 +523,12 @@ void GameDrawPlayers(Game *game) {
         }
 
         PlayerDraw(player);
+
+        for (int j = 0; j < PlayerGetBulletCount(player); j++) {
+            Bullet *bullet = PlayerGetBullet(player, j);
+
+            BulletDraw(bullet);
+        }
     }
 }
 
@@ -488,6 +544,12 @@ void GameDrawEnemies(Game *game) {
             Enemy *enemy = game->enemies[i][j];
 
             EnemyDraw(enemy);
+
+            for (int k = 0; k < EnemyGetBulletCount(enemy); k++) {
+                Bullet *bullet = EnemyGetBullet(enemy, k);
+
+                BulletDraw(bullet);
+            }
         }
     }
 }

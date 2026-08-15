@@ -1,4 +1,3 @@
-#include "asset.h"
 #include "collision.h"
 #include "game.h"
 #include "world.h"
@@ -14,7 +13,6 @@ int main(void) {
 
     InitWindow(GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
 
-    AssetLoadTextures();
     GameStart(game);
 
     SetTargetFPS(60);
@@ -26,20 +24,22 @@ int main(void) {
         float delta = GetFrameTime();
 
         GameUpdatePlayers(game, delta);
-        GameUpdateEnemyies(game, delta);
+        GameUpdateEnemies(game, delta);
         CollisionUpdate(game);
+        GameCull(game);
 
         BeginDrawing();
 
         ClearBackground(WorldGetBackgroundColor(GameGetWorld(game)));
 
-        GameDrawAllBullets(game);
         GameDrawPlayers(game);
         GameDrawEnemies(game);
         GameDrawHud(game);
 
         EndDrawing();
     }
+
+    GameEnd(game);
 
     GameDestroy(game);
     CloseWindow();

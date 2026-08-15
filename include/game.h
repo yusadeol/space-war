@@ -14,6 +14,7 @@ Game *GameCreate(const int window_width, const int window_height);
 void GameDestroy(Game *game);
 
 void GameStart(Game *game);
+void GameEnd(Game *game);
 void GameHandlePlayerJoins(Game *game);
 
 int GameGetWindowWidth(const Game *game);
@@ -38,8 +39,8 @@ bool GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, c
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index);
 void GameSpawnRandomEnemiesForPlayers(Game *game);
 void GameUpdatePlayers(Game *game, const float delta);
-void GameUpdateEnemyies(Game *game, const float delta);
-void GameDrawAllBullets(Game *game);
+void GameUpdateEnemies(Game *game, const float delta);
+void GameCull(Game *game);
 void GameDrawPlayers(Game *game);
 void GameDrawEnemies(Game *game);
 void GameDrawHud(Game *game);
