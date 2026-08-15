@@ -22,6 +22,7 @@ a simple, modular codebase.
 - Local multi-player support (up to 2 players)
 - Two distinct player ship types (Viper and Raptor)
 - Keyboard and gamepad support (plug-and-play, auto-detected)
+- Press START to join (keyboard or gamepad)
 - CPU-controlled enemy ships with state-based AI (pursuit and retreat behaviors)
 - Enemy ships shoot at the player when in attack range
 - Player bullets damage enemies (two hits to destroy)
@@ -32,13 +33,14 @@ a simple, modular codebase.
 - Frame-independent movement using delta time
 - Texture-based sprites for ships
 - Animated (frame-based) sprites for bullets
+- Explosion animation
 
 ## Build
 
 ### Dependencies
 
 - [raylib](https://www.raylib.com/) (tested with raylib 6.x)
-- [yyjson](https://github.com/ibireme/yyjson) (JSON parsing for bullet sprite frames)
+- [yyjson](https://github.com/ibireme/yyjson) (JSON parsing for sprite frame metadata)
 - GCC (or any C23-compatible compiler)
 - [just](https://github.com/casey/just) (command runner)
 
