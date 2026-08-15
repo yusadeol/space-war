@@ -12,10 +12,9 @@ int main(void) {
     }
 
     InitWindow(GameGetWindowWidth(game), GameGetWindowHeight(game), "Space War");
+    SetTargetFPS(60);
 
     GameStart(game);
-
-    SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
         GameHandlePlayerJoins(game);
