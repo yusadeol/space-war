@@ -33,10 +33,10 @@ struct Enemy {
 static Sprite *GetSprite(const EnemyType type) {
     switch (type) {
     case ENEMY_TYPE_SPECTRA:
-        return AssetGetSprite(TEXTURE_SPACESHIP_SPECTRA);
+        return AssetGetSprite(ASSET_SPACESHIP_SPECTRA);
     }
 
-    return AssetGetSprite(TEXTURE_SPACESHIP_SPECTRA);
+    return AssetGetSprite(ASSET_SPACESHIP_SPECTRA);
 }
 
 static BulletType GetBulletType(const EnemyType type) {

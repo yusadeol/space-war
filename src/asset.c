@@ -6,41 +6,41 @@
 #include <stdlib.h>
 #include <yyjson.h>
 
-static Texture2D *textures[TEXTURE_COUNT];
+static Texture2D *textures[ASSET_COUNT];
 
-static const char *file_textures[TEXTURE_COUNT] = {
-    [TEXTURE_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.png",
-    [TEXTURE_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.png",
-    [TEXTURE_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.png",
+static const char *file_textures[ASSET_COUNT] = {
+    [ASSET_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.png",
+    [ASSET_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.png",
+    [ASSET_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.png",
 
-    [TEXTURE_BULLET_PULSE] = "assets/textures/bullets/pulse.png",
-    [TEXTURE_BULLET_BOLT] = "assets/textures/bullets/bolt.png",
-    [TEXTURE_BULLET_HAMMER] = "assets/textures/bullets/hammer.png",
+    [ASSET_BULLET_PULSE] = "assets/textures/bullets/pulse.png",
+    [ASSET_BULLET_BOLT] = "assets/textures/bullets/bolt.png",
+    [ASSET_BULLET_HAMMER] = "assets/textures/bullets/hammer.png",
 };
 
-static Metadata *metadatas[TEXTURE_COUNT];
+static Metadata *metadatas[ASSET_COUNT];
 
-static const char *file_metadatas[TEXTURE_COUNT] = {
-    [TEXTURE_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.json",
-    [TEXTURE_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.json",
-    [TEXTURE_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.json",
+static const char *file_metadatas[ASSET_COUNT] = {
+    [ASSET_SPACESHIP_VIPER] = "assets/textures/spaceships/viper.json",
+    [ASSET_SPACESHIP_SPECTRA] = "assets/textures/spaceships/spectra.json",
+    [ASSET_SPACESHIP_RAPTOR] = "assets/textures/spaceships/raptor.json",
 
-    [TEXTURE_BULLET_PULSE] = "assets/textures/bullets/pulse.json",
-    [TEXTURE_BULLET_BOLT] = "assets/textures/bullets/bolt.json",
-    [TEXTURE_BULLET_HAMMER] = "assets/textures/bullets/hammer.json",
+    [ASSET_BULLET_PULSE] = "assets/textures/bullets/pulse.json",
+    [ASSET_BULLET_BOLT] = "assets/textures/bullets/bolt.json",
+    [ASSET_BULLET_HAMMER] = "assets/textures/bullets/hammer.json",
 };
 
 void AssetLoadTextures(void) {
-    for (int i = 0; i < TEXTURE_COUNT; i++) {
+    for (int i = 0; i < ASSET_COUNT; i++) {
         if (file_textures[i] == NULL) {
-            TraceLog(LOG_ERROR, "No texture file registered for texture type %d", i);
+            TraceLog(LOG_ERROR, "No texture file registered for asset type %d", i);
 
             continue;
         }
 
         Texture2D *texture = malloc(sizeof(*texture));
         if (texture == NULL) {
-            TraceLog(LOG_ERROR, "Failed to allocate texture for texture type %d", i);
+            TraceLog(LOG_ERROR, "Failed to allocate texture for asset type %d", i);
 
             continue;
         }
@@ -51,7 +51,7 @@ void AssetLoadTextures(void) {
 }
 
 void AssetUnloadTextures(void) {
-    for (int i = 0; i < TEXTURE_COUNT; i++) {
+    for (int i = 0; i < ASSET_COUNT; i++) {
         Texture2D *texture = textures[i];
         if (texture == NULL) {
             continue;
@@ -63,8 +63,8 @@ void AssetUnloadTextures(void) {
     }
 }
 
-Texture2D AssetGetTexture(const TextureType type) {
-    if (type < 0 || type >= TEXTURE_COUNT) {
+Texture2D AssetGetTexture(const AssetType type) {
+    if (type < 0 || type >= ASSET_COUNT) {
         return (Texture2D){};
     }
 
@@ -77,9 +77,9 @@ Texture2D AssetGetTexture(const TextureType type) {
 }
 
 void AssetLoadMetadatas(void) {
-    for (int i = 0; i < TEXTURE_COUNT; i++) {
+    for (int i = 0; i < ASSET_COUNT; i++) {
         if (file_metadatas[i] == NULL) {
-            TraceLog(LOG_ERROR, "No metadata file registered for texture type %d", i);
+            TraceLog(LOG_ERROR, "No metadata file registered for asset type %d", i);
 
             continue;
         }
@@ -103,7 +103,7 @@ void AssetLoadMetadatas(void) {
 
         Metadata *metadata = malloc(sizeof(*metadata));
         if (metadata == NULL) {
-            TraceLog(LOG_ERROR, "Failed to allocate metadata for texture type %d", i);
+            TraceLog(LOG_ERROR, "Failed to allocate metadata for asset type %d", i);
             yyjson_doc_free(json);
 
             continue;
@@ -163,7 +163,7 @@ void AssetLoadMetadatas(void) {
 
         Frame *frames = malloc(sizeof(*frames) * json_frame_count);
         if (frames == NULL) {
-            TraceLog(LOG_ERROR, "Failed to allocate frames array for texture type %d", i);
+            TraceLog(LOG_ERROR, "Failed to allocate frames array for asset type %d", i);
             yyjson_doc_free(json);
             free(metadata);
 
@@ -213,7 +213,7 @@ void AssetLoadMetadatas(void) {
 }
 
 void AssetUnloadMetadatas(void) {
-    for (int i = 0; i < TEXTURE_COUNT; i++) {
+    for (int i = 0; i < ASSET_COUNT; i++) {
         Metadata *metadata = metadatas[i];
         if (metadata == NULL) {
             continue;
@@ -225,8 +225,8 @@ void AssetUnloadMetadatas(void) {
     }
 }
 
-Metadata AssetGetMetadata(const TextureType type) {
-    if (type < 0 || type >= TEXTURE_COUNT) {
+Metadata AssetGetMetadata(const AssetType type) {
+    if (type < 0 || type >= ASSET_COUNT) {
         return (Metadata){};
     }
 
@@ -238,7 +238,7 @@ Metadata AssetGetMetadata(const TextureType type) {
     return *metadatas[type];
 }
 
-Sprite *AssetGetSprite(const TextureType type) {
+Sprite *AssetGetSprite(const AssetType type) {
     Texture2D texture = AssetGetTexture(type);
     if (texture.id == 0) {
         return NULL;

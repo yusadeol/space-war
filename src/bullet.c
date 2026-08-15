@@ -22,14 +22,14 @@ struct Bullet {
 static Sprite *GetSprite(const BulletType type) {
     switch (type) {
     case BULLET_TYPE_PULSE:
-        return AssetGetSprite(TEXTURE_BULLET_PULSE);
+        return AssetGetSprite(ASSET_BULLET_PULSE);
     case BULLET_TYPE_BOLT:
-        return AssetGetSprite(TEXTURE_BULLET_BOLT);
+        return AssetGetSprite(ASSET_BULLET_BOLT);
     case BULLET_TYPE_HAMMER:
-        return AssetGetSprite(TEXTURE_BULLET_HAMMER);
+        return AssetGetSprite(ASSET_BULLET_HAMMER);
     }
 
-    return AssetGetSprite(TEXTURE_BULLET_PULSE);
+    return AssetGetSprite(ASSET_BULLET_PULSE);
 }
 
 Bullet *BulletCreate(const BulletType type, const BulletDirection direction, const Vector2 shooter_center_position) {

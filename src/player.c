@@ -28,12 +28,12 @@ struct Player {
 static Sprite *GetSprite(const PlayerType type) {
     switch (type) {
     case PLAYER_TYPE_VIPER:
-        return AssetGetSprite(TEXTURE_SPACESHIP_VIPER);
+        return AssetGetSprite(ASSET_SPACESHIP_VIPER);
     case PLAYER_TYPE_RAPTOR:
-        return AssetGetSprite(TEXTURE_SPACESHIP_RAPTOR);
+        return AssetGetSprite(ASSET_SPACESHIP_RAPTOR);
     }
 
-    return AssetGetSprite(TEXTURE_SPACESHIP_VIPER);
+    return AssetGetSprite(ASSET_SPACESHIP_VIPER);
 }
 
 static BulletType GetBulletType(const PlayerType type) {
