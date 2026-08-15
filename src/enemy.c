@@ -183,16 +183,16 @@ bool EnemyRemoveBullets(Enemy *enemy, int *bullet_indexes, const int bullet_inde
 
     qsort(bullet_indexes, bullet_index_count, sizeof(*bullet_indexes), ArrayCompareIntegerAscending);
 
-    bool all_ok = true;
+    bool all_succeeded = true;
 
     for (int i = bullet_index_count - 1; i >= 0; i--) {
         if (!EnemyRemoveBullet(enemy, bullet_indexes[i])) {
             TraceLog(LOG_ERROR, "Failed to remove bullet at index %d", bullet_indexes[i]);
-            all_ok = false;
+            all_succeeded = false;
         }
     }
 
-    return all_ok;
+    return all_succeeded;
 }
 
 ControllerInput Think(Enemy *enemy, const int window_height, const int world_width, const Vector2 player_position,

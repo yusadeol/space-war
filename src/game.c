@@ -211,16 +211,16 @@ bool GameRemovePlayers(Game *game, int *player_indexes, const int player_index_c
 
     qsort(player_indexes, player_index_count, sizeof(*player_indexes), ArrayCompareIntegerAscending);
 
-    bool all_ok = true;
+    bool all_succeeded = true;
 
     for (int i = player_index_count - 1; i >= 0; i--) {
         if (!GameRemovePlayer(game, player_indexes[i])) {
             TraceLog(LOG_ERROR, "Failed to remove player at index %d", player_indexes[i]);
-            all_ok = false;
+            all_succeeded = false;
         }
     }
 
-    return all_ok;
+    return all_succeeded;
 }
 
 bool GameAddPlayerController(Game *game, const int player_index, Controller *controller) {
@@ -343,16 +343,16 @@ bool GameRemoveEnemies(Game *game, const int player_index, int *enemy_indexes, c
 
     qsort(enemy_indexes, enemy_index_count, sizeof(*enemy_indexes), ArrayCompareIntegerAscending);
 
-    bool all_ok = true;
+    bool all_succeeded = true;
 
     for (int i = enemy_index_count - 1; i >= 0; i--) {
         if (!GameRemoveEnemy(game, player_index, enemy_indexes[i])) {
             TraceLog(LOG_ERROR, "Failed to remove enemy at index %d for player %d", enemy_indexes[i], player_index);
-            all_ok = false;
+            all_succeeded = false;
         }
     }
 
-    return all_ok;
+    return all_succeeded;
 }
 
 void GameSpawnRandomEnemiesForPlayer(Game *game, const int player_index) {

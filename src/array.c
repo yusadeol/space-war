@@ -19,17 +19,17 @@ int ArrayDeduplicateInteger(int *array, const int count) {
     int new_count = 0;
 
     for (int i = 0; i < count; i++) {
-        bool exists = false;
+        bool already_exists = false;
 
         for (int j = 0; j < new_count; j++) {
             if (array[i] == array[j]) {
-                exists = true;
+                already_exists = true;
 
                 break;
             }
         }
 
-        if (!exists) {
+        if (!already_exists) {
             array[new_count++] = array[i];
         }
     }
